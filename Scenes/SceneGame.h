@@ -13,7 +13,11 @@ protected:
 	sf::Sound stage1Bgm;
 	Player* player;
 
-	TileMap* tileMap = nullptr;
+	TileMap* tileMap1 = nullptr;
+	TileMap* tileMap2 = nullptr;
+	TileMap* tileMap3 = nullptr;
+	TileMap* tileMap4 = nullptr;
+	TileMap* tileMap5 = nullptr;
 public:
 	SceneGame();
 	virtual ~SceneGame() override = default;
