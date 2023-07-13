@@ -8,6 +8,9 @@ protected:
 	sf::SoundBuffer titleBgmBuffer;
 	sf::Sound titleBgm;
 	SpriteGo* titleIcon;
+
+	sf::Vector2f centerPos;
+
 public:
 	SceneTitle();
 	virtual ~SceneTitle() override = default;
