@@ -1,9 +1,13 @@
 #pragma once
 #include "Scene.h"
+class SpriteGo;
+
 class SceneTitle : public Scene
 {
 protected:
-
+	sf::SoundBuffer titleBgmBuffer;
+	sf::Sound titleBgm;
+	SpriteGo* titleIcon;
 public:
 	SceneTitle();
 	virtual ~SceneTitle() override = default;
