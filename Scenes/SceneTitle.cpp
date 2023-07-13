@@ -60,6 +60,7 @@ void SceneTitle::Enter()
 
 void SceneTitle::Exit()
 {
+	titleBgm.stop();
 	Scene::Exit();
 }
 

@@ -7,7 +7,7 @@
 #include "SpriteGo.h"
 #include "Framework.h"
 #include "VertexArrayGo.h"
-#include "UiButton.h"
+#include "TileMap.h"
 
 SceneGame::SceneGame() : Scene(SceneId::Game)
 {
@@ -28,10 +28,23 @@ void SceneGame::Init()
 	worldView.setSize(size);
 	worldView.setCenter(centerPos);
 
+	uiView.setSize(size);
+	uiView.setCenter(centerPos);
+
+	/*----bgm ¼³Á¤----*/
+	stage1BgmBuffer.loadFromFile("sounds/OverWorld.wav");
+	stage1Bgm.setBuffer(stage1BgmBuffer);
+	stage1Bgm.setLoop(true);
+
+	/*----¸Ê ¼³Á¤----*/
+	tileMap = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap"));
+
 	for (auto go : gameObjects)
 	{
 		go->Init();
 	}
+	tileMap->Load("tables/stage1-1.csv");
+	tileMap->SetOrigin(Origins::MC);
 }
 
 void SceneGame::Release()
@@ -48,10 +61,12 @@ void SceneGame::Enter()
 	auto size = FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = size * 0.5f;
 
-	uiView.setSize(size);
-	uiView.setCenter(centerPos);
+	stage1Bgm.play();
+	stage1Bgm.setVolume(40.f);
 
 	Scene::Enter();
+
+	worldView.setCenter(tileMap->GetPosition());
 }
 
 void SceneGame::Exit()

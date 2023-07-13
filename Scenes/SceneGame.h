@@ -4,20 +4,19 @@
 class VertexArrayGo;
 class Player;
 class Player2;
+class TileMap;
 
 class SceneGame : public Scene
 {
 protected:
-	VertexArrayGo* background;
-	sf::FloatRect wallBounds;
-
+	sf::SoundBuffer stage1BgmBuffer;
+	sf::Sound stage1Bgm;
 	Player* player;
-	Player2* player2;
+
+	TileMap* tileMap = nullptr;
 public:
 	SceneGame();
 	virtual ~SceneGame() override = default;
-
-	VertexArrayGo* CreateBackGround(sf::Vector2i size, sf::Vector2f tileSize, sf::Vector2f texSize, string textureId);
 
 	virtual void Init() override;
 	virtual void Release() override;
