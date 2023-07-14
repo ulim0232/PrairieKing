@@ -32,7 +32,7 @@ ResourceMgr::~ResourceMgr()
 
 void ResourceMgr::Init()
 {
-	//LoadFromCSV("tables/defalutResource.csv", true);
+	LoadFromCSV("tables/defalutResource.csv", false);
 }
 
 void ResourceMgr::UnLoadAll()
@@ -130,6 +130,18 @@ void ResourceMgr::UnLoadAll()
 
 void ResourceMgr::LoadFromCSV(const string path, bool isDefault)
 {
+	//if (Utils::IsExistFile(path))
+	//{
+	//	std::cout << "ERR: Not Exist " << path << std::endl;
+	//	return;
+	//}
+	std::ifstream file(path);
+	if (!file.good())
+	{
+		std::cout << "ERR: Not Exist " << path << std::endl;
+		return;
+	}
+
 	rapidcsv::Document doc(path);
 	vector<int>types = doc.GetColumn<int>(0);
 	vector<string> paths = doc.GetColumn<string>(1);

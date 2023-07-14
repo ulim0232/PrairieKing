@@ -9,9 +9,9 @@ InputMgr::InputMgr()
 		AxisInfo infoH;
 		infoH.axis = Axis::Horizontal;
 		infoH.positivies.push_back((int)sf::Keyboard::Key::D);
-		infoH.positivies.push_back((int)sf::Keyboard::Key::Right);
+		//infoH.positivies.push_back((int)sf::Keyboard::Key::Right);
 		infoH.negatives.push_back((int)sf::Keyboard::Key::A);
-		infoH.negatives.push_back((int)sf::Keyboard::Key::Left);
+		//infoH.negatives.push_back((int)sf::Keyboard::Key::Left);
 		axisInfoMap.insert({ infoH.axis, infoH });
 	}
 
@@ -19,9 +19,9 @@ InputMgr::InputMgr()
 		AxisInfo infoV;
 		infoV.axis = Axis::Vertical;
 		infoV.positivies.push_back((int)sf::Keyboard::Key::S);
-		infoV.positivies.push_back((int)sf::Keyboard::Key::Down);
+		//infoV.positivies.push_back((int)sf::Keyboard::Key::Down);
 		infoV.negatives.push_back((int)sf::Keyboard::Key::W);
-		infoV.negatives.push_back((int)sf::Keyboard::Key::Up);
+		//infoV.negatives.push_back((int)sf::Keyboard::Key::Up);
 		axisInfoMap.insert({ infoV.axis, infoV });
 	}
 }

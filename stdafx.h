@@ -4,6 +4,7 @@
 using namespace std;
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <list>
@@ -21,3 +22,4 @@ using namespace std;
 
 #include "Defines.h"
 #include "Variables.h"
+#include "Utils.h"

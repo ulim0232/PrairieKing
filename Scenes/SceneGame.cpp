@@ -8,11 +8,17 @@
 #include "Framework.h"
 #include "VertexArrayGo.h"
 #include "TileMap.h"
+#include "TextGo.h"
+#include "RectangleGo.h"
+#include "Player.h"
 
 SceneGame::SceneGame() : Scene(SceneId::Game)
 {
 	//csv파일을 통해서 로딩하는 것으로 변경
 	resourceListPath = "tables/SceneGameResourceList.csv";
+
+	timerDecreaseRate = 1.0f / timeLimit;
+	timerDecreaseAmount = 482.0f * timerDecreaseRate;
 }
 
 
@@ -41,6 +47,52 @@ void SceneGame::Init()
 	tileMap3 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap3"));
 	tileMap4 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap4"));
 	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap5"));
+	tileMap1->sortLayer = -1;
+
+	/*---플레이어 설정----*/
+	player = (Player*)AddGo(new Player("graphics/players/Player_stand.png", "player"));
+	//player = (Player*)AddGo(new Player("graphics/players/Player_right.png", "player"));
+
+	/*----UI설정----*/
+	coinUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/coin1.png", "coinUI"));
+	itemUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/itemUI.png", "itemUI"));
+	lifeUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/life.png", "lifeUI"));
+	shotUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/shot.png", "shotUI"));
+	timerUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/timerUI.png", "timerUI"));
+	keyUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/controlKey.png", "keyUI"));
+
+	coinUI->sprite.setScale({ 2.f, 2.f });
+	itemUI->sprite.setScale({ 2.f, 2.f });
+	lifeUI->sprite.setScale({ 2.f, 2.f });
+	shotUI->sprite.setScale({ 2.f, 2.f });
+	timerUI->sprite.setScale({ 2.f, 2.f });
+	keyUI->sprite.setScale({ 2.f, 2.f });
+
+	coinUI->sortLayer = 100;
+	itemUI->sortLayer = 100;
+	lifeUI->sortLayer = 100;
+	shotUI->sortLayer = 100;
+	timerUI->sortLayer = 100;
+	keyUI->sortLayer = 100;
+
+	/*----텍스트 설정----*/
+	coinTxt = (TextGo*)AddGo(new TextGo("coinTxt", "fonts/angel.ttf"));
+	std::string ss = "X " + to_string(coinCount);
+	coinTxt->SetText(ss, 25, sf::Color::White, Origins::ML, 100, 0, 0);
+	coinTxt->text.setOutlineThickness(0.5f);
+	coinTxt->text.setOutlineColor(sf::Color::White);
+
+	lifeTxt = (TextGo*)AddGo(new TextGo("lifeTxt", "fonts/angel.ttf"));
+	ss = "X " + to_string(lifeCount);
+	lifeTxt->SetText(ss, 25, sf::Color::White, Origins::ML, 100, 0, 0);
+	lifeTxt->text.setOutlineThickness(0.5f);
+	lifeTxt->text.setOutlineColor(sf::Color::White);
+
+	/*---타이머 게이지 설정----*/
+	sf::Vector2f timersize = { 482, 10 };
+	timerGauge = (RectangleGo*)AddGo(new RectangleGo(timersize, "timerGauge"));
+	timerGauge->SetOrigin(Origins::ML);
+	timerGauge->rectangle.setFillColor(sf::Color::Green);
 
 	for (auto go : gameObjects)
 	{
@@ -66,6 +118,21 @@ void SceneGame::Init()
 	tileMap5->Load("maps/stage1-5.csv");
 	tileMap5->SetOrigin(Origins::MC);
 	tileMap5->SetActive(false);
+
+	/*---플레이어 설정----*/
+	player->SetOrigin(Origins::MC);
+	player->sortLayer = 1;
+	player->sprite.setScale({ 5.f, 5.f });
+
+	/*----UI설정----*/
+	coinUI->SetOrigin(Origins::MC);
+	itemUI->SetOrigin(Origins::MC);
+	lifeUI->SetOrigin(Origins::MC);
+	shotUI->SetOrigin(Origins::MC);
+	timerUI->SetOrigin(Origins::MC);
+	keyUI->SetOrigin(Origins::MC);
+
+	
 }
 
 void SceneGame::Release()
@@ -88,6 +155,34 @@ void SceneGame::Enter()
 	Scene::Enter();
 
 	worldView.setCenter(tileMap1->GetPosition());
+	uiView.setCenter(tileMap1->GetPosition());
+
+	/*----UI설정----*/
+	sf::Vector2f mapPosition = tileMap1->GetPosition();
+	sf::Vector2f tileSize = tileMap1->GetTileSize();
+
+	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
+	lifeUI->SetPosition(itemUI->GetPosition().x - 30, itemUI->GetPosition().y + 40);
+	coinUI->SetPosition(lifeUI->GetPosition().x, lifeUI->GetPosition().y + 30);
+	shotUI->SetPosition(mapPosition.x + tileSize.x / 2 + 10, mapPosition.y - tileSize.y / 2 + 10);
+	timerUI->SetPosition(mapPosition.x - tileSize.x / 2 + 9, mapPosition.y - tileSize.y / 2 - 20);
+	keyUI->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 + 55);
+
+	/*----txt 설정----*/
+	coinTxt->SetPosition(coinUI->GetPosition().x + 20, coinUI->GetPosition().y - 20);
+	lifeTxt->SetPosition(lifeUI->GetPosition().x + 20, lifeUI->GetPosition().y - 20);
+
+	/*---timer 설정----*/
+	timerGauge->SetPosition(timerUI->GetPosition().x + 21, timerUI->GetPosition().y);
+	
+	/*---플레이어 설정----*/
+	player->SetPosition(tileMap1->GetPosition());
+
+	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
+	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
+	back = RESOURCE_MGR.GetTexture("graphics/players/Player_back.png");
+	front = RESOURCE_MGR.GetTexture("graphics/players/Player_front.png");
+
 }
 
 void SceneGame::Exit()
@@ -139,6 +234,47 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(false);
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(true);
+	}
+
+	/*--타이머 게이지 설정--*/
+	if(isTimerRunning)
+	{
+		currentTime += dt;
+		float decreaseWidth = timerDecreaseAmount * currentTime;
+		float newWidth = initualWidth - decreaseWidth;
+		timerGauge->rectangle.setSize(sf::Vector2f(newWidth, timerGauge->rectangle.getSize().y));
+	}
+
+	 //5초가 지나면 초기 상태로 되돌리기
+	if (currentTime >= timeLimit)
+	{
+		currentTime = 0.0f;
+		isTimerRunning = false;
+		timerGauge->rectangle.setSize({ 0, 10 });
+	}
+
+	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+	{
+		if (right != nullptr)
+		{
+			player->sprite.setTexture(*right);
+			player->SetOrigin(Origins::MC);
+		}
+	}
+	if (INPUT_MGR.GetKey(sf::Keyboard::Left))
+	{
+		player->sprite.setTexture(*left);
+		player->SetOrigin(Origins::MC);
+	}
+	if (INPUT_MGR.GetKey(sf::Keyboard::Up))
+	{
+		player->sprite.setTexture(*back);
+		player->SetOrigin(Origins::MC);
+	}
+	if (INPUT_MGR.GetKey(sf::Keyboard::Down))
+	{
+		player->sprite.setTexture(*front);
+		player->SetOrigin(Origins::MC);
 	}
 }
 

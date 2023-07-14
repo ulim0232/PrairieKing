@@ -14,7 +14,7 @@ TileMap::~TileMap()
 bool TileMap::Load(const std::string& filePath)
 {
     rapidcsv::Document map(filePath, rapidcsv::LabelParams(-1, -1));
-    sf::Vector2i size = { (int)map.GetColumnCount(), (int)map.GetRowCount() };
+    size = { (int)map.GetColumnCount(), (int)map.GetRowCount() };
 
     for (int i = 0; i < size.y; ++i)
     {
@@ -28,8 +28,8 @@ bool TileMap::Load(const std::string& filePath)
         }
     }
 
-    sf::Vector2f tileSize = { 32.f, 32.f };
-    sf::Vector2f texSize = { 16.f, 16.f };
+   /* sf::Vector2f tileSize = { 32.f, 32.f };
+    sf::Vector2f texSize = { 16.f, 16.f };*/
     sf::Vector2f texOffsets[4] =
     {
         { 0.f, 0.f },
@@ -73,4 +73,9 @@ bool TileMap::Load(const std::string& filePath)
     }
 
     return true;
+}
+
+sf::Vector2f TileMap::GetTileSize()
+{
+    return sf::Vector2f{tileSize.x* size.x, tileSize.y* size.y};
 }
