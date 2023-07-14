@@ -23,7 +23,7 @@ void SceneTitle::Init()
 	worldView.setCenter(centerPos);
 
 	/*----title icon ¼³Á¤----*/
-	titleIcon = (SpriteGo*)AddGo(new SpriteGo("graphics/title.png", "titleIcon"));
+	titleIcon = (SpriteGo*)AddGo(new SpriteGo("graphics/titles/title.png", "titleIcon"));
 	titleIcon->sprite.setScale(4.f, 4.f);
 	titleIcon->SetOrigin(Origins::TC);
 	titleIcon->sortLayer = -1;

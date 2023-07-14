@@ -36,11 +36,11 @@ void SceneGame::Init()
 	stage1Bgm.setLoop(true);
 
 	/*----¸Ê ¼³Á¤----*/
-	tileMap1 = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap1"));
-	tileMap2 = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap2"));
-	tileMap3 = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap3"));
-	tileMap4 = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap4"));
-	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/map_sheet_stage1.png", "TileMap5"));
+	tileMap1 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap1"));
+	tileMap2 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap2"));
+	tileMap3 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap3"));
+	tileMap4 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap4"));
+	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap5"));
 
 	for (auto go : gameObjects)
 	{
