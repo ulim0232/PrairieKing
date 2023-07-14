@@ -2,6 +2,20 @@
 #include "SpriteGo.h"
 #include "AnimationController.h"
 
+//class player :public GameObject
+//{
+//protected:
+//	spritego 다리;
+//	spritego 머리;
+//
+//	AnimationController animation1;
+//	AnimationController animation2;
+//};
+
+
+
+
+
 class Player :public SpriteGo
 {
 protected:

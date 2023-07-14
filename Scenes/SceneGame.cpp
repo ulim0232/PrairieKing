@@ -10,7 +10,7 @@
 #include "TileMap.h"
 #include "TextGo.h"
 #include "RectangleGo.h"
-#include "Player.h"
+#include "CowBoy.h"
 
 SceneGame::SceneGame() : Scene(SceneId::Game)
 {
@@ -50,7 +50,8 @@ void SceneGame::Init()
 	tileMap1->sortLayer = -1;
 
 	/*---플레이어 설정----*/
-	player = (Player*)AddGo(new Player("graphics/players/Player_stand.png", "player"));
+	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
+	//player = (Player*)AddGo(new Player("graphics/players/Player_stand.png", "player"));
 	//player = (Player*)AddGo(new Player("graphics/players/Player_right.png", "player"));
 
 	/*----UI설정----*/
@@ -120,9 +121,10 @@ void SceneGame::Init()
 	tileMap5->SetActive(false);
 
 	/*---플레이어 설정----*/
-	player->SetOrigin(Origins::MC);
-	player->sortLayer = 1;
-	player->sprite.setScale({ 5.f, 5.f });
+	cowBoy->sortLayer = 2;
+	//player->SetOrigin(Origins::MC);
+	//player->sortLayer = 1;
+	//player->sprite.setScale({ 5.f, 5.f });
 
 	/*----UI설정----*/
 	coinUI->SetOrigin(Origins::MC);
@@ -176,7 +178,9 @@ void SceneGame::Enter()
 	timerGauge->SetPosition(timerUI->GetPosition().x + 21, timerUI->GetPosition().y);
 	
 	/*---플레이어 설정----*/
-	player->SetPosition(tileMap1->GetPosition());
+	Utils::SetOrigin(cowBoy->head, Origins::BC);
+	Utils::SetOrigin(cowBoy->leg, Origins::TC);
+	cowBoy->SetPosition(tileMap1->GetPosition());
 
 	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
 	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
@@ -257,24 +261,24 @@ void SceneGame::Update(float dt)
 	{
 		if (right != nullptr)
 		{
-			player->sprite.setTexture(*right);
-			player->SetOrigin(Origins::MC);
+			cowBoy->head.setTexture(*right);
+			//cowBoy->SetOrigin(Origins::MC);
 		}
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Left))
 	{
-		player->sprite.setTexture(*left);
-		player->SetOrigin(Origins::MC);
+		cowBoy->head.setTexture(*left);
+		//player->SetOrigin(Origins::MC);
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Up))
 	{
-		player->sprite.setTexture(*back);
-		player->SetOrigin(Origins::MC);
+		cowBoy->head.setTexture(*back);
+		//player->SetOrigin(Origins::MC);
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Down))
 	{
-		player->sprite.setTexture(*front);
-		player->SetOrigin(Origins::MC);
+		cowBoy->head.setTexture(*front);
+		//player->SetOrigin(Origins::MC);
 	}
 }
 

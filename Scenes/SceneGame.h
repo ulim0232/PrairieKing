@@ -2,7 +2,7 @@
 #include "Scene.h"
 
 class VertexArrayGo;
-class Player;
+class CowBoy;
 class TileMap;
 class SpriteGo;
 class TextGo;
@@ -14,7 +14,7 @@ protected:
 	sf::SoundBuffer stage1BgmBuffer;
 	sf::Sound stage1Bgm;
 
-	Player* player;
+	CowBoy* cowBoy;
 	sf::Texture* left = nullptr;
 	sf::Texture* right = nullptr;
 	sf::Texture* back = nullptr;

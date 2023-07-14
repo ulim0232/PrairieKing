@@ -9,11 +9,15 @@
 void Player::Init()
 {
 	SpriteGo::Init();
+	string textureId = "graphics/players/Player_sheet.png";
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Move.csv"));
+	animation.SetTarget(&sprite);
 }
 
 void Player::Reset()
 {
 	SpriteGo::Reset();
+	animation.Play("Move");
 
 
 }
