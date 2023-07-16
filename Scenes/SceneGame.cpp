@@ -103,6 +103,7 @@ void SceneGame::Init()
 	/*----¸Ê ¼³Á¤----*/
 	tileMap1->Load("maps/stage1-1.csv");
 	tileMap1->SetOrigin(Origins::MC);
+	tileMap1->SetPosition(centerPos);
 
 	tileMap2->Load("maps/stage1-2.csv");
 	tileMap2->SetOrigin(Origins::MC);
@@ -158,6 +159,7 @@ void SceneGame::Enter()
 
 	worldView.setCenter(tileMap1->GetPosition());
 	uiView.setCenter(tileMap1->GetPosition());
+	cout << tileMap1->GetPosition().x << ", "<<tileMap1->GetPosition().y << endl;
 
 	/*----UI¼³Á¤----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -181,6 +183,7 @@ void SceneGame::Enter()
 	Utils::SetOrigin(cowBoy->head, Origins::BC);
 	Utils::SetOrigin(cowBoy->leg, Origins::TC);
 	cowBoy->SetPosition(tileMap1->GetPosition());
+	cowBoy->SetTileMap(tileMap1, 32);
 
 	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
 	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");

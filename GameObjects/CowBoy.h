@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "AnimationController.h"
+#include "TileMap.h"
 
 class SpriteGo;
 
@@ -10,8 +11,8 @@ protected:
 	AnimationController legAnimation;
 
 	float gapLegToHead = 4.f;
-
 	float speed = 150.f;
+	int tileWidth = 0;
 
 	sf::Vector2f look; //바라보는 방향
 	sf::Vector2f direction;
@@ -22,6 +23,9 @@ protected:
 	sf::Texture* back = nullptr;
 	sf::Texture* front = nullptr;
 	sf::Texture* origintex = nullptr;
+
+	TileMap* tileMap;
+	sf::RectangleShape hitBox;
 
 public:
 	sf::Sprite head;
@@ -43,5 +47,9 @@ public:
 
 	virtual void SetOrigin(Origins origin);
 	virtual void SetOrigin(float x, float y);
+
+	void SetTileMap(TileMap* map, int width);
+	bool IsTileCollision(const sf::Vector2f p);
+	bool IsCollisoinTile(int index);
 };
 

@@ -5,6 +5,7 @@
 #include "Framework.h"
 #include "ResourceMgr.h"
 
+
 CowBoy::CowBoy(const std::string& n)
 	: GameObject(n)
 {
@@ -27,6 +28,13 @@ void CowBoy::Init()
 	auto texture = new sf::Texture();
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
+
+	hitBox.setSize(sf::Vector2f(32.f, 32.f));
+	Utils::SetOrigin(hitBox, Origins::BC);
+	hitBox.setFillColor(sf::Color::Transparent);
+	hitBox.setOutlineThickness(2);
+	hitBox.setOutlineColor(sf::Color::Cyan);
+	hitBox.setPosition(position);
 
 }
 
@@ -64,15 +72,16 @@ void CowBoy::Update(float dt)
 		direction /= magnitude;
 	}
 	velocity = direction * speed;
-	position += velocity * dt;
-	/*if (!wallBounds.contains(position))
-	{
-		position =
+	//position += velocity * dt;
 
-		::Clamp(position, wallBoundsLT, wallBoundsRB);
-	}*/
+	sf::Vector2f newPosition = position + velocity * dt;
+	if (!IsTileCollision(newPosition)) //충돌이 없는 경우
+	{
+		position = newPosition;
+	}
 
 	SetPosition(position);
+	hitBox.setPosition(position);
 
 	//애니메이션
 	if (legAnimation.GetCurrentClipId() == "Idle")
@@ -102,6 +111,7 @@ void CowBoy::Draw(sf::RenderWindow& window)
 {
 	window.draw(head);
 	window.draw(leg);
+	window.draw(hitBox);
 }
 
 void CowBoy::SetPosition(const sf::Vector2f& p)
@@ -133,4 +143,36 @@ void CowBoy::SetOrigin(float x, float y)
 	GameObject::SetOrigin(x, y);
 	head.setOrigin(x, y);
 	leg.setOrigin(x, y);
+}
+
+void CowBoy::SetTileMap(TileMap* map, int width)
+{
+	tileMap = map;
+	tileWidth = width;
+}
+
+bool CowBoy::IsTileCollision(const sf::Vector2f p)
+{
+	int tileX = (p.x - 384) / tileWidth;
+	int tileY = (p.y - 104) / tileWidth;
+
+	int tileIndex = tileMap->GetTile(tileX, tileY);
+	
+	return IsCollisoinTile(tileIndex);
+}
+
+bool CowBoy::IsCollisoinTile(int index)
+{
+	if ((index == 2) || (index == 3) || (index == 4)) //이동 가능한 타일
+	{
+		return 0;
+	}
+	else if (index == -1)
+	{
+		cout << "something wrong" << endl;
+	}
+	else
+	{
+		return 1;
+	}
 }

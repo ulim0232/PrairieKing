@@ -21,6 +21,7 @@ public:
 	bool Load(const std::string& filePath);
 
 	sf::Vector2f GetTileSize();
+	int GetTile(int x, int y);
 	std::vector<Tile> tiles;
 
 };
