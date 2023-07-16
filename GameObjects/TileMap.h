@@ -22,4 +22,5 @@ public:
 
 	sf::Vector2f GetTileSize();
 	std::vector<Tile> tiles;
+
 };

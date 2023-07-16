@@ -19,6 +19,7 @@ protected:
 	sf::Texture* right = nullptr;
 	sf::Texture* back = nullptr;
 	sf::Texture* front = nullptr;
+	sf::Texture* origin = nullptr;
 	/*---map---*/
 	TileMap* tileMap1 = nullptr;
 	TileMap* tileMap2 = nullptr;

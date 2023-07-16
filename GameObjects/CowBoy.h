@@ -11,11 +11,17 @@ protected:
 
 	float gapLegToHead = 4.f;
 
-	float speed = 200.f;
+	float speed = 150.f;
 
 	sf::Vector2f look; //바라보는 방향
 	sf::Vector2f direction;
 	sf::Vector2f velocity; //dir*dt
+
+	sf::Texture* left = nullptr;
+	sf::Texture* right = nullptr;
+	sf::Texture* back = nullptr;
+	sf::Texture* front = nullptr;
+	sf::Texture* origintex = nullptr;
 
 public:
 	sf::Sprite head;

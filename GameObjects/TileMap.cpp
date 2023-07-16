@@ -23,7 +23,7 @@ bool TileMap::Load(const std::string& filePath)
             Tile tile;
             tile.x = j;
             tile.y = i;
-            tile.texIndex = map.GetCell<int>(j, i);
+            tile.texIndex = map.GetCell<int>(j, i); //타일 종류
             tiles.push_back(tile);
         }
     }

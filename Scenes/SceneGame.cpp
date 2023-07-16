@@ -186,6 +186,7 @@ void SceneGame::Enter()
 	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
 	back = RESOURCE_MGR.GetTexture("graphics/players/Player_back.png");
 	front = RESOURCE_MGR.GetTexture("graphics/players/Player_front.png");
+	origin = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
 
 }
 
@@ -262,23 +263,26 @@ void SceneGame::Update(float dt)
 		if (right != nullptr)
 		{
 			cowBoy->head.setTexture(*right);
-			//cowBoy->SetOrigin(Origins::MC);
 		}
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Left))
 	{
 		cowBoy->head.setTexture(*left);
-		//player->SetOrigin(Origins::MC);
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Up))
 	{
 		cowBoy->head.setTexture(*back);
-		//player->SetOrigin(Origins::MC);
 	}
 	if (INPUT_MGR.GetKey(sf::Keyboard::Down))
 	{
 		cowBoy->head.setTexture(*front);
-		//player->SetOrigin(Origins::MC);
+	}
+	if (INPUT_MGR.GetKeyUp(sf::Keyboard::Down) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::Up) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::Right) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::Left))
+	{
+		cowBoy->head.setTexture(*origin);
 	}
 }
 

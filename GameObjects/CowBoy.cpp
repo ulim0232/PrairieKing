@@ -27,6 +27,7 @@ void CowBoy::Init()
 	auto texture = new sf::Texture();
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
+
 }
 
 void CowBoy::Release()
@@ -44,12 +45,25 @@ void CowBoy::Reset()
 void CowBoy::Update(float dt)
 {
 	legAnimation.Update(dt);
-	float h = INPUT_MGR.GetAxis(Axis::Horizontal);
-	float v = INPUT_MGR.GetAxis(Axis::Vertical);
+	
 
 	//이동
-	velocity.x = h * speed;
-	velocity.y = v * speed;
+	
+	//float h = INPUT_MGR.GetAxis(Axis::Horizontal);
+	//float v = INPUT_MGR.GetAxis(Axis::Vertical);
+	//velocity.x = h * speed;
+	//velocity.y = v * speed;
+	
+	//대각선 이동 속도 보정으로 수정
+	direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
+	direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
+
+	float magnitude = Utils::Magnitude(direction);
+	if (magnitude > 1.f)
+	{
+		direction /= magnitude;
+	}
+	velocity = direction * speed;
 	position += velocity * dt;
 	/*if (!wallBounds.contains(position))
 	{
@@ -63,16 +77,23 @@ void CowBoy::Update(float dt)
 	//애니메이션
 	if (legAnimation.GetCurrentClipId() == "Idle")
 	{
-		if (h != 0 || v != 0)
+		if (direction.x != 0 || direction.y != 0)
 		{
 			legAnimation.Play("Move");
 		}
 	}
 	else if (legAnimation.GetCurrentClipId() == "Move")
 	{
-		if (h == 0.f && v == 0.f)
+		if (direction.x == 0.f && direction.y == 0.f)
 		{
 			legAnimation.Play("Idle");
+		}
+	}
+	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+	{
+		if (right != nullptr)
+		{
+			head.setTexture(*right);
 		}
 	}
 }
