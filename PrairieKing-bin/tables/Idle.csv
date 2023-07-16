@@ -1,0 +1,6 @@
+﻿ID,FPS,LOOPTYPE,,
+Idle,5,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/players/Player_sheet.png,0,3,10,3
+graphics/players/Player_sheet.png,0,9,10,3
