@@ -63,11 +63,6 @@ void CowBoy::Update(float dt)
 
 	//이동
 	
-	//float h = INPUT_MGR.GetAxis(Axis::Horizontal);
-	//float v = INPUT_MGR.GetAxis(Axis::Vertical);
-	//velocity.x = h * speed;
-	//velocity.y = v * speed;
-	
 	//대각선 이동 속도 보정으로 수정
 	direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
 	direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
