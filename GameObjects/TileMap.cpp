@@ -80,7 +80,7 @@ sf::Vector2f TileMap::GetTileSize()
     return sf::Vector2f{tileSize.x* size.x, tileSize.y* size.y};
 }
 
-int TileMap::GetTile(int x, int y)
+int TileMap::GetTileIndex(int x, int y)
 {
     for (int i = 0; i < tiles.size(); i++)
     {
@@ -91,4 +91,18 @@ int TileMap::GetTile(int x, int y)
         }
     }
     return -1;
+}
+
+Tile& TileMap::GetTile(const int x, const int y)
+{
+    for (int i = 0; i < tiles.size(); i++)
+    {
+        Tile tile = tiles.at(i);
+        if (tile.x == x && tile.y == y)
+        {
+            return tile;
+        }
+    }
+    cout << "ERR: No Tile" << endl;
+    exit(1);
 }

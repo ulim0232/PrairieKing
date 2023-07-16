@@ -29,12 +29,18 @@ void CowBoy::Init()
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
 
-	hitBox.setSize(sf::Vector2f(32.f, 32.f));
+	hitBox.setSize(boxSize);
 	Utils::SetOrigin(hitBox, Origins::BC);
 	hitBox.setFillColor(sf::Color::Transparent);
-	hitBox.setOutlineThickness(2);
+	hitBox.setOutlineThickness(1);
 	hitBox.setOutlineColor(sf::Color::Cyan);
 	hitBox.setPosition(position);
+
+	tileBox.setSize(boxSize);
+	Utils::SetOrigin(tileBox, Origins::TL);
+	tileBox.setFillColor(sf::Color::Transparent);
+	tileBox.setOutlineThickness(2);
+	tileBox.setOutlineColor(sf::Color::Black);
 
 }
 
@@ -75,11 +81,12 @@ void CowBoy::Update(float dt)
 	//position += velocity * dt;
 
 	sf::Vector2f newPosition = position + velocity * dt;
+	sf::Vector2f originalPosition = position;
+	
 	if (!IsTileCollision(newPosition)) //충돌이 없는 경우
 	{
 		position = newPosition;
 	}
-
 	SetPosition(position);
 	hitBox.setPosition(position);
 
@@ -112,6 +119,7 @@ void CowBoy::Draw(sf::RenderWindow& window)
 	window.draw(head);
 	window.draw(leg);
 	window.draw(hitBox);
+	window.draw(tileBox);
 }
 
 void CowBoy::SetPosition(const sf::Vector2f& p)
@@ -153,26 +161,46 @@ void CowBoy::SetTileMap(TileMap* map, int width)
 
 bool CowBoy::IsTileCollision(const sf::Vector2f p)
 {
-	int tileX = (p.x - 384) / tileWidth;
-	int tileY = (p.y - 104) / tileWidth;
-
-	int tileIndex = tileMap->GetTile(tileX, tileY);
-	
-	return IsCollisoinTile(tileIndex);
+	for (auto tile : tileMap->tiles)
+	{
+		float tileL = 384 + (32 * tile.x);
+		float tileT = 104 + (32 * tile.y);
+		sf::FloatRect tileRect(tileL, tileT, 32, 32);
+		if (tileRect.intersects(hitBox.getGlobalBounds()))
+		{
+			//cout << "collison with" << tile.texIndex << endl;
+			tileBox.setPosition(tileL, tileT);
+			if (IsCollisoinTile(tile.texIndex))
+			{
+				hitBox.setOutlineColor(sf::Color::Red);
+				return true;
+			}
+			else
+			{
+				hitBox.setOutlineColor(sf::Color::Cyan);
+			}
+		}
+	}
+	return false;
 }
 
 bool CowBoy::IsCollisoinTile(int index)
 {
-	if ((index == 2) || (index == 3) || (index == 4)) //이동 가능한 타일
-	{
-		return 0;
-	}
-	else if (index == -1)
-	{
-		cout << "something wrong" << endl;
-	}
-	else
-	{
-		return 1;
-	}
+	cout << index << endl;
+	return (index != 2 && index != 3 && index != 4); // 2, 3, 4가 이동 가능한 타일의 인덱스라고 가정
+	
+	//if ((index == 2) || (index == 3) || (index == 4)) //이동 가능한 타일
+	//{
+	//	return 0;
+	//}
+	//else if (index == -1)
+	//{
+	//	cout << "something wrong" << endl;
+	//}
+	//else
+	//{
+	//	hitBox.setOutlineColor(sf::Color::Red);
+	//	return 1;
+	//}
+
 }
