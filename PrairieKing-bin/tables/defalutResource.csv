@@ -1,0 +1,10 @@
+﻿RESOURCE_TYPES,RESOURCE_PATH
+3,tables/Move.csv
+0,graphics/players/Player_sheet.png
+3,tables/Idle.csv
+0,graphics/players/Player_stand.png
+0,graphics/players/Player_left.png
+0,graphics/players/Player_right.png
+0,graphics/players/Player_front.png
+0,graphics/players/Player_back.png
+0,graphics/players/Player_idle.png
