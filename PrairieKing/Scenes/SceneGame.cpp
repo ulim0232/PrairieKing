@@ -107,18 +107,22 @@ void SceneGame::Init()
 
 	tileMap2->Load("maps/stage1-2.csv");
 	tileMap2->SetOrigin(Origins::MC);
+	tileMap2->SetPosition(centerPos);
 	tileMap2->SetActive(false);
 
 	tileMap3->Load("maps/stage1-3.csv");
 	tileMap3->SetOrigin(Origins::MC);
+	tileMap3->SetPosition(centerPos);
 	tileMap3->SetActive(false);
 
 	tileMap4->Load("maps/stage1-4.csv");
 	tileMap4->SetOrigin(Origins::MC);
+	tileMap4->SetPosition(centerPos);
 	tileMap4->SetActive(false);
 
 	tileMap5->Load("maps/stage1-5.csv");
 	tileMap5->SetOrigin(Origins::MC);
+	tileMap5->SetPosition(centerPos);
 	tileMap5->SetActive(false);
 
 	/*---플레이어 설정----*/
@@ -218,6 +222,7 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(false);
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
+		cowBoy->SetTileMap(tileMap2, 32);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
 	{
@@ -226,6 +231,7 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(true);
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
+		cowBoy->SetTileMap(tileMap3, 32);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
 	{
@@ -234,6 +240,7 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(false);
 		tileMap4->SetActive(true);
 		tileMap5->SetActive(false);
+		cowBoy->SetTileMap(tileMap4, 32);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
 	{
@@ -242,6 +249,8 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(false);
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(true);
+		cowBoy->SetTileMap(tileMap5, 32);
+		cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
 	}
 
 	/*--타이머 게이지 설정--*/

@@ -29,14 +29,14 @@ void CowBoy::Init()
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
 
-	hitBox.setSize(boxSize);
+	hitBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(hitBox, Origins::BC);
 	hitBox.setFillColor(sf::Color::Transparent);
 	hitBox.setOutlineThickness(1);
 	hitBox.setOutlineColor(sf::Color::Cyan);
-	hitBox.setPosition(position);
+	hitBox.setPosition(sf::Vector2f(static_cast<int>(position.x), static_cast<int>(position.y)));
 
-	tileBox.setSize(boxSize);
+	tileBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(tileBox, Origins::TL);
 	tileBox.setFillColor(sf::Color::Transparent);
 	tileBox.setOutlineThickness(2);
@@ -59,8 +59,6 @@ void CowBoy::Reset()
 void CowBoy::Update(float dt)
 {
 	legAnimation.Update(dt);
-	
-
 	//이동
 	
 	//대각선 이동 속도 보정으로 수정
@@ -73,18 +71,77 @@ void CowBoy::Update(float dt)
 		direction /= magnitude;
 	}
 	velocity = direction * speed;
-	//position += velocity * dt;
 
-	sf::Vector2f newPosition = position + velocity * dt;
-	sf::Vector2f originalPosition = position;
-	
-	if (!IsTileCollision(newPosition)) //충돌이 없는 경우
+	newPosition = position + velocity * dt;
+	hitBox.setPosition(newPosition);
+
+	for (auto tile : tileMap->tiles)
 	{
-		position = newPosition;
+		float tileL = 384 + (tileSize.x * tile.x);
+		float tileT = 104 + (tileSize.y * tile.y);
+		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+		{
+			float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
+			float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
+			if (IsCollisoinTile(tile.texIndex))
+			{
+				hitBox.setOutlineColor(sf::Color::Red);
+				if (std::abs(overlapX) < std::abs(overlapY))
+				{
+					newPosition.x = position.x + overlapX;
+				}
+				else
+				{
+					newPosition.y = position.y + overlapY;
+				}
+			}
+			else
+			{
+				hitBox.setOutlineColor(sf::Color::Cyan);
+			}
+		}
 	}
+
+	position = newPosition;
+
+	//if (!IsTileCollision()) //충돌이 없는 경우
+	//{
+	//	position = newPosition;
+	//}
+	//else
+	//{
+	//	//이동 거리 조정
+	//	float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
+	//	float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
+
+	//	for (auto tile : tileMap->tiles)
+	//	{
+	//		float tileL = 384 + (tileSize.x * tile.x);
+	//		float tileT = 104 + (tileSize.y * tile.y);
+	//		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+	//		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+	//		{
+	//			if (IsCollisoinTile(tile.texIndex))
+	//			{
+	//				if (std::abs(overlapX) < std::abs(overlapY))
+	//				{
+	//					newPosition.x = position.x + overlapX;
+	//				}
+	//				else
+	//				{
+	//					newPosition.y = position.y + overlapY;
+	//				}
+	//			}
+	//		}
+	//	}
+
+	//	position = newPosition;
+	//}
 	SetPosition(position);
 	hitBox.setPosition(position);
-
 	//애니메이션
 	if (legAnimation.GetCurrentClipId() == "Idle")
 	{
@@ -153,17 +210,16 @@ void CowBoy::SetTileMap(TileMap* map, int width)
 	tileMap = map;
 	tileWidth = width;
 }
-
-bool CowBoy::IsTileCollision(const sf::Vector2f p)
+bool CowBoy::IsTileCollision()
 {
 	for (auto tile : tileMap->tiles)
 	{
-		float tileL = 384 + (32 * tile.x);
-		float tileT = 104 + (32 * tile.y);
-		sf::FloatRect tileRect(tileL, tileT, 32, 32);
-		if (tileRect.intersects(hitBox.getGlobalBounds()))
+		float tileL = 384 + (tileSize.x * tile.x);
+		float tileT = 104 + (tileSize.y * tile.y);
+		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
 		{
-			//cout << "collison with" << tile.texIndex << endl;
 			tileBox.setPosition(tileL, tileT);
 			if (IsCollisoinTile(tile.texIndex))
 			{
@@ -178,24 +234,7 @@ bool CowBoy::IsTileCollision(const sf::Vector2f p)
 	}
 	return false;
 }
-
 bool CowBoy::IsCollisoinTile(int index)
 {
-	cout << index << endl;
 	return (index != 2 && index != 3 && index != 4); // 2, 3, 4가 이동 가능한 타일의 인덱스라고 가정
-	
-	//if ((index == 2) || (index == 3) || (index == 4)) //이동 가능한 타일
-	//{
-	//	return 0;
-	//}
-	//else if (index == -1)
-	//{
-	//	cout << "something wrong" << endl;
-	//}
-	//else
-	//{
-	//	hitBox.setOutlineColor(sf::Color::Red);
-	//	return 1;
-	//}
-
 }

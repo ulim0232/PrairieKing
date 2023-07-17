@@ -11,7 +11,7 @@ protected:
 	AnimationController legAnimation;
 
 	float gapLegToHead = 4.f;
-	float speed = 100.f;
+	float speed = 100.f; //100
 	int tileWidth = 0;
 
 	sf::Vector2f look; //바라보는 방향
@@ -27,10 +27,12 @@ protected:
 	TileMap* tileMap;
 	sf::RectangleShape hitBox;
 	sf::RectangleShape tileBox;
-	sf::Vector2f boxSize = { 32.f, 32.f };
+	sf::Vector2i boxSize = { 28.f, 28.f };
+	sf::Vector2i tileSize = { 32.f, 32.f };
+	sf::FloatRect intersection;
+	sf::Vector2f newPosition;
 
-	bool collisionOnOccurred = false;
-
+	bool iscoll = false;
 public:
 	sf::Sprite head;
 	sf::Sprite leg;
@@ -53,8 +55,7 @@ public:
 	virtual void SetOrigin(float x, float y);
 
 	void SetTileMap(TileMap* map, int width);
-	bool IsTileCollision(const sf::Vector2f p);
+	bool IsTileCollision();
 	bool IsCollisoinTile(int index);
-	bool IsCollisoinTile(Tile t, sf::FloatRect rect);
 };
 
