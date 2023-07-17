@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="Animation\AnimationClip.cpp" />
     <ClCompile Include="Animation\AnimationController.cpp" />
+    <ClCompile Include="GameObjects\Bullet.cpp" />
     <ClCompile Include="GameObjects\CowBoy.cpp" />
     <ClCompile Include="DataTables\ClipTable.cpp" />
     <ClCompile Include="DataTables\DataTable.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Animation\AnimationController.h" />
     <ClInclude Include="Animation\AnimationClip.h" />
+    <ClInclude Include="GameObjects\Bullet.h" />
     <ClInclude Include="GameObjects\CowBoy.h" />
     <ClInclude Include="DataTables\ClipTable.h" />
     <ClInclude Include="DataTables\DataTable.h" />

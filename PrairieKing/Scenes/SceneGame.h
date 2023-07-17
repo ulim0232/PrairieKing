@@ -40,7 +40,7 @@ protected:
 
 	RectangleGo* timerGauge;
 
-	int lifeCount = 0;
+	int lifeCount = 3;
 	int coinCount = 0;
 
 	float timerDecreaseRate;

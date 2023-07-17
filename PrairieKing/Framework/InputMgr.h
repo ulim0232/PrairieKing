@@ -5,6 +5,8 @@ enum class Axis
 {
 	Horizontal,
 	Vertical,
+	HorizontalArrow,
+	VerticalArrow,
 };
 
 struct AxisInfo
@@ -33,6 +35,7 @@ protected:
 	sf::Vector2f mousePos;
 
 	std::map<Axis, AxisInfo> axisInfoMap;
+	std::map<Axis, AxisInfo> axisInfoMapA;
 
 public:
 	void Update(float dt);

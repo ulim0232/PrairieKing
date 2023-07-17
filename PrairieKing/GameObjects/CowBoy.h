@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "AnimationController.h"
 #include "TileMap.h"
+#include "Bullet.h"
 
 class SpriteGo;
 
@@ -9,10 +10,16 @@ class CowBoy : public GameObject
 {
 protected:
 	AnimationController legAnimation;
+	AnimationController headAnimation;
 
 	float gapLegToHead = 4.f;
 	float speed = 100.f; //100
 	int tileWidth = 0;
+	bool rebound = false;
+	float timer = 0.f;
+	float shotDelay = 0.3f;
+
+	sf::Texture* texture;
 
 	sf::Vector2f look; //바라보는 방향
 	sf::Vector2f direction;
@@ -33,6 +40,8 @@ protected:
 	sf::Vector2f newPosition;
 
 	bool iscoll = false;
+
+	ObjectPool<Bullet> poolBullets;
 public:
 	sf::Sprite head;
 	sf::Sprite leg;
