@@ -10,6 +10,7 @@ class CowBoy : public GameObject
 {
 protected:
 	AnimationController legAnimation;
+	AnimationController headAnimation;
 
 	float gapLegToHead = 4.f;
 	float speed = 100.f; //100

@@ -24,7 +24,10 @@ void CowBoy::Init()
 
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Move.csv"));
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Idle.csv"));
+	//headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
+	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
 	legAnimation.SetTarget(&leg);
+	headAnimation.SetTarget(&head);
 
 	//sf::Texture* tex = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
 	texture = new sf::Texture();
@@ -183,6 +186,12 @@ void CowBoy::Update(float dt)
 		{
 			head.setTexture(*right);
 		}
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
+	{
+		head.setColor(sf::Color::Transparent);
+		leg.setPosition(leg.getPosition().x, leg.getPosition().y - 16);
+		legAnimation.Play("Die");
 	}
 
 	/*---ÃÑ¾Ë ¹ß»ç---*/

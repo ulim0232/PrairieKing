@@ -71,11 +71,6 @@ void Bullet::Update(float dt)
 		SCENE_MGR.GetCurrScene()->RemoveGo(this);
 		pool->Return(this);
 	}
-	/*if (sprite.getGlobalBounds().intersects(tileBounds))
-	{
-		SCENE_MGR.GetCurrScene()->RemoveGo(this);
-		pool->Return(this);
-	}*/
 	//if (zombies != nullptr)
 	//{
 	//	for (Zombie* zombie : *zombies)
