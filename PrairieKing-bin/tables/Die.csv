@@ -1,0 +1,9 @@
+﻿ID,FPS,LOOPTYPE,,
+Die,5,0,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/players/Player_Die_sheet.png,0,0,16,16
+graphics/players/Player_Die_sheet.png,16,0,16,16
+graphics/players/Player_Die_sheet.png,32,0,16,16
+graphics/players/Player_Die_sheet.png,48,0,16,16
+graphics/players/Player_Die_sheet.png,64,0,16,16
