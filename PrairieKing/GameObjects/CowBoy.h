@@ -13,7 +13,7 @@ protected:
 	AnimationController headAnimation;
 
 	float gapLegToHead = 4.f;
-	float speed = 100.f; //100
+	float speed = 150.f; //100
 	int tileWidth = 0;
 	bool rebound = false;
 	float timer = 0.f;

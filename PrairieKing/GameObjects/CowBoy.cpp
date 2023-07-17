@@ -24,8 +24,8 @@ void CowBoy::Init()
 
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Move.csv"));
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Idle.csv"));
-	//headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
-	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
+	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
+	
 	legAnimation.SetTarget(&leg);
 	headAnimation.SetTarget(&head);
 
@@ -33,6 +33,9 @@ void CowBoy::Init()
 	texture = new sf::Texture();
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
+
+	head.setScale(2.0f, 2.0f);
+	leg.setScale(2.0f, 2.0f);
 
 	hitBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(hitBox, Origins::BC);
@@ -66,10 +69,15 @@ void CowBoy::Release()
 
 void CowBoy::Reset()
 {
+	legAnimation.SetTarget(&leg);
+	leg.setColor(sf::Color::White);
+	headAnimation.Stop();
+ 	head.setTexture(*texture);
+	head.setTextureRect({ 0, 0, (int)texture->getSize().x, (int)texture->getSize().y });
+
 	legAnimation.Play("Idle");
-	SetPosition(0.f, 0.f);
-	head.setScale(2.0f, 2.0f);
-	leg.setScale(2.0f, 2.0f);
+	SetPosition(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2);
+	
 
 	for (auto bullet : poolBullets.GetUseList())
 	{
@@ -82,6 +90,7 @@ void CowBoy::Reset()
 void CowBoy::Update(float dt)
 {
 	legAnimation.Update(dt);
+	headAnimation.Update(dt);
 	//이동
 	
 	//대각선 이동 속도 보정으로 수정
@@ -189,9 +198,12 @@ void CowBoy::Update(float dt)
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
 	{
-		head.setColor(sf::Color::Transparent);
-		leg.setPosition(leg.getPosition().x, leg.getPosition().y - 16);
-		legAnimation.Play("Die");
+		leg.setColor(sf::Color::Transparent);
+		headAnimation.Play("Die");
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num9))
+	{
+		Reset();
 	}
 
 	/*---총알 발사---*/
