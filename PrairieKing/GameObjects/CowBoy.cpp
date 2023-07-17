@@ -321,3 +321,9 @@ bool CowBoy::IsCollisoinTile(int index)
 {
 	return (index != 2 && index != 3 && index != 4); // 2, 3, 4가 이동 가능한 타일의 인덱스라고 가정
 }
+
+void CowBoy::CowBoyDie()
+{
+	leg.setColor(sf::Color::Transparent);
+	headAnimation.Play("Die");
+}

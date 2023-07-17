@@ -66,5 +66,7 @@ public:
 	void SetTileMap(TileMap* map, int width);
 	bool IsTileCollision();
 	bool IsCollisoinTile(int index);
+
+	void CowBoyDie();
 };
 
