@@ -9,20 +9,28 @@ InputMgr::InputMgr()
 		AxisInfo infoH;
 		infoH.axis = Axis::Horizontal;
 		infoH.positivies.push_back((int)sf::Keyboard::Key::D);
-		//infoH.positivies.push_back((int)sf::Keyboard::Key::Right);
 		infoH.negatives.push_back((int)sf::Keyboard::Key::A);
-		//infoH.negatives.push_back((int)sf::Keyboard::Key::Left);
 		axisInfoMap.insert({ infoH.axis, infoH });
+
+		AxisInfo infoHA;
+		infoHA.axis = Axis::HorizontalArrow;
+		infoHA.positivies.push_back((int)sf::Keyboard::Key::Right);
+		infoHA.negatives.push_back((int)sf::Keyboard::Key::Left);
+		axisInfoMapA.insert({ infoHA.axis, infoHA });
 	}
 
 	{
 		AxisInfo infoV;
 		infoV.axis = Axis::Vertical;
 		infoV.positivies.push_back((int)sf::Keyboard::Key::S);
-		//infoV.positivies.push_back((int)sf::Keyboard::Key::Down);
 		infoV.negatives.push_back((int)sf::Keyboard::Key::W);
-		//infoV.negatives.push_back((int)sf::Keyboard::Key::Up);
 		axisInfoMap.insert({ infoV.axis, infoV });
+
+		AxisInfo infoVA;
+		infoVA.axis = Axis::VerticalArrow;
+		infoVA.positivies.push_back((int)sf::Keyboard::Key::Down);
+		infoVA.negatives.push_back((int)sf::Keyboard::Key::Up);
+		axisInfoMapA.insert({ infoVA.axis, infoVA });
 	}
 }
 
@@ -32,6 +40,21 @@ void InputMgr::Update(float dt)
 	upList.clear();
 
 	for (auto& it : axisInfoMap)
+	{
+		auto& axisInfo = it.second;
+		float raw = GetAxisRaw(axisInfo.axis);	// -1.0, 0, 1.0
+		if (raw == 0.f && axisInfo.value != 0.f)
+		{
+			raw = axisInfo.value > 0.f ? -1.f : 1.f;
+		}
+		float diff = axisInfo.sensi * dt;
+		axisInfo.value = Utils::Clamp(axisInfo.value + raw * diff, -1.0f, 1.0f);
+		if (abs(axisInfo.value) < diff * 0.5f)
+		{
+			axisInfo.value = 0.f;
+		}
+	}
+	for (auto& it : axisInfoMapA)
 	{
 		auto& axisInfo = it.second;
 		float raw = GetAxisRaw(axisInfo.axis);	// -1.0, 0, 1.0
@@ -125,33 +148,70 @@ bool InputMgr::GetMouseButtonUp(sf::Mouse::Button button)
 
 float InputMgr::GetAxis(Axis axis)
 {
-	const auto& it = axisInfoMap.find(axis);
-	if (it == axisInfoMap.end())
-		return 0.0f;
-	return it->second.value;
+	if(axis == Axis::Horizontal || axis == Axis::Vertical)
+	{
+		const auto& it = axisInfoMap.find(axis);
+		if (it == axisInfoMap.end())
+			return 0.0f;
+		return it->second.value;
+	}
+	if (axis == Axis::HorizontalArrow || axis == Axis::VerticalArrow)
+	{
+		const auto& it = axisInfoMapA.find(axis);
+		if (it == axisInfoMapA.end())
+			return 0.0f;
+		return it->second.value;
+	}
 }
 
 float InputMgr::GetAxisRaw(Axis axis)
 {
-	const auto& it = axisInfoMap.find(axis);
-	if (it == axisInfoMap.end())
-		return 0.0f;
-
-	const AxisInfo& info = it->second;
-
-	auto rit = ingList.rbegin();
-	while (rit != ingList.rend())
+	if (axis == Axis::Horizontal || axis == Axis::Vertical)
 	{
-		int code = *rit;
-		if (std::find(info.positivies.begin(), info.positivies.end(), code) != info.positivies.end())
+		const auto& it = axisInfoMap.find(axis);
+		if (it == axisInfoMap.end())
+			return 0.0f;
+
+		const AxisInfo& info = it->second;
+
+		auto rit = ingList.rbegin();
+		while (rit != ingList.rend())
 		{
-			return 1.f;
+			int code = *rit;
+			if (std::find(info.positivies.begin(), info.positivies.end(), code) != info.positivies.end())
+			{
+				return 1.f;
+			}
+			if (std::find(info.negatives.begin(), info.negatives.end(), code) != info.negatives.end())
+			{
+				return -1.f;
+			}
+			++rit;
 		}
-		if (std::find(info.negatives.begin(), info.negatives.end(), code) != info.negatives.end())
-		{
-			return -1.f;
-		}
-		++rit;
+		return 0.0f;
 	}
-	return 0.0f;
+	if (axis == Axis::HorizontalArrow || axis == Axis::VerticalArrow)
+	{
+		const auto& it = axisInfoMapA.find(axis);
+		if (it == axisInfoMapA.end())
+			return 0.0f;
+
+		const AxisInfo& info = it->second;
+
+		auto rit = ingList.rbegin();
+		while (rit != ingList.rend())
+		{
+			int code = *rit;
+			if (std::find(info.positivies.begin(), info.positivies.end(), code) != info.positivies.end())
+			{
+				return 1.f;
+			}
+			if (std::find(info.negatives.begin(), info.negatives.end(), code) != info.negatives.end())
+			{
+				return -1.f;
+			}
+			++rit;
+		}
+		return 0.0f;
+	}
 }

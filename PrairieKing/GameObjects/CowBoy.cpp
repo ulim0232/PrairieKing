@@ -4,6 +4,8 @@
 #include "InputMgr.h"
 #include "Framework.h"
 #include "ResourceMgr.h"
+#include "SceneMgr.h"
+#include "SceneGame.h"
 
 
 CowBoy::CowBoy(const std::string& n)
@@ -25,7 +27,7 @@ void CowBoy::Init()
 	legAnimation.SetTarget(&leg);
 
 	//sf::Texture* tex = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
-	auto texture = new sf::Texture();
+	texture = new sf::Texture();
 	texture->loadFromFile("graphics/players/Player_stand.png");
 	head.setTexture(*texture);
 
@@ -42,10 +44,21 @@ void CowBoy::Init()
 	tileBox.setOutlineThickness(2);
 	tileBox.setOutlineColor(sf::Color::Black);
 
+	ObjectPool<Bullet>* ptr = &poolBullets;
+	poolBullets.OnCreate = [ptr](Bullet* bullet)//무명함수, 람다식
+	{
+		bullet->textureId = "graphics/UIs/shot.png";
+		bullet->pool = ptr;
+	};
+
+	poolBullets.Init();
+
 }
 
 void CowBoy::Release()
 {
+	delete texture;
+	poolBullets.Release();
 }
 
 void CowBoy::Reset()
@@ -54,6 +67,13 @@ void CowBoy::Reset()
 	SetPosition(0.f, 0.f);
 	head.setScale(2.0f, 2.0f);
 	leg.setScale(2.0f, 2.0f);
+
+	for (auto bullet : poolBullets.GetUseList())
+	{
+		SCENE_MGR.GetCurrScene()->RemoveGo(bullet);
+	}
+
+	poolBullets.Clear();
 }
 
 void CowBoy::Update(float dt)
@@ -115,13 +135,13 @@ void CowBoy::Update(float dt)
 	//	//이동 거리 조정
 	//	float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
 	//	float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
-
+	//
 	//	for (auto tile : tileMap->tiles)
 	//	{
 	//		float tileL = 384 + (tileSize.x * tile.x);
 	//		float tileT = 104 + (tileSize.y * tile.y);
 	//		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
-
+	//
 	//		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
 	//		{
 	//			if (IsCollisoinTile(tile.texIndex))
@@ -137,7 +157,7 @@ void CowBoy::Update(float dt)
 	//			}
 	//		}
 	//	}
-
+	//
 	//	position = newPosition;
 	//}
 	SetPosition(position);
@@ -162,6 +182,48 @@ void CowBoy::Update(float dt)
 		if (right != nullptr)
 		{
 			head.setTexture(*right);
+		}
+	}
+
+	/*---총알 발사---*/
+	if(!rebound)
+	{
+		if (INPUT_MGR.GetKey(sf::Keyboard::Left) ||
+			INPUT_MGR.GetKey(sf::Keyboard::Up) ||
+			INPUT_MGR.GetKey(sf::Keyboard::Down) ||
+			INPUT_MGR.GetKey(sf::Keyboard::Right))
+		{
+			look.x = INPUT_MGR.GetAxisRaw(Axis::HorizontalArrow);
+			look.y = INPUT_MGR.GetAxisRaw(Axis::VerticalArrow);
+
+			magnitude = Utils::Magnitude(look);
+			if (magnitude > 1.f)
+			{
+				look /= magnitude;
+			}
+
+			Bullet* bullet = poolBullets.Get();
+			bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
+			sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+			bullet->Fire(fireP, look, 400.f);
+
+			Scene* scene = SCENE_MGR.GetCurrScene();
+			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+			if (sceneGame != nullptr)
+			{
+				sceneGame->AddGo(bullet);
+			}
+			SCENE_MGR.GetCurrScene()->AddGo(bullet);
+			rebound = true;
+		}
+	}
+	else
+	{
+		timer += dt;
+		if (timer >= shotDelay)
+		{
+			timer = 0.f;
+			rebound = false;
 		}
 	}
 }
