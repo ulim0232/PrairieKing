@@ -398,4 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 #bin file
-PrairieKing-d.exe
+PrairieKing-bin/PrairieKing-d.exe
