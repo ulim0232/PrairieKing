@@ -3,7 +3,7 @@
 #include "ObjectPool.h"
 #include "TileMap.h"
 
-//class Zombie;
+class Monster;
 class Bullet : public SpriteGo
 {
 protected:
@@ -12,7 +12,7 @@ protected:
 	float speed = 0.f;
 	int damage = 1;
 	sf::FloatRect tileBounds;
-	//const list<Zombie*>* zombies;
+	const list<Monster*>* monsters;
 	
 public:
 	ObjectPool<Bullet>* pool;
@@ -20,7 +20,7 @@ public:
 	Bullet(const string& textureId = "", const string& n = "");
 	virtual ~Bullet() override;
 
-	//void SetZombieList(const list<Zombie*>* list);
+	void SetMonsterList(const list<Monster*>* list);
 	void Fire(const sf::Vector2f pos, const sf::Vector2f direction, float speed); 
 	//매개변수: 시작 위치, 방향, 속도, 일정 시간or거리가 지나면 총알이 사라지도록
 

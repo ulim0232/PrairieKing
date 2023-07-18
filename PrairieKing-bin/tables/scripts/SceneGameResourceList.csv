@@ -1,4 +1,5 @@
 ﻿RESOURCE_TYPES,RESOURCE_PATH
+0,graphics/monsters/Monster_sheet.png
 0,graphics/maps/map_sheet_stage1.png
 0,graphics/UIs/coin1.png
 0,graphics/UIs/itemUI.png
@@ -18,3 +19,4 @@
 0,graphics/players/Player_sheet.png
 0,graphics/players/Player_idle.png
 0,graphics/players/Player_Die_sheet.png
+0,graphics/monsters/Die.png

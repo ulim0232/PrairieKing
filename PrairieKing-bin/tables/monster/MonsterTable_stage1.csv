@@ -1,0 +1,3 @@
+﻿NAME,ID,IDLE_CLIP,DIE_CLIP,SPEED,HP
+Ogre,4,tables/monster/Ogre.csv,tables/monster/Die.csv,100,3
+Orc,5,tables/monster/Orc.csv,tables/monster/Die.csv,100,1

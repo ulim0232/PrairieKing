@@ -32,7 +32,7 @@ ResourceMgr::~ResourceMgr()
 
 void ResourceMgr::Init()
 {
-	LoadFromCSV("tables/defalutResource.csv", false);
+	LoadFromCSV("tables/scripts/defalutResource.csv", true);
 }
 
 void ResourceMgr::UnLoadAll()
