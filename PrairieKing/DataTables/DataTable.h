@@ -7,7 +7,8 @@ public:
 	{
 		None = -1,
 		String,
-		Clip
+		Clip,
+		Monster
 	};
 
 	DataTable(const DataTable& other) = delete;

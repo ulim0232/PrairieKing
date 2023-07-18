@@ -1,8 +1,0 @@
-﻿NAME,ID,TEXTURE,SPEED,HP
-Boss,0,graphics/monsters/boss.png,100,10
-Imp,1,graphics/monsters/imp.png,100,3
-Mirra,2,graphics/monsters/mirra.png,100,6
-Mushroom,3,graphics/monsters/mushroom.png,100,2
-Ogre,4,graphics/monsters/Ogre.png,100,3
-Orc,5,graphics/monsters/orc.png,100,1
-Pixy,6,graphics/monsters/pixy.png,100,1
