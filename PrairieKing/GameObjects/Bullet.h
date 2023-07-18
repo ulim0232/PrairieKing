@@ -10,7 +10,6 @@ protected:
 
 	sf::Vector2f direction;
 	float speed = 0.f;
-	float range = 2000.f;
 	int damage = 1;
 	sf::FloatRect tileBounds;
 	//const list<Zombie*>* zombies;

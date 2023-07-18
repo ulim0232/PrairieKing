@@ -56,21 +56,16 @@ void Bullet::Update(float dt)
 	SpriteGo::Update(dt);
 
 	//회전은 고정
-	range -= speed * dt; // 이동량 빼기
-	if (range <= 0.f) //사거리까지 이동하면 총알 삭제
-	{
-		SCENE_MGR.GetCurrScene()->RemoveGo(this);
-		pool->Return(this); 
-		return;
-	}
-
-	position += direction * speed * dt;
-	SetPosition(position);
+	//맵 바깥으로 나가면 삭제
 	if (!tileBounds.contains(position))
 	{
 		SCENE_MGR.GetCurrScene()->RemoveGo(this);
 		pool->Return(this);
 	}
+
+	position += direction * speed * dt;
+	SetPosition(position);
+	
 	//if (zombies != nullptr)
 	//{
 	//	for (Zombie* zombie : *zombies)
