@@ -5,6 +5,7 @@
 #include "SceneMgr.h"
 #include "SceneGame.h"
 #include "ResourceMgr.h"
+#include "CowBoy.h"
 
 Monster::Monster(const string& n)
 	:SpriteGo("", n)
@@ -47,7 +48,25 @@ void Monster::Update(float dt)
 	SpriteGo::Update(dt); //삭제 고려
 	animation.Update(dt);
 
-	if (!isAlive)
+	if(isAlive)
+	{
+		if (cowboy == nullptr)
+			return;
+		else
+		{
+			sf::Vector2f cowboyPos = cowboy->GetPosition();
+
+			float distance = Utils::Distance(cowboyPos, position);
+			look = direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
+
+			if (distance > 25.f) //일정 거리에 가까워지면 도착으로 처리
+			{
+				position += direction * speed * dt;
+				SetPosition(position);
+			}
+		}
+	}
+	else
 	{
 		timer += dt;
 		if (timer > duration)
@@ -86,19 +105,27 @@ void Monster::SetCowboy(CowBoy* p)
 	cowboy = p;
 }
 
+bool Monster::GetIsAllive()
+{
+	return isAlive;
+}
+
 void Monster::OnHitBullet(int damage)
 {
-	hp -= damage;
-	if (hp <= 0) //hp가 0이 되면 죽는다
+	if(isAlive)
 	{
-		animation.Stop();
-		animation.Play("DIE");
-		isAlive = false;
-		//Scene* scene = SCENE_MGR.GetCurrScene();
-		//SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
-		//if (sceneGame != nullptr)
-		//{
-		//	sceneGame->OnDieMonster(this);
-		//}
+		hp -= damage;
+		if (hp <= 0) //hp가 0이 되면 죽는다
+		{
+			animation.Stop();
+			animation.Play("DIE");
+			isAlive = false;
+			//Scene* scene = SCENE_MGR.GetCurrScene();
+			//SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+			//if (sceneGame != nullptr)
+			//{
+			//	sceneGame->OnDieMonster(this);
+			//}
+		}
 	}
 }

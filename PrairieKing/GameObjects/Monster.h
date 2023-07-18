@@ -32,7 +32,7 @@ protected:
 	string dieClipPath;
 	bool isAlive;
 
-	float duration = 3.f;
+	float duration = 5.f; //죽으면 5초 후 삭제
 	float timer = 0.f;
 
 	CowBoy* cowboy = nullptr; //플레이어 추적에 사용
@@ -56,7 +56,7 @@ public:
 	Types GetType() const;
 
 	void SetCowboy(CowBoy* p);
-
+	bool GetIsAllive();
 	void OnHitBullet(int damage); //총알에 맞았을 때
 
 };

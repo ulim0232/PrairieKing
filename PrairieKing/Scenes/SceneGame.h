@@ -55,7 +55,10 @@ protected:
 	float timeLimit = 5.0f;
 
 	bool isTimerRunning = true;
-	vector<sf::Vector2f> monsterSpawnPos;
+	vector<sf::Vector2f> monsterSpawnPosTop;
+	vector<sf::Vector2f> monsterSpawnPosBottom;
+	vector<sf::Vector2f> monsterSpawnPosLeft;
+	vector<sf::Vector2f> monsterSpawnPosRight;
 
 public:
 	SceneGame();

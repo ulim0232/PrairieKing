@@ -69,7 +69,7 @@ void Bullet::Update(float dt)
 	{
 		for (Monster* monster : *monsters)
 		{
-			if (sprite.getGlobalBounds().intersects(monster->sprite.getGlobalBounds()))
+			if (sprite.getGlobalBounds().intersects(monster->sprite.getGlobalBounds()) && monster->GetIsAllive())
 			{
 				monster->OnHitBullet(damage);
 				//총알과 좀비가 충돌하면 총알 삭제

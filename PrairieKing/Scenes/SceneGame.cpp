@@ -21,24 +21,24 @@ SceneGame::SceneGame() : Scene(SceneId::Game)
 	timerDecreaseRate = 1.0f / timeLimit;
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
 	//위
-	monsterSpawnPos.push_back({ 240, 16 });
-	monsterSpawnPos.push_back({ 272, 16 });
-	monsterSpawnPos.push_back({ 304, 16 });
+	monsterSpawnPosTop.push_back({ 240, 16 });
+	monsterSpawnPosTop.push_back({ 272, 16 });
+	monsterSpawnPosTop.push_back({ 304, 16 });
 
 	//아래
-	monsterSpawnPos.push_back({ 240, 496 });
-	monsterSpawnPos.push_back({ 272, 496 });
-	monsterSpawnPos.push_back({ 304, 496 });
+	monsterSpawnPosBottom.push_back({ 240, 496 });
+	monsterSpawnPosBottom.push_back({ 272, 496 });
+	monsterSpawnPosBottom.push_back({ 304, 496 });
 
 	//왼쪽
-	monsterSpawnPos.push_back({ 16, 240 });
-	monsterSpawnPos.push_back({ 16, 272 });
-	monsterSpawnPos.push_back({ 16, 304 });
+	monsterSpawnPosLeft.push_back({ 16, 240 });
+	monsterSpawnPosLeft.push_back({ 16, 272 });
+	monsterSpawnPosLeft.push_back({ 16, 304 });
 
 	//오른쪽
-	monsterSpawnPos.push_back({ 496, 240 });
-	monsterSpawnPos.push_back({ 496, 272 });
-	monsterSpawnPos.push_back({ 496, 304 });
+	monsterSpawnPosRight.push_back({ 496, 240 });
+	monsterSpawnPosRight.push_back({ 496, 272 });
+	monsterSpawnPosRight.push_back({ 496, 304 });
 }
 
 
@@ -338,7 +338,8 @@ void SceneGame::Update(float dt)
 	//몬스터 스폰
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
 	{
-		SpawnMonster(1);
+		int num = Utils::RandomRange(1, 3);
+		SpawnMonster(num);
 	}
 }
 
@@ -349,14 +350,44 @@ void SceneGame::Draw(sf::RenderWindow& window)
 
 void SceneGame::SpawnMonster(int count)
 {
-	for (int i = 0; i < count; i++)
+	int num = Utils::RandomRange(0, 4);
+	switch (num)
 	{
-		//1280, 720 -> 640, 360
-		Monster* monster = monsterPool.Get();
-		int num = Utils::RandomRange(0, monsterSpawnPos.size());
-		monster->SetPosition(monsterSpawnPos.at(num).x + 384, monsterSpawnPos.at(num).y + 104);
-		//monster->SetPosition(cowBoy->GetPosition());
-		AddGo(monster);
+	case 0:
+		for (int i = 0; i < count; i++)
+		{
+			Monster* monster = monsterPool.Get();
+			monster->SetPosition(monsterSpawnPosTop.at(i).x + 384, monsterSpawnPosTop.at(i).y + 104);
+			AddGo(monster);
+		}
+		break;
+	case 1:
+		for (int i = 0; i < count; i++)
+		{
+			Monster* monster = monsterPool.Get();
+			monster->SetPosition(monsterSpawnPosBottom.at(i).x + 384, monsterSpawnPosBottom.at(i).y + 104);
+			AddGo(monster);
+		}
+		break;
+	case 2:
+		for (int i = 0; i < count; i++)
+		{
+			Monster* monster = monsterPool.Get();
+			monster->SetPosition(monsterSpawnPosLeft.at(i).x + 384, monsterSpawnPosLeft.at(i).y + 104);
+			AddGo(monster);
+		}
+		break;
+	case 3:
+		for (int i = 0; i < count; i++)
+		{
+			Monster* monster = monsterPool.Get();
+			monster->SetPosition(monsterSpawnPosRight.at(i).x + 384, monsterSpawnPosRight.at(i).y + 104);
+			AddGo(monster);
+		}
+		break;
+	default:
+		cout << "ERR:: spawnmonster" << endl;
+		break;
 	}
 }
 
