@@ -162,6 +162,7 @@ void SceneGame::Init()
 		monster->SetType(monsterType);
 		monster->SetCowboy(cowBoy);
 		monster->SetPool(&monsterPool);
+		monster->SetTileMap(tileMap1, 32);
 		monster->sortLayer = 2; //플레이어와 동일
 	};
 	monsterPool.Init();
@@ -250,6 +251,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap1, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap1, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
 	{
@@ -259,6 +264,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap2, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap2, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
 	{
@@ -268,6 +277,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap3, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap3, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
 	{
@@ -277,6 +290,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(true);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap4, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap4, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
 	{
@@ -287,6 +304,10 @@ void SceneGame::Update(float dt)
 		tileMap5->SetActive(true);
 		cowBoy->SetTileMap(tileMap5, 32);
 		cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap5, 32);
+		}
 	}
 
 	/*--타이머 게이지 설정--*/
@@ -351,43 +372,31 @@ void SceneGame::Draw(sf::RenderWindow& window)
 void SceneGame::SpawnMonster(int count)
 {
 	int num = Utils::RandomRange(0, 4);
+	vector<sf::Vector2f>* spawnPosList = nullptr;
 	switch (num)
 	{
 	case 0:
-		for (int i = 0; i < count; i++)
-		{
-			Monster* monster = monsterPool.Get();
-			monster->SetPosition(monsterSpawnPosTop.at(i).x + 384, monsterSpawnPosTop.at(i).y + 104);
-			AddGo(monster);
-		}
+		spawnPosList = &monsterSpawnPosTop;
 		break;
 	case 1:
-		for (int i = 0; i < count; i++)
-		{
-			Monster* monster = monsterPool.Get();
-			monster->SetPosition(monsterSpawnPosBottom.at(i).x + 384, monsterSpawnPosBottom.at(i).y + 104);
-			AddGo(monster);
-		}
+		spawnPosList = &monsterSpawnPosBottom;
 		break;
 	case 2:
-		for (int i = 0; i < count; i++)
-		{
-			Monster* monster = monsterPool.Get();
-			monster->SetPosition(monsterSpawnPosLeft.at(i).x + 384, monsterSpawnPosLeft.at(i).y + 104);
-			AddGo(monster);
-		}
+		spawnPosList = &monsterSpawnPosLeft;
 		break;
 	case 3:
-		for (int i = 0; i < count; i++)
-		{
-			Monster* monster = monsterPool.Get();
-			monster->SetPosition(monsterSpawnPosRight.at(i).x + 384, monsterSpawnPosRight.at(i).y + 104);
-			AddGo(monster);
-		}
+		spawnPosList = &monsterSpawnPosRight;
 		break;
 	default:
 		cout << "ERR:: spawnmonster" << endl;
 		break;
+	}
+	for (int i = 0; i < count; i++)
+	{
+		Monster* monster = monsterPool.Get();
+		monster->SetPosition(spawnPosList->at(i).x + 384, spawnPosList->at(i).y + 104);
+		//cout << monster->GetPosition().x << ", " << monster->GetPosition().y << endl;
+		AddGo(monster);
 	}
 }
 
@@ -396,6 +405,15 @@ void SceneGame::OnDieMonster(Monster* monster)
 	//monster 내부에서 하는 것으로 변경
 	//RemoveGo(monster);
 	//monsterPool.Return(monster);
+}
+
+void SceneGame::OnDieCowBoy()
+{
+	cowBoy->Reset();
+	monsterPool.Clear();
+	lifeCount--;
+	TextGo* findText = (TextGo*)FindGo("lifeTxt");
+	findText->text.setString("X " + to_string(lifeCount));
 }
 
 const list<Monster*>* SceneGame::GetMonsterList() const

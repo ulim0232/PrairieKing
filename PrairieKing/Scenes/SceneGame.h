@@ -79,6 +79,7 @@ public:
 	void ClearObjectPool(ObjectPool<T>& pool);
 
 	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
+	void OnDieCowBoy();
 	const list<Monster*>* GetMonsterList() const;
 
 };

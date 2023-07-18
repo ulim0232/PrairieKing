@@ -332,3 +332,8 @@ void CowBoy::CowBoyDie()
 	leg.setColor(sf::Color::Transparent);
 	headAnimation.Play("Die");
 }
+
+sf::RectangleShape CowBoy::GetHitBox()
+{
+	return hitBox;
+}

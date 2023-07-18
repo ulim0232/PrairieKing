@@ -90,9 +90,6 @@
     <ClCompile Include="GameObjects\TextGo.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjects\Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjects\CowBoy.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -192,9 +189,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameObjects\TextGo.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjects\Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameObjects\CowBoy.h">

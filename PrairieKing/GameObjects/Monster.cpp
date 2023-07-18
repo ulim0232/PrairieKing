@@ -6,6 +6,7 @@
 #include "SceneGame.h"
 #include "ResourceMgr.h"
 #include "CowBoy.h"
+#include "TileMap.h"
 
 Monster::Monster(const string& n)
 	:SpriteGo("", n)
@@ -26,6 +27,13 @@ void Monster::Init()
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
 	sprite.setScale({ 2.f, 2.f });
+
+	hitBox.setSize(sf::Vector2f(boxSize));
+	Utils::SetOrigin(hitBox, Origins::MC);
+	hitBox.setFillColor(sf::Color::Transparent);
+	hitBox.setOutlineThickness(1);
+	hitBox.setOutlineColor(sf::Color::Cyan);
+	hitBox.setPosition(sf::Vector2f(static_cast<int>(position.x), static_cast<int>(position.y)));
 }
 
 void Monster::Release()
@@ -57,12 +65,22 @@ void Monster::Update(float dt)
 			sf::Vector2f cowboyPos = cowboy->GetPosition();
 
 			float distance = Utils::Distance(cowboyPos, position);
-			look = direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
+			direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
 
 			if (distance > 25.f) //일정 거리에 가까워지면 도착으로 처리
 			{
-				position += direction * speed * dt;
+				velocity = direction * speed;
+				position += velocity * dt;
 				SetPosition(position);
+			}
+		}
+		if (sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()))
+		{
+			Scene* scene = SCENE_MGR.GetCurrScene();
+			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+			if (sceneGame != nullptr)
+			{
+				sceneGame->OnDieCowBoy();
 			}
 		}
 	}
@@ -127,5 +145,19 @@ void Monster::OnHitBullet(int damage)
 			//	sceneGame->OnDieMonster(this);
 			//}
 		}
+	}
+}
+
+void Monster::SetTileMap(TileMap* map, int width)
+{
+	tileMap = map;
+	tileWidth = width;
+}
+
+bool Monster::IsCollisoinTile(int index)
+{
+	if (index > 4)
+	{
+		return true;
 	}
 }

@@ -68,5 +68,6 @@ public:
 	bool IsCollisoinTile(int index);
 
 	void CowBoyDie();
+	sf::RectangleShape GetHitBox();
 };
 
