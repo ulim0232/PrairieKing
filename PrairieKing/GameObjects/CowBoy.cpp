@@ -6,6 +6,7 @@
 #include "ResourceMgr.h"
 #include "SceneMgr.h"
 #include "SceneGame.h"
+#include "AnimationController.h"
 
 
 CowBoy::CowBoy(const std::string& n)
@@ -25,14 +26,8 @@ void CowBoy::Init()
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Move.csv"));
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Idle.csv"));
 	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
-	
-	legAnimation.SetTarget(&leg);
-	headAnimation.SetTarget(&head);
 
-	//sf::Texture* tex = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
-	texture = new sf::Texture();
-	texture->loadFromFile("graphics/players/Player_stand.png");
-	head.setTexture(*texture);
+	headAnimation.SetTarget(&head);
 
 	head.setScale(2.0f, 2.0f);
 	leg.setScale(2.0f, 2.0f);
@@ -71,8 +66,16 @@ void CowBoy::Reset()
 {
 	legAnimation.SetTarget(&leg);
 	leg.setColor(sf::Color::White);
-	headAnimation.Stop();
- 	head.setTexture(*texture);
+	if (headAnimation.GetCurrentClipId() == "Die")
+	{
+		headAnimation.Stop();
+	}
+	texture = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
+	if (texture != nullptr)
+	{
+		head.setTexture(*texture);
+	}
+	
 	head.setTextureRect({ 0, 0, (int)texture->getSize().x, (int)texture->getSize().y });
 
 	legAnimation.Play("Idle");
@@ -115,6 +118,7 @@ void CowBoy::Update(float dt)
 
 		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
 		{
+			//이동량 보정
 			float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
 			float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
 			if (IsCollisoinTile(tile.texIndex))
