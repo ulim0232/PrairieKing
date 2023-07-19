@@ -44,3 +44,17 @@ void StringTable::Release()
 	}
 	//tables.clear();
 }
+
+wstring multibyte_to_uni(const std::string& str) {
+	int nLen = str.size();
+	wchar_t warr[256];
+	MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str.c_str(), -1, warr, nLen);
+
+	return warr;
+}
+
+const std::wstring StringTable::GetUni(const std::string& id, Languages lang)
+{
+	string multibyteString = Get(id, lang);
+	return multibyte_to_uni(multibyteString);
+}

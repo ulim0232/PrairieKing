@@ -180,6 +180,7 @@
     <ClCompile Include="Framework\ResourceMgr.cpp" />
     <ClCompile Include="GameObjects\Monster.cpp" />
     <ClCompile Include="DataTables\MonsterTable.cpp" />
+    <ClCompile Include="Scenes\SceneEnding.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
     <ClCompile Include="Framework\SceneMgr.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="GameObjects\Ground.h" />
     <ClInclude Include="GameObjects\Monster.h" />
     <ClInclude Include="DataTables\MonsterTable.h" />
+    <ClInclude Include="Scenes\SceneEnding.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />
     <ClInclude Include="Framework\SceneMgr.h" />

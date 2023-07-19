@@ -243,6 +243,11 @@ void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
 
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	{
+		SCENE_MGR.ChangeScene(SceneId::GameOver);
+	}
+
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
 	{
 		tileMap1->SetActive(true);
