@@ -3,12 +3,14 @@
 #include "StringTable.h"
 #include "ClipTable.h"
 #include "MonsterTable.h"
+#include "ItemTable.h"
 
 void DataTableMgr::LoadAll()
 {
 	tables.insert({ DataTable::Ids::String, new StringTable() });
 	tables.insert({ DataTable::Ids::Clip, new ClipTable() });
 	tables.insert({ DataTable::Ids::Monster, new MonsterTable() });
+	tables.insert({ DataTable::Ids::Item, new ItemTable() });
 
 	for (auto pair : tables)
 	{

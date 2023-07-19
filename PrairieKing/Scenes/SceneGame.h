@@ -9,6 +9,7 @@ class SpriteGo;
 class TextGo;
 class RectangleGo;
 class Monster;
+class Item;
 
 class SceneGame : public Scene
 {
@@ -18,6 +19,7 @@ protected:
 
 	CowBoy* cowBoy;
 	ObjectPool<Monster> monsterPool;
+	ObjectPool<Item> itemPool;
 
 	sf::Texture* left = nullptr;
 	sf::Texture* right = nullptr;
@@ -96,8 +98,11 @@ public:
 	const list<Monster*>* GetMonsterList() const;
 
 	void BlinkCowboy();
-	
 
+	void TakeItem(Item* item);
+	void GetGoin();
+	void GetLife();
+	void RemoveItem(Item* item);
 };
 
 template<typename T>

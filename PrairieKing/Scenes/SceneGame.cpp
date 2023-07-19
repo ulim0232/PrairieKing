@@ -165,11 +165,22 @@ void SceneGame::Init()
 	};
 	monsterPool.Init();
 
+	/*----아이템 생성----*/
+	itemPool.OnCreate = [this](Item* item)
+	{
+		Item::ItemTypes itemtype = (Item::ItemTypes)Utils::RandomRange(0, Item::TotalTypes);
+		item->SetType(itemtype);
+		item->SetPlayer(cowBoy);
+		item->sortLayer = 2;
+	};
+	itemPool.Init();
+
 }
 
 void SceneGame::Release()
 {
 	monsterPool.Release();
+	itemPool.Release();
 
 	for (auto go : gameObjects)
 	{
@@ -243,6 +254,7 @@ void SceneGame::Exit()
 	stage1Bgm.stop();
 
 	ClearObjectPool(monsterPool);
+	ClearObjectPool(itemPool);
 	cowBoy->Reset();
 	
 	Scene::Exit();
@@ -448,9 +460,15 @@ void SceneGame::SpawnMonster(int count)
 
 void SceneGame::OnDieMonster(Monster* monster)
 {
-	//monster 내부에서 하는 것으로 변경
-	//RemoveGo(monster);
-	//monsterPool.Return(monster);
+	//아이템 생성
+	int random = Utils::RandomRange(0, 9);
+	if (random >= 0)
+	{
+		Item* item = itemPool.Get();
+		item->SetPosition(monster->GetPosition());
+		item->SetIsSpawn(true);
+		AddGo(item);
+	}
 }
 
 void SceneGame::OnDieCowBoy()
@@ -463,9 +481,24 @@ void SceneGame::OnDieCowBoy()
 	{
 		isTimerRunning = false;
 		cowBoy->CowBoyDie();
-		for (auto monster : monsterPool.GetUseList())
+		const list<Monster*> monsters = monsterPool.GetUseList();
+		if(!monsters.empty())
 		{
-			monster->OnDie();
+			for (auto monster : monsters)
+			{
+				monster->OnDie();
+			}
+		}
+		//아이템 삭제
+		list<Item*> items = itemPool.GetUseList();
+		if (!items.empty())
+		{
+			for (auto item : items)
+			{
+				item->SetIsSpawn(false);
+				RemoveGo(item);
+				itemPool.Return(item);
+			}
 		}
 	}
 }
@@ -498,4 +531,38 @@ void SceneGame::BlinkCowboy()
 		cowBoy->SetActive(true);
 		blinkTimeCheck = false;
 	}
+}
+
+void SceneGame::TakeItem(Item* item)
+{
+	if (item->GetType() == Item::ItemTypes::Coin)
+	{
+		GetGoin();
+	}
+	if (item->GetType() == Item::ItemTypes::Life)
+	{
+		GetLife();
+	}
+	RemoveItem(item);
+}
+
+void SceneGame::GetGoin()
+{
+	coinCount++;
+	TextGo* findText = (TextGo*)FindGo("coinTxt");
+	findText->text.setString("X " + to_string(coinCount));
+}
+
+void SceneGame::GetLife()
+{
+	lifeCount++;
+	TextGo* findText = (TextGo*)FindGo("lifeTxt");
+	findText->text.setString("X " + to_string(lifeCount));
+}
+
+void SceneGame::RemoveItem(Item* item)
+{
+	item->SetIsSpawn(false);
+	RemoveGo(item); //리스트에서 삭제
+	itemPool.Return(item);
 }

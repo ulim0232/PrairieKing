@@ -70,6 +70,8 @@ void CowBoy::Reset()
 	leg.setColor(sf::Color::White);
 	isRevive = false;
 	isDie = false;
+	isSpeedUp = false;
+	speed = 150.f;
 	if (headAnimation.IsPlaying())
 	{
 		headAnimation.Stop();
@@ -151,80 +153,91 @@ void CowBoy::Update(float dt)
 
 		SetPosition(position);
 		hitBox.setPosition(position);
-	}
-	//애니메이션
-	if (legAnimation.GetCurrentClipId() == "Idle")
-	{
-		if (direction.x != 0 || direction.y != 0)
-		{
-			legAnimation.Play("Move");
-		}
-	}
-	else if (legAnimation.GetCurrentClipId() == "Move")
-	{
-		if (direction.x == 0.f && direction.y == 0.f)
-		{
-			legAnimation.Play("Idle");
-		}
-	}
-	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
-	{
-		if (right != nullptr)
-		{
-			head.setTexture(*right);
-		}
-	}
-	/*if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
-	{
-		leg.setColor(sf::Color::Transparent);
-		headAnimation.Play("Die");
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num9))
-	{
-		Reset();
-	}*/
 
-	/*---총알 발사---*/
-	if (!rebound)
-	{
-		if (INPUT_MGR.GetKey(sf::Keyboard::Left) ||
-			INPUT_MGR.GetKey(sf::Keyboard::Up) ||
-			INPUT_MGR.GetKey(sf::Keyboard::Down) ||
-			INPUT_MGR.GetKey(sf::Keyboard::Right))
+		//애니메이션
+		if (legAnimation.GetCurrentClipId() == "Idle")
 		{
-			look.x = INPUT_MGR.GetAxisRaw(Axis::HorizontalArrow);
-			look.y = INPUT_MGR.GetAxisRaw(Axis::VerticalArrow);
-
-			float magnitude = Utils::Magnitude(look);
-			if (magnitude > 1.f)
+			if (direction.x != 0 || direction.y != 0)
 			{
-				look /= magnitude;
+				legAnimation.Play("Move");
 			}
-
-			Bullet* bullet = poolBullets.Get();
-			bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
-			sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
-			bullet->Fire(fireP, look, 400.f);
-
-			Scene* scene = SCENE_MGR.GetCurrScene();
-			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
-			if (sceneGame != nullptr)
+		}
+		else if (legAnimation.GetCurrentClipId() == "Move")
+		{
+			if (direction.x == 0.f && direction.y == 0.f)
 			{
-				bullet->SetMonsterList(sceneGame->GetMonsterList());
-				sceneGame->AddGo(bullet);
+				legAnimation.Play("Idle");
 			}
-			SCENE_MGR.GetCurrScene()->AddGo(bullet);
-			rebound = true;
+		}
+		if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+		{
+			if (right != nullptr)
+			{
+				head.setTexture(*right);
+			}
+		}
+		/*if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
+		{
+			leg.setColor(sf::Color::Transparent);
+			headAnimation.Play("Die");
+		}
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num9))
+		{
+			Reset();
+		}*/
+
+		/*---총알 발사---*/
+		if (!rebound)
+		{
+			if (INPUT_MGR.GetKey(sf::Keyboard::Left) ||
+				INPUT_MGR.GetKey(sf::Keyboard::Up) ||
+				INPUT_MGR.GetKey(sf::Keyboard::Down) ||
+				INPUT_MGR.GetKey(sf::Keyboard::Right))
+			{
+				look.x = INPUT_MGR.GetAxisRaw(Axis::HorizontalArrow);
+				look.y = INPUT_MGR.GetAxisRaw(Axis::VerticalArrow);
+
+				float magnitude = Utils::Magnitude(look);
+				if (magnitude > 1.f)
+				{
+					look /= magnitude;
+				}
+
+				Bullet* bullet = poolBullets.Get();
+				bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
+				sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+				bullet->Fire(fireP, look, 400.f);
+
+				Scene* scene = SCENE_MGR.GetCurrScene();
+				SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+				if (sceneGame != nullptr)
+				{
+					bullet->SetMonsterList(sceneGame->GetMonsterList());
+					sceneGame->AddGo(bullet);
+				}
+				SCENE_MGR.GetCurrScene()->AddGo(bullet);
+				rebound = true;
+			}
+		}
+		else
+		{
+			timer += dt;
+			if (timer >= shotDelay)
+			{
+				timer = 0.f;
+				rebound = false;
+			}
 		}
 	}
-	else
+	if (isSpeedUp)
 	{
-		timer += dt;
-		if (timer >= shotDelay)
-		{
-			timer = 0.f;
-			rebound = false;
-		}
+		timerI += dt;
+	}
+	if (isSpeedUp && timerI >= itmeDuration)
+	{
+		cout << "speed down" << endl;
+		speed = 150.f;
+		isSpeedUp = false;
 	}
 
 }
@@ -327,4 +340,14 @@ void CowBoy::SetIsRevive(bool is)
 void CowBoy::SetIsDie(bool is)
 {
 	isDie = is;
+}
+
+void CowBoy::TakeItem(Item::ItemTypes type)
+{
+	if (type == Item::ItemTypes::Coffee && !isSpeedUp)
+	{
+		speed = 200.f;
+		isSpeedUp = true;
+		cout << "speed up" << endl;
+	}
 }

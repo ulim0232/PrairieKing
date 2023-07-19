@@ -3,6 +3,7 @@
 #include "AnimationController.h"
 #include "TileMap.h"
 #include "Bullet.h"
+#include "Item.h"
 
 class SpriteGo;
 
@@ -47,6 +48,9 @@ protected:
 	float duration = 3.f;
 	float timerA = 0.f;
 	bool isDie = false;
+	bool isSpeedUp = false;
+	float timerI = 0.f;
+	float itmeDuration = 5.f;
 
 	
 public:
@@ -78,5 +82,7 @@ public:
 	sf::RectangleShape GetHitBox();
 	void SetIsRevive(bool is);
 	void SetIsDie(bool is);
+
+	void TakeItem(Item::ItemTypes type);
 };
 

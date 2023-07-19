@@ -136,12 +136,12 @@ void Monster::OnHitBullet(int damage)
 		if (hp <= 0) //hp가 0이 되면 죽는다
 		{
 			OnDie();
-			//Scene* scene = SCENE_MGR.GetCurrScene();
-			//SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
-			//if (sceneGame != nullptr)
-			//{
-			//	sceneGame->OnDieMonster(this);
-			//}
+			Scene* scene = SCENE_MGR.GetCurrScene();
+			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+			if (sceneGame != nullptr)
+			{
+				sceneGame->OnDieMonster(this);
+			}
 		}
 	}
 }

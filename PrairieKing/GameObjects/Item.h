@@ -1,31 +1,33 @@
 #pragma once
 #include "SpriteGo.h"
 
-class Player;
+class CowBoy;
 
 class Item : public SpriteGo
 {
 public:
 	enum class ItemTypes
 	{
-		Ammo, //총알
-		Potion //체력키트
+		Coin,
+		Life,
+		Coffee,
 	};
 protected:
-
 	bool isSpawn = false;
 	ItemTypes type;
-	Player* player = nullptr;
+	CowBoy* cowboy = nullptr;
+	float spawnLimit = 10.f;
+	float timer = 0.f;
 
 public:
-	
-	static const int TotalTypes = 2;
+	static const int TotalTypes = 3;
 	Item(const string& textureId = "", const string& n = "");
 	virtual ~Item() override;
 
 	void SetType(ItemTypes t);
 	ItemTypes GetType() const;
-	void SetPlayer(Player* p);
+	void SetPlayer(CowBoy* p);
+	void SetIsSpawn(bool is);
 
 	virtual void Init() override;
 	virtual void Release() override;
