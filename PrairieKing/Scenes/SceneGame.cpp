@@ -11,14 +11,34 @@
 #include "TextGo.h"
 #include "RectangleGo.h"
 #include "CowBoy.h"
+#include "Monster.h"
 
 SceneGame::SceneGame() : Scene(SceneId::Game)
 {
 	//csv파일을 통해서 로딩하는 것으로 변경
-	resourceListPath = "tables/SceneGameResourceList.csv";
+	resourceListPath = "tables/scripts/SceneGameResourceList.csv";
 
 	timerDecreaseRate = 1.0f / timeLimit;
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
+	//위
+	monsterSpawnPosTop.push_back({ 240, 16 });
+	monsterSpawnPosTop.push_back({ 272, 16 });
+	monsterSpawnPosTop.push_back({ 304, 16 });
+
+	//아래
+	monsterSpawnPosBottom.push_back({ 240, 496 });
+	monsterSpawnPosBottom.push_back({ 272, 496 });
+	monsterSpawnPosBottom.push_back({ 304, 496 });
+
+	//왼쪽
+	monsterSpawnPosLeft.push_back({ 16, 240 });
+	monsterSpawnPosLeft.push_back({ 16, 272 });
+	monsterSpawnPosLeft.push_back({ 16, 304 });
+
+	//오른쪽
+	monsterSpawnPosRight.push_back({ 496, 240 });
+	monsterSpawnPosRight.push_back({ 496, 272 });
+	monsterSpawnPosRight.push_back({ 496, 304 });
 }
 
 
@@ -51,8 +71,6 @@ void SceneGame::Init()
 
 	/*---플레이어 설정----*/
 	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
-	//player = (Player*)AddGo(new Player("graphics/players/Player_stand.png", "player"));
-	//player = (Player*)AddGo(new Player("graphics/players/Player_right.png", "player"));
 
 	/*----UI설정----*/
 	coinUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/coin1.png", "coinUI"));
@@ -127,9 +145,6 @@ void SceneGame::Init()
 
 	/*---플레이어 설정----*/
 	cowBoy->sortLayer = 2;
-	//player->SetOrigin(Origins::MC);
-	//player->sortLayer = 1;
-	//player->sprite.setScale({ 5.f, 5.f });
 
 	/*----UI설정----*/
 	coinUI->SetOrigin(Origins::MC);
@@ -139,11 +154,25 @@ void SceneGame::Init()
 	timerUI->SetOrigin(Origins::MC);
 	keyUI->SetOrigin(Origins::MC);
 
-	
+	/*----몬스터 생성----*/
+	monsterPool.OnCreate = [this](Monster* monster)
+	{
+		//Monster::Types monsterType = (Monster::Types)(Utils::RandomRange(0, Monster::TotalTypes) + 1); //1번은 보스
+		Monster::Types monsterType = (Monster::Types)Utils::RandomRange(4, 6);
+		monster->SetType(monsterType);
+		monster->SetCowboy(cowBoy);
+		monster->SetPool(&monsterPool);
+		monster->SetTileMap(tileMap1, 32);
+		monster->sortLayer = 2; //플레이어와 동일
+	};
+	monsterPool.Init();
+
 }
 
 void SceneGame::Release()
 {
+	monsterPool.Release();
+
 	for (auto go : gameObjects)
 	{
 		//go->Release();
@@ -164,6 +193,9 @@ void SceneGame::Enter()
 	worldView.setCenter(tileMap1->GetPosition());
 	uiView.setCenter(tileMap1->GetPosition());
 	cout << tileMap1->GetPosition().x << ", "<<tileMap1->GetPosition().y << endl;
+
+	lifeCount = 3;
+	coinCount = 0;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -200,12 +232,21 @@ void SceneGame::Enter()
 void SceneGame::Exit()
 {
 	stage1Bgm.stop();
+
+	ClearObjectPool(monsterPool);
+	cowBoy->Reset();
+	
 	Scene::Exit();
 }
 
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
+	{
+		SCENE_MGR.ChangeScene(SceneId::GameOver);
+	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
 	{
@@ -214,6 +255,11 @@ void SceneGame::Update(float dt)
 		tileMap3->SetActive(false);
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
+		cowBoy->SetTileMap(tileMap1, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap1, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
 	{
@@ -223,6 +269,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap2, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap2, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
 	{
@@ -232,6 +282,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(false);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap3, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap3, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
 	{
@@ -241,6 +295,10 @@ void SceneGame::Update(float dt)
 		tileMap4->SetActive(true);
 		tileMap5->SetActive(false);
 		cowBoy->SetTileMap(tileMap4, 32);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap4, 32);
+		}
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
 	{
@@ -251,6 +309,10 @@ void SceneGame::Update(float dt)
 		tileMap5->SetActive(true);
 		cowBoy->SetTileMap(tileMap5, 32);
 		cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->SetTileMap(tileMap5, 32);
+		}
 	}
 
 	/*--타이머 게이지 설정--*/
@@ -270,6 +332,8 @@ void SceneGame::Update(float dt)
 		timerGauge->rectangle.setSize({ 0, 10 });
 	}
 
+
+	//플레이어 텍스쳐 변경
 	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
 	{
 		if (right != nullptr)
@@ -296,9 +360,68 @@ void SceneGame::Update(float dt)
 	{
 		cowBoy->head.setTexture(*origin);
 	}
+
+	//몬스터 스폰
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
+	{
+		int num = Utils::RandomRange(1, 3);
+		SpawnMonster(num);
+	}
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
+}
+
+void SceneGame::SpawnMonster(int count)
+{
+	int num = Utils::RandomRange(0, 4);
+	vector<sf::Vector2f>* spawnPosList = nullptr;
+	switch (num)
+	{
+	case 0:
+		spawnPosList = &monsterSpawnPosTop;
+		break;
+	case 1:
+		spawnPosList = &monsterSpawnPosBottom;
+		break;
+	case 2:
+		spawnPosList = &monsterSpawnPosLeft;
+		break;
+	case 3:
+		spawnPosList = &monsterSpawnPosRight;
+		break;
+	default:
+		cout << "ERR:: spawnmonster" << endl;
+		break;
+	}
+	for (int i = 0; i < count; i++)
+	{
+		Monster* monster = monsterPool.Get();
+		monster->SetPosition(spawnPosList->at(i).x + 384, spawnPosList->at(i).y + 104);
+		//cout << monster->GetPosition().x << ", " << monster->GetPosition().y << endl;
+		AddGo(monster);
+	}
+}
+
+void SceneGame::OnDieMonster(Monster* monster)
+{
+	//monster 내부에서 하는 것으로 변경
+	//RemoveGo(monster);
+	//monsterPool.Return(monster);
+}
+
+void SceneGame::OnDieCowBoy()
+{
+	cowBoy->Reset();
+	monsterPool.Clear();
+	lifeCount--;
+	TextGo* findText = (TextGo*)FindGo("lifeTxt");
+	findText->text.setString("X " + to_string(lifeCount));
+}
+
+const list<Monster*>* SceneGame::GetMonsterList() const
+{
+	return &monsterPool.GetUseList();
 }

@@ -23,9 +23,9 @@ void CowBoy::Init()
 	Utils::SetOrigin(head, Origins::BC);
 	Utils::SetOrigin(leg, Origins::TC);
 
-	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Move.csv"));
-	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Idle.csv"));
-	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/Die.csv"));
+	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Move.csv"));
+	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Idle.csv"));
+	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Die.csv"));
 
 	headAnimation.SetTarget(&head);
 
@@ -200,7 +200,7 @@ void CowBoy::Update(float dt)
 			head.setTexture(*right);
 		}
 	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
+	/*if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
 	{
 		leg.setColor(sf::Color::Transparent);
 		headAnimation.Play("Die");
@@ -208,7 +208,7 @@ void CowBoy::Update(float dt)
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num9))
 	{
 		Reset();
-	}
+	}*/
 
 	/*---총알 발사---*/
 	if(!rebound)
@@ -236,6 +236,7 @@ void CowBoy::Update(float dt)
 			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 			if (sceneGame != nullptr)
 			{
+				bullet->SetMonsterList(sceneGame->GetMonsterList());
 				sceneGame->AddGo(bullet);
 			}
 			SCENE_MGR.GetCurrScene()->AddGo(bullet);
@@ -330,4 +331,9 @@ void CowBoy::CowBoyDie()
 {
 	leg.setColor(sf::Color::Transparent);
 	headAnimation.Play("Die");
+}
+
+sf::RectangleShape CowBoy::GetHitBox()
+{
+	return hitBox;
 }

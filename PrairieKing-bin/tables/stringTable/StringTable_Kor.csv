@@ -1,5 +1,7 @@
 ID,KOREAN
-HELLO,안녕
-BYE,잘가
-YOU_DIE,너 죽음
-TITLE,좀비 서바이벌
+TITLE,게임 오버
+RESTART,재시작
+RESTART_C,> 재시작
+EXIT,종료
+EXIT_C,> 종료
+CURSOR,>

@@ -18,6 +18,6 @@ public:
 	{
 		return Get(id, Variables::CurrentLang);
 	}
-
+	const std::wstring GetUni(const std::string& id, Languages lang);
 };
 

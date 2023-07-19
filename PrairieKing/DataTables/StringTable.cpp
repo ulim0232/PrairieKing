@@ -16,9 +16,9 @@ const std::string& StringTable::Get(const std::string& id, Languages lang) const
 bool StringTable::Load()
 {
 	std::vector<std::string> filenames;
-	filenames.push_back("tables/StringTable_KOR.csv");
-	filenames.push_back("tables/StringTable_ENG.csv");
-	filenames.push_back("tables/StringTable_JP.csv");
+	filenames.push_back("tables/stringTable/StringTable_KOR.csv");
+	filenames.push_back("tables/stringTable/StringTable_ENG.csv");
+	filenames.push_back("tables/stringTable/StringTable_JP.csv");
 
 	for (int i = 0; i < tables.size(); ++i)
 	{
@@ -43,4 +43,18 @@ void StringTable::Release()
 		table.clear();
 	}
 	//tables.clear();
+}
+
+wstring multibyte_to_uni(const std::string& str) {
+	int nLen = str.size();
+	wchar_t warr[256];
+	MultiByteToWideChar(CP_ACP, 0, (LPCSTR)str.c_str(), -1, warr, nLen);
+
+	return warr;
+}
+
+const std::wstring StringTable::GetUni(const std::string& id, Languages lang)
+{
+	string multibyteString = Get(id, lang);
+	return multibyte_to_uni(multibyteString);
 }

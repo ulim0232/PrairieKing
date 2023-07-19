@@ -1,6 +1,6 @@
 ﻿ID,FPS,LOOPTYPE,,
-MUSHROOM,5,1,,
+Idle,5,1,,
 ,,,,
 TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
-graphics/mosters/Monster_sheet.png,160,0,16,16
-graphics/mosters/Monster_sheet.png,176,0,16,16
+graphics/monsters/Monster_sheet.png,160,0,16,16
+graphics/monsters/Monster_sheet.png,176,0,16,16

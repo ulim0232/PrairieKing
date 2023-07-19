@@ -46,7 +46,7 @@ void Framework::Run()
 
     sf::Cursor cursor;
     if (cursor.loadFromPixels(cursorImg.getPixelsPtr(), cursorImg.getSize(),
-        { cursorImg.getSize().x / 2, cursorImg.getSize().y / 2 }))
+        { cursorImg.getSize().x/2, cursorImg.getSize().y/2}))
     {
         window.setMouseCursor(cursor);
     }

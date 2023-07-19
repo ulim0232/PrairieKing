@@ -24,6 +24,6 @@ public:
 	virtual void Draw(sf::RenderWindow& window) override;
 	void SetString(const string& str);
 	void SetText(const std::string& ss, const int& size, sf::Color color, Origins origin, int soltLayer, float x, float y);
-
+	void SetText(const std::wstring& ss, const int& size, sf::Color color, Origins origin, int soltLayer, float x, float y);
 };
 

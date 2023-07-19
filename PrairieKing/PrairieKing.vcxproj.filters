@@ -90,9 +90,6 @@
     <ClCompile Include="GameObjects\TextGo.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjects\Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjects\CowBoy.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -103,6 +100,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="DataTables\MonsterTable.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenes\SceneEnding.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,9 +194,6 @@
     <ClInclude Include="GameObjects\TextGo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjects\Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameObjects\CowBoy.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -207,6 +204,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="DataTables\MonsterTable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenes\SceneEnding.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

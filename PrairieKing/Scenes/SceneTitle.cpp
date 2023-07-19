@@ -9,7 +9,7 @@
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
 {
-	resourceListPath = "tables/SceneTitleResourceList.csv";
+	resourceListPath = "tables/scripts/SceneTitleResourceList.csv";
 }
 
 void SceneTitle::Init()

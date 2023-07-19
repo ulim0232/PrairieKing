@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Bullet.h"
-//#include "Zombie.h"
+#include "Monster.h"
 #include "SceneMgr.h"
 #include "Scene.h"
 
@@ -13,10 +13,10 @@ Bullet::~Bullet()
 {
 }
 
-//void Bullet::SetZombieList(const list<Zombie*>* list)
-//{
-//	zombies = list;
-//}
+void Bullet::SetMonsterList(const list<Monster*>* list)
+{
+	monsters = list;
+}
 
 void Bullet::Fire(const sf::Vector2f pos, const sf::Vector2f direction, float speed)
 {
@@ -48,7 +48,6 @@ void Bullet::Reset()
 	SetPosition(0.f, 0.f);
 	speed = 0.f;
 	direction = { 0.f, 0.f };
-	range = 2000.f;
 }
 
 void Bullet::Update(float dt)
@@ -66,20 +65,20 @@ void Bullet::Update(float dt)
 	position += direction * speed * dt;
 	SetPosition(position);
 	
-	//if (zombies != nullptr)
-	//{
-	//	for (Zombie* zombie : *zombies)
-	//	{
-	//		if (sprite.getGlobalBounds().intersects(zombie->sprite.getGlobalBounds()))
-	//		{
-	//			zombie->OnHitBullet(damage);
-	//			//총알과 좀비가 충돌하면 총알 삭제
-	//			SCENE_MGR.GetCurrScene()->RemoveGo(this);
-	//			pool->Return(this);
-	//			break;
-	//		}
-	//	}
-	//}
+	if (monsters != nullptr)
+	{
+		for (Monster* monster : *monsters)
+		{
+			if (sprite.getGlobalBounds().intersects(monster->sprite.getGlobalBounds()) && monster->GetIsAllive())
+			{
+				monster->OnHitBullet(damage);
+				//총알과 좀비가 충돌하면 총알 삭제
+				SCENE_MGR.GetCurrScene()->RemoveGo(this);
+				pool->Return(this);
+				break;
+			}
+		}
+	}
 }
 
 void Bullet::Draw(sf::RenderWindow& window)
