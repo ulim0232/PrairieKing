@@ -169,13 +169,13 @@ void CowBoy::Update(float dt)
 				legAnimation.Play("Idle");
 			}
 		}
-		if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+		/*if (INPUT_MGR.GetKey(sf::Keyboard::Right))
 		{
 			if (right != nullptr)
 			{
 				head.setTexture(*right);
 			}
-		}
+		}*/
 		/*if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
 		{
 			leg.setColor(sf::Color::Transparent);

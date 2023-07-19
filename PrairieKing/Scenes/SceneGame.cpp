@@ -58,10 +58,14 @@ void SceneGame::Init()
 	uiView.setSize(size);
 	uiView.setCenter(centerPos);
 
-	/*----bgm 설정----*/
+	/*----오디오 설정----*/
 	stage1BgmBuffer.loadFromFile("sounds/OverWorld.wav");
 	stage1Bgm.setBuffer(stage1BgmBuffer);
 	stage1Bgm.setLoop(true);
+
+	footStepBuffer.loadFromFile("sounds/Footstep.wav");
+	footStep.setBuffer(footStepBuffer);
+	footStep.setLoop(true);
 
 	/*----맵 설정----*/
 	tileMap1 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap1"));
@@ -81,13 +85,15 @@ void SceneGame::Init()
 	shotUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/shot.png", "shotUI"));
 	timerUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/timerUI.png", "timerUI"));
 	keyUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/controlKey.png", "keyUI"));
+	pickedItemUI = (SpriteGo*)AddGo(new SpriteGo("graphics/items/coffee.png", "pickedItemUI"));
 
 	coinUI->sprite.setScale({ 2.f, 2.f });
 	itemUI->sprite.setScale({ 2.f, 2.f });
 	lifeUI->sprite.setScale({ 2.f, 2.f });
 	shotUI->sprite.setScale({ 2.f, 2.f });
 	timerUI->sprite.setScale({ 2.f, 2.f });
-	keyUI->sprite.setScale({ 2.f, 2.f });
+	keyUI->sprite.setScale({ 2.f, 2.f }); 
+	pickedItemUI->sprite.setScale({ 2.f, 2.f });
 
 	coinUI->sortLayer = 100;
 	itemUI->sortLayer = 100;
@@ -95,6 +101,9 @@ void SceneGame::Init()
 	shotUI->sortLayer = 100;
 	timerUI->sortLayer = 100;
 	keyUI->sortLayer = 100;
+	pickedItemUI->sortLayer = 100;
+
+	pickedItemUI->SetActive(false);
 
 	/*----텍스트 설정----*/
 	coinTxt = (TextGo*)AddGo(new TextGo("coinTxt", "fonts/angel.ttf"));
@@ -142,7 +151,7 @@ void SceneGame::Init()
 	tileMap5->SetActive(false);
 
 	/*---플레이어 설정----*/
-	cowBoy->sortLayer = 2;
+	cowBoy->sortLayer = 3;
 
 	/*----UI설정----*/
 	coinUI->SetOrigin(Origins::MC);
@@ -151,6 +160,7 @@ void SceneGame::Init()
 	shotUI->SetOrigin(Origins::MC);
 	timerUI->SetOrigin(Origins::MC);
 	keyUI->SetOrigin(Origins::MC);
+	pickedItemUI->SetOrigin(Origins::MC);
 
 	/*----몬스터 생성----*/
 	monsterPool.OnCreate = [this](Monster* monster)
@@ -206,6 +216,7 @@ void SceneGame::Enter()
 	lifeCount = 3;
 	coinCount = 0;
 	isGameOver = false;
+	pickedItem = nullptr;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -217,7 +228,8 @@ void SceneGame::Enter()
 	shotUI->SetPosition(mapPosition.x + tileSize.x / 2 + 10, mapPosition.y - tileSize.y / 2 + 10);
 	timerUI->SetPosition(mapPosition.x - tileSize.x / 2 + 9, mapPosition.y - tileSize.y / 2 - 20);
 	keyUI->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 + 55);
-
+	pickedItemUI->SetPosition(itemUI->GetPosition());
+	
 	/*----txt 설정----*/
 	coinTxt->SetPosition(coinUI->GetPosition().x + 20, coinUI->GetPosition().y - 20);
 	string ss = "X " + to_string(lifeCount);
@@ -246,7 +258,20 @@ void SceneGame::Enter()
 	origin = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
 
 	blinkTimeCheck = false;
+	roundClear = false;
 
+	/*----맵 설정----*/
+	tileMap1->SetActive(true);
+	tileMap2->SetActive(false); 
+	tileMap3->SetActive(false);
+	tileMap4->SetActive(false);
+	tileMap5->SetActive(false);
+
+	/*----몬스터 설정----*/
+	for (auto monster : monsterPool.GetPool())
+	{
+		monster->SetTileMap(tileMap1, 32);
+	}
 }
 
 void SceneGame::Exit()
@@ -264,6 +289,30 @@ void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
 	
+	/*---오디오 재생---*/
+	//수정 필요
+	if (INPUT_MGR.GetKeyUp(sf::Keyboard::W) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::A) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::S) ||
+		INPUT_MGR.GetKeyUp(sf::Keyboard::D))
+	{
+		if(footStep.getStatus() == sf::SoundSource::Status::Playing)
+		{
+			footStep.stop();
+		}
+	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::W) ||
+		INPUT_MGR.GetKeyDown(sf::Keyboard::A) ||
+		INPUT_MGR.GetKeyDown(sf::Keyboard::S) ||
+		INPUT_MGR.GetKeyDown(sf::Keyboard::D))
+	{
+		if (footStep.getStatus() != sf::SoundSource::Status::Playing)
+		{
+			footStep.play();
+			footStep.setVolume(100.f);
+		}
+	}
+
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
@@ -335,7 +384,14 @@ void SceneGame::Update(float dt)
 			monster->SetTileMap(tileMap5, 32);
 		}
 	}
-
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space))
+	{
+		if (pickedItem != nullptr)
+		{
+			cowBoy->TakeItem(pickedItem->GetType());
+			pickedItemUI->SetActive(false);
+		}
+	}
 	/*--타이머 게이지 설정--*/
 	if(isTimerRunning)
 	{
@@ -353,15 +409,19 @@ void SceneGame::Update(float dt)
 	}
 	else
 	{
-		OnDieCowBoy();
-		timerR += dt;
-		if (timerR >= reviveLimit)
+		if(!roundClear)
 		{
-			timerR = 0.f;
-			OnReviveCowBoy();
-			isTimerRunning = true;
+			OnDieCowBoy();
+			timerR += dt;
+			if (timerR >= reviveLimit)
+			{
+				timerR = 0.f;
+				OnReviveCowBoy();
+				isTimerRunning = true;
+			}
 		}
-		/*if (timerR == 0.f)
+		/*부활 시 플레이어 blink 추가 필요
+		if (timerR == 0.f)
 		{
 			timerM += dt;
 			BlinkCowboy();
@@ -374,15 +434,61 @@ void SceneGame::Update(float dt)
 		}*/
 	}
 
-	 //5초가 지나면 라운드 전환으로 변환 필요
+	 //제한시간이 종료되면 라운드 전환으로 변환 필요
 	if (currentTime >= timeLimit)
 	{
 		currentTime = 0.0f;
+		roundClear = true;
 		isTimerRunning = false;
 		timerGauge->rectangle.setSize({ 0, 10 });
 	}
+	if (roundClear)
+	{
+		currentTime += dt;
+		//아이템 삭제
+		list<Item*> items = itemPool.GetUseList();
+		if (!items.empty())
+		{
+			for (auto item : items)
+			{
+				item->SetIsSpawn(false);
+				RemoveGo(item);
+				itemPool.Return(item);
+			}
+		}
+		//몬스터 삭제
+		list<Monster*> monsters = monsterPool.GetUseList();
+		if (!monsters.empty())
+		{
+			for (auto monster : monsters)
+			{
+				RemoveGo(monster);
+				monsterPool.Return(monster);
+			}
+		}
+		//맵 변경
+		tileMap1->SetActive(false);
+		tileMap2->SetActive(true);
+		cowBoy->SetTileMap(tileMap2, 32);
+		for (auto monster : monsterPool.GetPool())
+		{
+			monster->SetTileMap(tileMap2, 32);
+		}
 
+		//타이머 초기화
+		timerGauge->rectangle.setSize(timersize);
+		
+		//플레이어 위치 이동
+		cowBoy->SetPosition(tileMap2->GetPosition());
 
+		//3초 후 재시작
+		if (currentTime >= 3.0f)
+		{
+			currentTime = 0.f;
+			roundClear = false;
+			isTimerRunning = true;
+		}
+	}
 	//플레이어 텍스쳐 변경
 	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
 	{
@@ -411,12 +517,12 @@ void SceneGame::Update(float dt)
 		cowBoy->head.setTexture(*origin);
 	}
 
-	//몬스터 스폰
+	/*몬스터 스폰 test code
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
 	{
 		int num = Utils::RandomRange(1, 3);
 		SpawnMonster(num);
-	}
+	}*/
 	if (isGameOver)
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
@@ -462,7 +568,7 @@ void SceneGame::OnDieMonster(Monster* monster)
 {
 	//아이템 생성
 	int random = Utils::RandomRange(0, 9);
-	if (random >= 0)
+	if (random >= 7)
 	{
 		Item* item = itemPool.Get();
 		item->SetPosition(monster->GetPosition());
@@ -542,6 +648,11 @@ void SceneGame::TakeItem(Item* item)
 	if (item->GetType() == Item::ItemTypes::Life)
 	{
 		GetLife();
+	}
+	if (item->GetType() == Item::ItemTypes::Coffee)
+	{
+		pickedItem = item;
+		pickedItemUI->SetActive(true);
 	}
 	RemoveItem(item);
 }

@@ -83,8 +83,6 @@ void SceneOver::Update(float dt)
 		}
 		else
 		{
-			//수정 필요
-			Exit();
 			window.close();
 		}
 	}

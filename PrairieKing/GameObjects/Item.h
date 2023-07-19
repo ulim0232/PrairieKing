@@ -19,6 +19,13 @@ protected:
 	float spawnLimit = 10.f;
 	float timer = 0.f;
 
+	float blinkDuration;
+	float blinkTimer;
+
+	sf::Clock clock;
+	const sf::Time blinkTime = sf::seconds(0.2f);
+	bool blinkTimeCheck = false;
+
 public:
 	static const int TotalTypes = 3;
 	Item(const string& textureId = "", const string& n = "");
@@ -28,6 +35,7 @@ public:
 	ItemTypes GetType() const;
 	void SetPlayer(CowBoy* p);
 	void SetIsSpawn(bool is);
+	void blink();
 
 	virtual void Init() override;
 	virtual void Release() override;

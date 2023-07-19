@@ -14,8 +14,12 @@ class Item;
 class SceneGame : public Scene
 {
 protected:
+	/*---sound---*/
 	sf::SoundBuffer stage1BgmBuffer;
 	sf::Sound stage1Bgm;
+
+	sf::SoundBuffer footStepBuffer;
+	sf::Sound footStep;
 
 	CowBoy* cowBoy;
 	ObjectPool<Monster> monsterPool;
@@ -39,12 +43,15 @@ protected:
 	SpriteGo* lifeUI;
 	SpriteGo* shotUI;
 	SpriteGo* timerUI;
-	SpriteGo* keyUI;
+	SpriteGo* keyUI; 
+	SpriteGo* pickedItemUI;
 
 	TextGo* coinTxt;
 	TextGo* lifeTxt;
 
 	RectangleGo* timerGauge;
+
+	Item* pickedItem = nullptr;
 
 	int lifeCount = 3;
 	int coinCount = 0;
@@ -54,7 +61,7 @@ protected:
 
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 30.0f;
+	float timeLimit = 30.0f; //30
 
 	bool isTimerRunning = true;
 	vector<sf::Vector2f> monsterSpawnPosTop;
@@ -73,6 +80,8 @@ protected:
 	sf::Clock clock;
 	const sf::Time blinkTime = sf::seconds(0.2f);
 	bool blinkTimeCheck = false;
+
+	bool roundClear = false;
 
 public:
 	SceneGame();

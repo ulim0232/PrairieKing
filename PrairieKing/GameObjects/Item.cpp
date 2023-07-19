@@ -57,6 +57,24 @@ void Item::SetIsSpawn(bool is)
 	isSpawn = is;
 }
 
+void Item::blink()
+{
+	if (!blinkTimeCheck && clock.getElapsedTime() >= blinkTime)
+	{
+		clock.restart();
+		blinkTimeCheck = true;
+		sprite.setColor(sf::Color::Transparent);
+	}
+
+	if (clock.getElapsedTime() >= blinkTime)
+	{
+		clock.restart();
+		sprite.setColor(sf::Color::White);
+		blinkTimeCheck = false;
+	}
+}
+
+
 void Item::Update(float dt)
 {
 	SpriteGo::Update(dt);
@@ -65,20 +83,26 @@ void Item::Update(float dt)
 	{
 		timer += dt;
 	}
-	if (timer >= spawnLimit)
+	if (timer >= 7.f)
 	{
-		Scene* scene = SCENE_MGR.GetCurrScene();
-		SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
-		if (sceneGame != nullptr)
+		blink();
+
+		//10초동안 아이템 먹지 않으면 삭제
+		if (timer >= spawnLimit)
 		{
-			sceneGame->RemoveItem(this);
+			Scene* scene = SCENE_MGR.GetCurrScene();
+			SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+			if (sceneGame != nullptr)
+			{
+				sceneGame->RemoveItem(this);
+			}
+			timer = 0.f;
+			sprite.setColor(sf::Color::White);
 		}
-		timer = 0.f;
 	}
+	
 	if (/*cowboy->isAlive && */sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()) && isSpawn)
 	{
-		cowboy->TakeItem(type);
-
 		Scene* scene = SCENE_MGR.GetCurrScene();
 		SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 		if (sceneGame != nullptr)
@@ -86,7 +110,6 @@ void Item::Update(float dt)
 			sceneGame->TakeItem(this);
 		}
 	}
-
 }
 
 void Item::Draw(sf::RenderWindow& window)
