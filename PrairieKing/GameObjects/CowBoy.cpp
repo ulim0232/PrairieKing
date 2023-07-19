@@ -69,7 +69,8 @@ void CowBoy::Reset()
 {
 	leg.setColor(sf::Color::White);
 	isRevive = false;
-	if (headAnimation.GetCurrentClipId() == "Die")
+	isDie = false;
+	if (headAnimation.IsPlaying())
 	{
 		headAnimation.Stop();
 	}
@@ -101,53 +102,56 @@ void CowBoy::Update(float dt)
 	//이동
 
 	//대각선 이동 속도 보정으로 수정
-	direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
-	direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
-
-	float magnitude = Utils::Magnitude(direction);
-	if (magnitude > 1.f)
+	if (!isDie)
 	{
-		direction /= magnitude;
-	}
-	velocity = direction * speed;
+		direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
+		direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
 
-	newPosition = position + velocity * dt;
-	hitBox.setPosition(newPosition);
-
-	for (auto tile : tileMap->tiles)
-	{
-		float tileL = 384 + (tileSize.x * tile.x);
-		float tileT = 104 + (tileSize.y * tile.y);
-		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
-
-		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+		float magnitude = Utils::Magnitude(direction);
+		if (magnitude > 1.f)
 		{
-			//이동량 보정
-			float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
-			float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
-			if (IsCollisoinTile(tile.texIndex))
+			direction /= magnitude;
+		}
+		velocity = direction * speed;
+
+		newPosition = position + velocity * dt;
+		hitBox.setPosition(newPosition);
+
+		for (auto tile : tileMap->tiles)
+		{
+			float tileL = 384 + (tileSize.x * tile.x);
+			float tileT = 104 + (tileSize.y * tile.y);
+			sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+			if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
 			{
-				hitBox.setOutlineColor(sf::Color::Red);
-				if (std::abs(overlapX) < std::abs(overlapY))
+				//이동량 보정
+				float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
+				float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
+				if (IsCollisoinTile(tile.texIndex))
 				{
-					newPosition.x = position.x + overlapX;
+					hitBox.setOutlineColor(sf::Color::Red);
+					if (std::abs(overlapX) < std::abs(overlapY))
+					{
+						newPosition.x = position.x + overlapX;
+					}
+					else
+					{
+						newPosition.y = position.y + overlapY;
+					}
 				}
 				else
 				{
-					newPosition.y = position.y + overlapY;
+					hitBox.setOutlineColor(sf::Color::Cyan);
 				}
 			}
-			else
-			{
-				hitBox.setOutlineColor(sf::Color::Cyan);
-			}
 		}
+
+		position = newPosition;
+
+		SetPosition(position);
+		hitBox.setPosition(position);
 	}
-
-	position = newPosition;
-
-	SetPosition(position);
-	hitBox.setPosition(position);
 	//애니메이션
 	if (legAnimation.GetCurrentClipId() == "Idle")
 	{
@@ -191,7 +195,7 @@ void CowBoy::Update(float dt)
 			look.x = INPUT_MGR.GetAxisRaw(Axis::HorizontalArrow);
 			look.y = INPUT_MGR.GetAxisRaw(Axis::VerticalArrow);
 
-			magnitude = Utils::Magnitude(look);
+			float magnitude = Utils::Magnitude(look);
 			if (magnitude > 1.f)
 			{
 				look /= magnitude;
@@ -302,8 +306,12 @@ bool CowBoy::IsCollisoinTile(int index)
 
 void CowBoy::CowBoyDie()
 {
-	leg.setColor(sf::Color::Transparent);
-	headAnimation.Play("Die");
+	isDie = true;
+	if(!headAnimation.IsPlaying())
+	{
+		leg.setColor(sf::Color::Transparent);
+		headAnimation.Play("Die");
+	}
 }
 
 sf::RectangleShape CowBoy::GetHitBox()
@@ -314,4 +322,9 @@ sf::RectangleShape CowBoy::GetHitBox()
 void CowBoy::SetIsRevive(bool is)
 {
 	isRevive = is;
+}
+
+void CowBoy::SetIsDie(bool is)
+{
+	isDie = is;
 }

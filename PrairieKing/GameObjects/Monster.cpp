@@ -148,9 +148,12 @@ void Monster::OnHitBullet(int damage)
 
 void Monster::OnDie()
 {
-	animation.Stop();
-	animation.Play("DIE");
-	isAlive = false;
+	if (animation.GetCurrentClipId() != "DIE")
+	{
+		animation.Stop();
+		animation.Play("DIE");
+		isAlive = false;
+	}
 }
 
 void Monster::SetTileMap(TileMap* map, int width)

@@ -92,6 +92,7 @@ public:
 
 	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
 	void OnDieCowBoy();
+	void OnReviveCowBoy();
 	const list<Monster*>* GetMonsterList() const;
 
 	void BlinkCowboy();

@@ -46,6 +46,7 @@ protected:
 	bool isRevive = false;
 	float duration = 3.f;
 	float timerA = 0.f;
+	bool isDie = false;
 
 	
 public:
@@ -76,5 +77,6 @@ public:
 	void CowBoyDie();
 	sf::RectangleShape GetHitBox();
 	void SetIsRevive(bool is);
+	void SetIsDie(bool is);
 };
 

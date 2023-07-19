@@ -340,15 +340,26 @@ void SceneGame::Update(float dt)
 		}
 	}
 	else
-	{	
-		BlinkCowboy();
+	{
+		OnDieCowBoy();
 		timerR += dt;
 		if (timerR >= reviveLimit)
 		{
 			timerR = 0.f;
+			OnReviveCowBoy();
 			isTimerRunning = true;
-			cowBoy->SetActive(true);
 		}
+		/*if (timerR == 0.f)
+		{
+			timerM += dt;
+			BlinkCowboy();
+			if (timerM >= reviveLimit)
+			{
+				timerM = 0.f;
+				isTimerRunning = true;
+				cowBoy->SetActive(true);
+			}
+		}*/
 	}
 
 	 //5초가 지나면 라운드 전환으로 변환 필요
@@ -451,16 +462,20 @@ void SceneGame::OnDieCowBoy()
 	else
 	{
 		isTimerRunning = false;
-		cowBoy->Reset();
-		lifeCount--;
-		TextGo* findText = (TextGo*)FindGo("lifeTxt");
-		findText->text.setString("X " + to_string(lifeCount));
+		cowBoy->CowBoyDie();
 		for (auto monster : monsterPool.GetUseList())
 		{
 			monster->OnDie();
 		}
-		//monsterPool.Clear();
 	}
+}
+
+void SceneGame::OnReviveCowBoy()
+{
+	lifeCount--;
+	TextGo* findText = (TextGo*)FindGo("lifeTxt");
+	findText->text.setString("X " + to_string(lifeCount));
+	cowBoy->Reset();
 }
 
 const list<Monster*>* SceneGame::GetMonsterList() const
