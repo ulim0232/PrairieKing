@@ -135,9 +135,7 @@ void Monster::OnHitBullet(int damage)
 		hp -= damage;
 		if (hp <= 0) //hp가 0이 되면 죽는다
 		{
-			animation.Stop();
-			animation.Play("DIE");
-			isAlive = false;
+			OnDie();
 			//Scene* scene = SCENE_MGR.GetCurrScene();
 			//SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 			//if (sceneGame != nullptr)
@@ -146,6 +144,13 @@ void Monster::OnHitBullet(int damage)
 			//}
 		}
 	}
+}
+
+void Monster::OnDie()
+{
+	animation.Stop();
+	animation.Play("DIE");
+	isAlive = false;
 }
 
 void Monster::SetTileMap(TileMap* map, int width)

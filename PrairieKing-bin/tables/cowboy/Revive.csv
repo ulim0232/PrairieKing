@@ -1,0 +1,6 @@
+﻿ID,FPS,LOOPTYPE,,
+Revive,5,1,,
+,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT
+graphics/players/Player_revive.png,0,0,16,16
+graphics/players/Player_revive.png,16,0,16,16

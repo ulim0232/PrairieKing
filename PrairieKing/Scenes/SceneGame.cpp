@@ -20,6 +20,8 @@ SceneGame::SceneGame() : Scene(SceneId::Game)
 
 	timerDecreaseRate = 1.0f / timeLimit;
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
+
+	/*----스폰 위치 설정, 변경 필요----*/
 	//위
 	monsterSpawnPosTop.push_back({ 240, 16 });
 	monsterSpawnPosTop.push_back({ 272, 16 });
@@ -102,13 +104,9 @@ void SceneGame::Init()
 	coinTxt->text.setOutlineColor(sf::Color::White);
 
 	lifeTxt = (TextGo*)AddGo(new TextGo("lifeTxt", "fonts/angel.ttf"));
-	ss = "X " + to_string(lifeCount);
-	lifeTxt->SetText(ss, 25, sf::Color::White, Origins::ML, 100, 0, 0);
-	lifeTxt->text.setOutlineThickness(0.5f);
-	lifeTxt->text.setOutlineColor(sf::Color::White);
 
 	/*---타이머 게이지 설정----*/
-	sf::Vector2f timersize = { 482, 10 };
+	
 	timerGauge = (RectangleGo*)AddGo(new RectangleGo(timersize, "timerGauge"));
 	timerGauge->SetOrigin(Origins::ML);
 	timerGauge->rectangle.setFillColor(sf::Color::Green);
@@ -196,6 +194,7 @@ void SceneGame::Enter()
 
 	lifeCount = 3;
 	coinCount = 0;
+	isGameOver = false;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -210,10 +209,18 @@ void SceneGame::Enter()
 
 	/*----txt 설정----*/
 	coinTxt->SetPosition(coinUI->GetPosition().x + 20, coinUI->GetPosition().y - 20);
+	string ss = "X " + to_string(lifeCount);
+	lifeTxt->SetText(ss, 25, sf::Color::White, Origins::ML, 100, 0, 0);
+	lifeTxt->text.setOutlineThickness(0.5f);
+	lifeTxt->text.setOutlineColor(sf::Color::White);
 	lifeTxt->SetPosition(lifeUI->GetPosition().x + 20, lifeUI->GetPosition().y - 20);
 
 	/*---timer 설정----*/
+	timerGauge->rectangle.setSize(timersize);
 	timerGauge->SetPosition(timerUI->GetPosition().x + 21, timerUI->GetPosition().y);
+	isTimerRunning = true;
+	currentTime = 0.0f;
+	timerM = 0.0f;
 	
 	/*---플레이어 설정----*/
 	Utils::SetOrigin(cowBoy->head, Origins::BC);
@@ -226,6 +233,8 @@ void SceneGame::Enter()
 	back = RESOURCE_MGR.GetTexture("graphics/players/Player_back.png");
 	front = RESOURCE_MGR.GetTexture("graphics/players/Player_front.png");
 	origin = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
+
+	blinkTimeCheck = false;
 
 }
 
@@ -242,7 +251,7 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
-
+	
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
@@ -322,9 +331,27 @@ void SceneGame::Update(float dt)
 		float decreaseWidth = timerDecreaseAmount * currentTime;
 		float newWidth = initualWidth - decreaseWidth;
 		timerGauge->rectangle.setSize(sf::Vector2f(newWidth, timerGauge->rectangle.getSize().y));
+		timerM += dt;
+		if (timerM >= mosterSpawnLimit)
+		{
+			int num = Utils::RandomRange(1, 3);
+			SpawnMonster(num);
+			timerM = 0.f;
+		}
+	}
+	else
+	{	
+		BlinkCowboy();
+		timerR += dt;
+		if (timerR >= reviveLimit)
+		{
+			timerR = 0.f;
+			isTimerRunning = true;
+			cowBoy->SetActive(true);
+		}
 	}
 
-	 //5초가 지나면 초기 상태로 되돌리기
+	 //5초가 지나면 라운드 전환으로 변환 필요
 	if (currentTime >= timeLimit)
 	{
 		currentTime = 0.0f;
@@ -367,6 +394,10 @@ void SceneGame::Update(float dt)
 		int num = Utils::RandomRange(1, 3);
 		SpawnMonster(num);
 	}
+	if (isGameOver)
+	{
+		SCENE_MGR.ChangeScene(SceneId::GameOver);
+	}
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)
@@ -400,7 +431,6 @@ void SceneGame::SpawnMonster(int count)
 	{
 		Monster* monster = monsterPool.Get();
 		monster->SetPosition(spawnPosList->at(i).x + 384, spawnPosList->at(i).y + 104);
-		//cout << monster->GetPosition().x << ", " << monster->GetPosition().y << endl;
 		AddGo(monster);
 	}
 }
@@ -414,14 +444,43 @@ void SceneGame::OnDieMonster(Monster* monster)
 
 void SceneGame::OnDieCowBoy()
 {
-	cowBoy->Reset();
-	monsterPool.Clear();
-	lifeCount--;
-	TextGo* findText = (TextGo*)FindGo("lifeTxt");
-	findText->text.setString("X " + to_string(lifeCount));
+	if (lifeCount <= 0)
+	{
+		isGameOver = true;
+	}
+	else
+	{
+		isTimerRunning = false;
+		cowBoy->Reset();
+		lifeCount--;
+		TextGo* findText = (TextGo*)FindGo("lifeTxt");
+		findText->text.setString("X " + to_string(lifeCount));
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->OnDie();
+		}
+		//monsterPool.Clear();
+	}
 }
 
 const list<Monster*>* SceneGame::GetMonsterList() const
 {
 	return &monsterPool.GetUseList();
+}
+
+void SceneGame::BlinkCowboy()
+{
+	if (!blinkTimeCheck && clock.getElapsedTime() >= blinkTime)
+	{
+		clock.restart();
+		blinkTimeCheck = true;
+		cowBoy->SetActive(false);
+	}
+
+	if (clock.getElapsedTime() >= blinkTime)
+	{
+		clock.restart();
+		cowBoy->SetActive(true);
+		blinkTimeCheck = false;
+	}
 }

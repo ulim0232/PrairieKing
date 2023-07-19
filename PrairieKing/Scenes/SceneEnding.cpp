@@ -51,8 +51,8 @@ void SceneOver::Enter()
 	stringTable = DATATABLE_MGR.Get<StringTable>(DataTable::Ids::String);
 
 	titleM->SetText(stringTable->GetUni("TITLE", Languages::KOR), 80, sf::Color::White, Origins::MC, 1, centerPos.x, centerPos.y * 0.6);
-	restartM->SetText(stringTable->GetUni("RESTART", Languages::KOR), 60, sf::Color::White, Origins::ML, 1, centerPos.x - 10.f, centerPos.y);
-	exitM->SetText(stringTable->GetUni("EXIT", Languages::KOR), 60, sf::Color::White, Origins::ML, 1, centerPos.x - 10.f, centerPos.y * 1.2);
+	restartM->SetText(stringTable->GetUni("RESTART", Languages::KOR), 60, sf::Color::White, Origins::ML, 1, centerPos.x, centerPos.y);
+	exitM->SetText(stringTable->GetUni("EXIT", Languages::KOR), 60, sf::Color::White, Origins::ML, 1, centerPos.x, centerPos.y * 1.2);
 	cursorM->SetText(stringTable->Get("CURSOR", Languages::KOR), 50, sf::Color::White, Origins::MR, 1, centerPos.x, centerPos.y);
 }
 

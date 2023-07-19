@@ -39,9 +39,15 @@ protected:
 	sf::FloatRect intersection;
 	sf::Vector2f newPosition;
 
+	ObjectPool<Bullet> poolBullets;
+
 	bool iscoll = false;
 
-	ObjectPool<Bullet> poolBullets;
+	bool isRevive = false;
+	float duration = 3.f;
+	float timerA = 0.f;
+
+	
 public:
 	sf::Sprite head;
 	sf::Sprite leg;
@@ -69,5 +75,6 @@ public:
 
 	void CowBoyDie();
 	sf::RectangleShape GetHitBox();
+	void SetIsRevive(bool is);
 };
 

@@ -52,13 +52,25 @@ protected:
 
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 5.0f;
+	float timeLimit = 30.0f;
 
 	bool isTimerRunning = true;
 	vector<sf::Vector2f> monsterSpawnPosTop;
 	vector<sf::Vector2f> monsterSpawnPosBottom;
 	vector<sf::Vector2f> monsterSpawnPosLeft;
 	vector<sf::Vector2f> monsterSpawnPosRight;
+
+	bool isGameOver = false;
+	sf::Vector2f timersize = { 482, 10 };
+
+	float mosterSpawnLimit = 3.f;
+	float timerM = 0.0f;
+
+	float reviveLimit = 3.f;
+	float timerR = 0.0f;
+	sf::Clock clock;
+	const sf::Time blinkTime = sf::seconds(0.2f);
+	bool blinkTimeCheck = false;
 
 public:
 	SceneGame();
@@ -81,6 +93,9 @@ public:
 	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
 	void OnDieCowBoy();
 	const list<Monster*>* GetMonsterList() const;
+
+	void BlinkCowboy();
+	
 
 };
 

@@ -26,12 +26,15 @@ void CowBoy::Init()
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Move.csv"));
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Idle.csv"));
 	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Die.csv"));
+	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Revive.csv"));
 
 	headAnimation.SetTarget(&head);
+	legAnimation.SetTarget(&leg);
 
 	head.setScale(2.0f, 2.0f);
 	leg.setScale(2.0f, 2.0f);
 
+	/*--set hitbox--*/
 	hitBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(hitBox, Origins::BC);
 	hitBox.setFillColor(sf::Color::Transparent);
@@ -39,33 +42,33 @@ void CowBoy::Init()
 	hitBox.setOutlineColor(sf::Color::Cyan);
 	hitBox.setPosition(sf::Vector2f(static_cast<int>(position.x), static_cast<int>(position.y)));
 
+	/*--set tile box--*/
 	tileBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(tileBox, Origins::TL);
 	tileBox.setFillColor(sf::Color::Transparent);
 	tileBox.setOutlineThickness(2);
 	tileBox.setOutlineColor(sf::Color::Black);
 
+	/*--set bullet pool--*/
 	ObjectPool<Bullet>* ptr = &poolBullets;
 	poolBullets.OnCreate = [ptr](Bullet* bullet)//무명함수, 람다식
 	{
 		bullet->textureId = "graphics/UIs/shot.png";
 		bullet->pool = ptr;
 	};
-
 	poolBullets.Init();
 
 }
 
 void CowBoy::Release()
 {
-	delete texture;
 	poolBullets.Release();
 }
 
 void CowBoy::Reset()
 {
-	legAnimation.SetTarget(&leg);
 	leg.setColor(sf::Color::White);
+	isRevive = false;
 	if (headAnimation.GetCurrentClipId() == "Die")
 	{
 		headAnimation.Stop();
@@ -75,10 +78,10 @@ void CowBoy::Reset()
 	{
 		head.setTexture(*texture);
 	}
-	
-	head.setTextureRect({ 0, 0, (int)texture->getSize().x, (int)texture->getSize().y });
 
+	head.setTextureRect({ 0, 0, (int)texture->getSize().x, (int)texture->getSize().y });
 	legAnimation.Play("Idle");
+
 	SetPosition(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2);
 	
 
@@ -94,8 +97,9 @@ void CowBoy::Update(float dt)
 {
 	legAnimation.Update(dt);
 	headAnimation.Update(dt);
+
 	//이동
-	
+
 	//대각선 이동 속도 보정으로 수정
 	direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
 	direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
@@ -142,40 +146,6 @@ void CowBoy::Update(float dt)
 
 	position = newPosition;
 
-	//if (!IsTileCollision()) //충돌이 없는 경우
-	//{
-	//	position = newPosition;
-	//}
-	//else
-	//{
-	//	//이동 거리 조정
-	//	float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
-	//	float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
-	//
-	//	for (auto tile : tileMap->tiles)
-	//	{
-	//		float tileL = 384 + (tileSize.x * tile.x);
-	//		float tileT = 104 + (tileSize.y * tile.y);
-	//		sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
-	//
-	//		if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
-	//		{
-	//			if (IsCollisoinTile(tile.texIndex))
-	//			{
-	//				if (std::abs(overlapX) < std::abs(overlapY))
-	//				{
-	//					newPosition.x = position.x + overlapX;
-	//				}
-	//				else
-	//				{
-	//					newPosition.y = position.y + overlapY;
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	position = newPosition;
-	//}
 	SetPosition(position);
 	hitBox.setPosition(position);
 	//애니메이션
@@ -211,7 +181,7 @@ void CowBoy::Update(float dt)
 	}*/
 
 	/*---총알 발사---*/
-	if(!rebound)
+	if (!rebound)
 	{
 		if (INPUT_MGR.GetKey(sf::Keyboard::Left) ||
 			INPUT_MGR.GetKey(sf::Keyboard::Up) ||
@@ -252,6 +222,7 @@ void CowBoy::Update(float dt)
 			rebound = false;
 		}
 	}
+
 }
 
 void CowBoy::Draw(sf::RenderWindow& window)
@@ -298,6 +269,8 @@ void CowBoy::SetTileMap(TileMap* map, int width)
 	tileMap = map;
 	tileWidth = width;
 }
+
+//현재 사용x
 bool CowBoy::IsTileCollision()
 {
 	for (auto tile : tileMap->tiles)
@@ -336,4 +309,9 @@ void CowBoy::CowBoyDie()
 sf::RectangleShape CowBoy::GetHitBox()
 {
 	return hitBox;
+}
+
+void CowBoy::SetIsRevive(bool is)
+{
+	isRevive = is;
 }
