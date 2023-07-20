@@ -261,8 +261,7 @@ void CowBoy::Update(float dt)
 						bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
 
 						sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
-						//bullet->Fire(fireP, look, 400.f);
-						bullet->Fire(fireP, fireDir, 400.f);
+						bullet->Fire(fireP, fireDir, shotSpeed);
 
 						Scene* scene = SCENE_MGR.GetCurrScene();
 						SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
@@ -271,7 +270,6 @@ void CowBoy::Update(float dt)
 							bullet->SetMonsterList(sceneGame->GetMonsterList());
 							sceneGame->AddGo(bullet);
 						}
-						//SCENE_MGR.GetCurrScene()->AddGo(bullet);
 					}
 					rebound = true;
 				}
@@ -280,7 +278,7 @@ void CowBoy::Update(float dt)
 					Bullet* bullet = poolBullets.Get();
 					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
 					sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
-					bullet->Fire(fireP, look, 400.f);
+					bullet->Fire(fireP, look, shotSpeed);
 				
 					Scene* scene = SCENE_MGR.GetCurrScene();
 					SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
@@ -314,6 +312,16 @@ void CowBoy::Update(float dt)
 		speed = 150.f;
 		isSpeedUp = false;
 		isShotGun = false;
+		timerI = 0.f;
+	}
+	if (isMachineGun)
+	{
+		timerI += dt;
+	}
+	if (isMachineGun && timerI >= itmeDuration)
+	{
+		isMachineGun = false;
+		shotDelay = 0.3f;
 		timerI = 0.f;
 	}
 
@@ -430,10 +438,17 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}
-	if (type == Item::ItemTypes::Shotgun && !isSpeedUp)
+	if (type == Item::ItemTypes::Shotgun /*&& !isSpeedUp*/)
 	{
 		isSpeedUp = true;
 		isShotGun = true;
 		cout << "use shotgun" << endl;
+	}
+	if (type == Item::ItemTypes::MuchineGun /*&& !isSpeedUp*/)
+	{
+		isSpeedUp = true;
+		isMachineGun = true;
+		shotDelay = 0.15f;
+		cout << "use MuchineGun" << endl;
 	}
 }

@@ -12,7 +12,7 @@ public:
 		Life,
 		Coffee,
 		Shotgun,
-
+		MuchineGun,
 	};
 protected:
 	bool isSpawn = false;
@@ -29,7 +29,7 @@ protected:
 	bool blinkTimeCheck = false;
 
 public:
-	static const int TotalTypes = 4;
+	static const int TotalTypes = 5;
 	Item(const string& textureId = "", const string& n = "");
 	virtual ~Item() override;
 

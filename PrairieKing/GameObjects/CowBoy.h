@@ -45,6 +45,7 @@ protected:
 	bool isDie = false;
 	bool isSpeedUp = false;
 	bool isShotGun = false;
+	bool isMachineGun = false;
 	bool rebound = false;
 
 	float duration = 3.f;
@@ -55,6 +56,7 @@ protected:
 	float speed = 150.f; //100
 	float timer = 0.f; //연사 속도 조절에 사용
 	float shotDelay = 0.3f;
+	float shotSpeed = 400.f;
 
 	int tileWidth = 0;
 	

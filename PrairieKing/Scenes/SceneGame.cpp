@@ -609,6 +609,14 @@ void SceneGame::TakeItem(Item* item)
 		pickedItemUI->sprite.setTexture(*texture);
 		pickedItemUI->SetActive(true);
 	}
+
+	if (item->GetType() == Item::ItemTypes::MuchineGun)
+	{
+		pickedItem = item;
+		sf::Texture* texture = RESOURCE_MGR.GetTexture("graphics/items/machineGun.png");
+		pickedItemUI->sprite.setTexture(*texture);
+		pickedItemUI->SetActive(true);
+	}
 	RemoveItem(item);
 }
 
