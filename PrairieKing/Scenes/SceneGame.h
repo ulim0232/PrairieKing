@@ -18,8 +18,11 @@ protected:
 	sf::SoundBuffer stage1BgmBuffer;
 	sf::Sound stage1Bgm;
 
-	sf::SoundBuffer footStepBuffer;
-	sf::Sound footStep;
+	sf::SoundBuffer pDieSoundBuffer;
+	sf::Sound pDieSound;
+
+	/*sf::SoundBuffer footStepBuffer;
+	sf::Sound footStep;*/
 
 	CowBoy* cowBoy;
 	ObjectPool<Monster> monsterPool;

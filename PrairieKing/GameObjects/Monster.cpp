@@ -67,7 +67,7 @@ void Monster::Update(float dt)
 			float distance = Utils::Distance(cowboyPos, position);
 			direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
 
-			if (distance > 25.f) //일정 거리에 가까워지면 도착으로 처리
+			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 			{
 				velocity = direction * speed;
 				position += velocity * dt;

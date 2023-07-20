@@ -63,9 +63,9 @@ void SceneGame::Init()
 	stage1Bgm.setBuffer(stage1BgmBuffer);
 	stage1Bgm.setLoop(true);
 
-	footStepBuffer.loadFromFile("sounds/Footstep.wav");
-	footStep.setBuffer(footStepBuffer);
-	footStep.setLoop(true);
+	pDieSoundBuffer.loadFromFile("sounds/PlayerDie.wav");
+	pDieSound.setBuffer(pDieSoundBuffer);
+	pDieSound.setLoop(false);
 
 	/*----맵 설정----*/
 	tileMap1 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap1"));
@@ -288,30 +288,6 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
-	
-	/*---오디오 재생---*/
-	//수정 필요
-	if (INPUT_MGR.GetKeyUp(sf::Keyboard::W) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::A) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::S) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::D))
-	{
-		if(footStep.getStatus() == sf::SoundSource::Status::Playing)
-		{
-			footStep.stop();
-		}
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::W) ||
-		INPUT_MGR.GetKeyDown(sf::Keyboard::A) ||
-		INPUT_MGR.GetKeyDown(sf::Keyboard::S) ||
-		INPUT_MGR.GetKeyDown(sf::Keyboard::D))
-	{
-		if (footStep.getStatus() != sf::SoundSource::Status::Playing)
-		{
-			footStep.play();
-			footStep.setVolume(100.f);
-		}
-	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
@@ -411,8 +387,17 @@ void SceneGame::Update(float dt)
 	{
 		if(!roundClear)
 		{
-			OnDieCowBoy();
 			timerR += dt;
+			if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
+			{
+				stage1Bgm.stop();
+			}
+			if (pDieSound.getStatus() == sf::SoundSource::Status::Stopped && timerR < 2.f)
+			{
+				pDieSound.play();
+			}
+			OnDieCowBoy();
+			
 			if (timerR >= reviveLimit)
 			{
 				timerR = 0.f;
@@ -585,6 +570,14 @@ void SceneGame::OnDieCowBoy()
 	}
 	else
 	{
+		/*if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
+		{
+			stage1Bgm.stop();
+		}
+		if (pDieSound.getStatus() == sf::SoundSource::Status::Stopped)
+		{
+			pDieSound.play();
+		}*/
 		isTimerRunning = false;
 		cowBoy->CowBoyDie();
 		const list<Monster*> monsters = monsterPool.GetUseList();
@@ -615,6 +608,11 @@ void SceneGame::OnReviveCowBoy()
 	TextGo* findText = (TextGo*)FindGo("lifeTxt");
 	findText->text.setString("X " + to_string(lifeCount));
 	cowBoy->Reset();
+	if (pDieSound.getStatus() == sf::SoundSource::Status::Playing)
+	{
+		pDieSound.stop();
+	}
+	stage1Bgm.play();
 }
 
 const list<Monster*>* SceneGame::GetMonsterList() const

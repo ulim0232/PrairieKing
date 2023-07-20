@@ -58,6 +58,11 @@ void CowBoy::Init()
 	};
 	poolBullets.Init();
 
+	/*---set audio---*/
+	footStepBuffer.loadFromFile("sounds/Footstep.wav");
+	footStep.setBuffer(footStepBuffer);
+	footStep.setLoop(true);
+
 }
 
 void CowBoy::Release()
@@ -108,6 +113,23 @@ void CowBoy::Update(float dt)
 	{
 		direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
 		direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
+
+		/*audio*/
+		if (direction.x == 0 && direction.y == 0)
+		{
+			if (footStep.getStatus() == sf::SoundSource::Status::Playing)
+			{
+				footStep.stop();
+			}
+		}
+		if (direction.x != 0 || direction.y != 0)
+		{
+			if (footStep.getStatus() != sf::SoundSource::Status::Playing)
+			{
+				footStep.play();
+				footStep.setVolume(100.f);
+			}
+		}
 
 		float magnitude = Utils::Magnitude(direction);
 		if (magnitude > 1.f)
@@ -320,6 +342,13 @@ bool CowBoy::IsCollisoinTile(int index)
 void CowBoy::CowBoyDie()
 {
 	isDie = true;
+	//발걸음 오디오 중지
+	if (footStep.getStatus() == sf::SoundSource::Status::Playing)
+	{
+		footStep.stop();
+	}
+	
+	//die 애니메이션 출력
 	if(!headAnimation.IsPlaying())
 	{
 		leg.setColor(sf::Color::Transparent);

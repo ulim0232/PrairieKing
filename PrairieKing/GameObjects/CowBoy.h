@@ -13,6 +13,10 @@ protected:
 	AnimationController legAnimation;
 	AnimationController headAnimation;
 
+	/*»ç¿îµå*/
+	sf::SoundBuffer footStepBuffer;
+	sf::Sound footStep;
+
 	float gapLegToHead = 4.f;
 	float speed = 150.f; //100
 	int tileWidth = 0;
