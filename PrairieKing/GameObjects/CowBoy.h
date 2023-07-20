@@ -17,45 +17,46 @@ protected:
 	sf::SoundBuffer footStepBuffer;
 	sf::Sound footStep;
 
-	float gapLegToHead = 4.f;
-	float speed = 150.f; //100
-	int tileWidth = 0;
-	bool rebound = false;
-	float timer = 0.f;
-	float shotDelay = 0.3f;
-
-	sf::Texture* texture;
-
+	/*--이동--*/
+	sf::Vector2f newPosition;
 	sf::Vector2f look; //바라보는 방향
 	sf::Vector2f direction;
 	sf::Vector2f velocity; //dir*dt
 
+	/*--텍스쳐--*/
+	sf::Texture* texture;
 	sf::Texture* left = nullptr;
 	sf::Texture* right = nullptr;
 	sf::Texture* back = nullptr;
 	sf::Texture* front = nullptr;
 	sf::Texture* origintex = nullptr;
 
+	/*--맵--*/
 	TileMap* tileMap;
 	sf::RectangleShape hitBox;
 	sf::RectangleShape tileBox;
 	sf::Vector2i boxSize = { 28.f, 28.f };
 	sf::Vector2i tileSize = { 32.f, 32.f };
 	sf::FloatRect intersection;
-	sf::Vector2f newPosition;
-
+	
 	ObjectPool<Bullet> poolBullets;
 
 	bool iscoll = false;
-
-	bool isRevive = false;
-	float duration = 3.f;
-	float timerA = 0.f;
 	bool isDie = false;
 	bool isSpeedUp = false;
-	float timerI = 0.f;
-	float itmeDuration = 5.f;
+	bool isShotGun = false;
+	bool rebound = false;
 
+	float duration = 3.f;
+	float timerA = 0.f;
+	float timerI = 0.f; //아이템 유지 시간
+	float itmeDuration = 5.f; //아이템 유지 시간
+	float gapLegToHead = 4.f;
+	float speed = 150.f; //100
+	float timer = 0.f; //연사 속도 조절에 사용
+	float shotDelay = 0.3f;
+
+	int tileWidth = 0;
 	
 public:
 	sf::Sprite head;
@@ -79,14 +80,16 @@ public:
 	virtual void SetOrigin(float x, float y);
 
 	void SetTileMap(TileMap* map, int width);
+
 	bool IsTileCollision();
 	bool IsCollisoinTile(int index);
 
-	void CowBoyDie();
-	sf::RectangleShape GetHitBox();
-	void SetIsRevive(bool is);
-	void SetIsDie(bool is);
-
 	void TakeItem(Item::ItemTypes type);
+
+	void CowBoyDie();
+	void SetIsDie(bool is);
+	
+	sf::RectangleShape GetHitBox();
+	
 };
 

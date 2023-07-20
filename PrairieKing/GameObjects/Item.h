@@ -11,6 +11,8 @@ public:
 		Coin,
 		Life,
 		Coffee,
+		Shotgun,
+
 	};
 protected:
 	bool isSpawn = false;
@@ -27,7 +29,7 @@ protected:
 	bool blinkTimeCheck = false;
 
 public:
-	static const int TotalTypes = 3;
+	static const int TotalTypes = 4;
 	Item(const string& textureId = "", const string& n = "");
 	virtual ~Item() override;
 

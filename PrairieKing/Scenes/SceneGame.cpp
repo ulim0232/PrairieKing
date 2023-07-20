@@ -77,6 +77,7 @@ void SceneGame::Init()
 
 	/*---플레이어 설정----*/
 	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
+	cowBoy->sortLayer = 3;
 
 	/*----UI설정----*/
 	coinUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/coin1.png", "coinUI"));
@@ -150,8 +151,6 @@ void SceneGame::Init()
 	tileMap5->SetPosition(centerPos);
 	tileMap5->SetActive(false);
 
-	/*---플레이어 설정----*/
-	cowBoy->sortLayer = 3;
 
 	/*----UI설정----*/
 	coinUI->SetOrigin(Origins::MC);
@@ -211,12 +210,13 @@ void SceneGame::Enter()
 
 	worldView.setCenter(tileMap1->GetPosition());
 	uiView.setCenter(tileMap1->GetPosition());
-	cout << tileMap1->GetPosition().x << ", "<<tileMap1->GetPosition().y << endl;
 
+	/*--변수 초기화*/
 	lifeCount = 3;
 	coinCount = 0;
 	isGameOver = false;
 	pickedItem = nullptr;
+	roundClear = false;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -250,15 +250,6 @@ void SceneGame::Enter()
 	Utils::SetOrigin(cowBoy->leg, Origins::TC);
 	cowBoy->SetPosition(tileMap1->GetPosition());
 	cowBoy->SetTileMap(tileMap1, 32);
-
-	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
-	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
-	back = RESOURCE_MGR.GetTexture("graphics/players/Player_back.png");
-	front = RESOURCE_MGR.GetTexture("graphics/players/Player_front.png");
-	origin = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
-
-	blinkTimeCheck = false;
-	roundClear = false;
 
 	/*----맵 설정----*/
 	tileMap1->SetActive(true);
@@ -474,40 +465,6 @@ void SceneGame::Update(float dt)
 			isTimerRunning = true;
 		}
 	}
-	//플레이어 텍스쳐 변경
-	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
-	{
-		if (right != nullptr)
-		{
-			cowBoy->head.setTexture(*right);
-		}
-	}
-	if (INPUT_MGR.GetKey(sf::Keyboard::Left))
-	{
-		cowBoy->head.setTexture(*left);
-	}
-	if (INPUT_MGR.GetKey(sf::Keyboard::Up))
-	{
-		cowBoy->head.setTexture(*back);
-	}
-	if (INPUT_MGR.GetKey(sf::Keyboard::Down))
-	{
-		cowBoy->head.setTexture(*front);
-	}
-	if (INPUT_MGR.GetKeyUp(sf::Keyboard::Down) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::Up) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::Right) ||
-		INPUT_MGR.GetKeyUp(sf::Keyboard::Left))
-	{
-		cowBoy->head.setTexture(*origin);
-	}
-
-	/*몬스터 스폰 test code
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
-	{
-		int num = Utils::RandomRange(1, 3);
-		SpawnMonster(num);
-	}*/
 	if (isGameOver)
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
@@ -553,7 +510,7 @@ void SceneGame::OnDieMonster(Monster* monster)
 {
 	//아이템 생성
 	int random = Utils::RandomRange(0, 9);
-	if (random >= 7)
+	if (random >= 0)
 	{
 		Item* item = itemPool.Get();
 		item->SetPosition(monster->GetPosition());
@@ -570,14 +527,6 @@ void SceneGame::OnDieCowBoy()
 	}
 	else
 	{
-		/*if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
-		{
-			stage1Bgm.stop();
-		}
-		if (pDieSound.getStatus() == sf::SoundSource::Status::Stopped)
-		{
-			pDieSound.play();
-		}*/
 		isTimerRunning = false;
 		cowBoy->CowBoyDie();
 		const list<Monster*> monsters = monsterPool.GetUseList();
@@ -620,22 +569,22 @@ const list<Monster*>* SceneGame::GetMonsterList() const
 	return &monsterPool.GetUseList();
 }
 
-void SceneGame::BlinkCowboy()
-{
-	if (!blinkTimeCheck && clock.getElapsedTime() >= blinkTime)
-	{
-		clock.restart();
-		blinkTimeCheck = true;
-		cowBoy->SetActive(false);
-	}
-
-	if (clock.getElapsedTime() >= blinkTime)
-	{
-		clock.restart();
-		cowBoy->SetActive(true);
-		blinkTimeCheck = false;
-	}
-}
+//void SceneGame::BlinkCowboy()
+//{
+//	if (!blinkTimeCheck && clock.getElapsedTime() >= blinkTime)
+//	{
+//		clock.restart();
+//		blinkTimeCheck = true;
+//		cowBoy->SetActive(false);
+//	}
+//
+//	if (clock.getElapsedTime() >= blinkTime)
+//	{
+//		clock.restart();
+//		cowBoy->SetActive(true);
+//		blinkTimeCheck = false;
+//	}
+//}
 
 void SceneGame::TakeItem(Item* item)
 {
@@ -650,6 +599,14 @@ void SceneGame::TakeItem(Item* item)
 	if (item->GetType() == Item::ItemTypes::Coffee)
 	{
 		pickedItem = item;
+		pickedItemUI->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/items/coffee.png"));
+		pickedItemUI->SetActive(true);
+	}
+	if (item->GetType() == Item::ItemTypes::Shotgun)
+	{
+		pickedItem = item;
+		sf::Texture* texture = RESOURCE_MGR.GetTexture("graphics/items/shotgun.png");
+		pickedItemUI->sprite.setTexture(*texture);
 		pickedItemUI->SetActive(true);
 	}
 	RemoveItem(item);

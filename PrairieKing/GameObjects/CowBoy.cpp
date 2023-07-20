@@ -20,9 +20,10 @@ CowBoy::~CowBoy()
 
 void CowBoy::Init()
 {
-	Utils::SetOrigin(head, Origins::BC);
-	Utils::SetOrigin(leg, Origins::TC);
+	//Utils::SetOrigin(head, Origins::BC);
+	//Utils::SetOrigin(leg, Origins::TC);
 
+	/*--텍스쳐 세팅--*/
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Move.csv"));
 	legAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Idle.csv"));
 	headAnimation.AddClip(*RESOURCE_MGR.GetAnimationClip("tables/cowboy/Die.csv"));
@@ -33,6 +34,13 @@ void CowBoy::Init()
 
 	head.setScale(2.0f, 2.0f);
 	leg.setScale(2.0f, 2.0f);
+
+	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
+	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
+	back = RESOURCE_MGR.GetTexture("graphics/players/Player_back.png");
+	front = RESOURCE_MGR.GetTexture("graphics/players/Player_front.png");
+	origintex = RESOURCE_MGR.GetTexture("graphics/players/Player_stand.png");
+
 
 	/*--set hitbox--*/
 	hitBox.setSize(sf::Vector2f(boxSize));
@@ -72,11 +80,12 @@ void CowBoy::Release()
 
 void CowBoy::Reset()
 {
-	leg.setColor(sf::Color::White);
-	isRevive = false;
+	/*변수 초기화*/
 	isDie = false;
 	isSpeedUp = false;
 	speed = 150.f;
+
+	/*텍스쳐 초기화*/
 	if (headAnimation.IsPlaying())
 	{
 		headAnimation.Stop();
@@ -86,19 +95,19 @@ void CowBoy::Reset()
 	{
 		head.setTexture(*texture);
 	}
-
 	head.setTextureRect({ 0, 0, (int)texture->getSize().x, (int)texture->getSize().y });
+
+	leg.setColor(sf::Color::White);
 	legAnimation.Play("Idle");
 
 	SetPosition(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2);
-	
 
+	/*총알 삭제*/
 	for (auto bullet : poolBullets.GetUseList())
 	{
 		SCENE_MGR.GetCurrScene()->RemoveGo(bullet);
 	}
-
-	poolBullets.Clear();
+	//poolBullets.Clear();
 }
 
 void CowBoy::Update(float dt)
@@ -191,22 +200,32 @@ void CowBoy::Update(float dt)
 				legAnimation.Play("Idle");
 			}
 		}
-		/*if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+		if (INPUT_MGR.GetKey(sf::Keyboard::Right))
 		{
 			if (right != nullptr)
 			{
 				head.setTexture(*right);
 			}
-		}*/
-		/*if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num8))
-		{
-			leg.setColor(sf::Color::Transparent);
-			headAnimation.Play("Die");
 		}
-		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num9))
+		if (INPUT_MGR.GetKey(sf::Keyboard::Left))
 		{
-			Reset();
-		}*/
+			head.setTexture(*left);
+		}
+		if (INPUT_MGR.GetKey(sf::Keyboard::Up))
+		{
+			head.setTexture(*back);
+		}
+		if (INPUT_MGR.GetKey(sf::Keyboard::Down))
+		{
+			head.setTexture(*front);
+		}
+		if (INPUT_MGR.GetKeyUp(sf::Keyboard::Down) ||
+			INPUT_MGR.GetKeyUp(sf::Keyboard::Up) ||
+			INPUT_MGR.GetKeyUp(sf::Keyboard::Right) ||
+			INPUT_MGR.GetKeyUp(sf::Keyboard::Left))
+		{
+			head.setTexture(*origintex);
+		}
 
 		/*---총알 발사---*/
 		if (!rebound)
@@ -224,21 +243,55 @@ void CowBoy::Update(float dt)
 				{
 					look /= magnitude;
 				}
-
-				Bullet* bullet = poolBullets.Get();
-				bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
-				sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
-				bullet->Fire(fireP, look, 400.f);
-
-				Scene* scene = SCENE_MGR.GetCurrScene();
-				SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
-				if (sceneGame != nullptr)
+				if(isShotGun)
 				{
-					bullet->SetMonsterList(sceneGame->GetMonsterList());
-					sceneGame->AddGo(bullet);
+					int bulletCount = 3;
+					float angleStep = 15.f; //부채꼴 각도
+					float startAngle = -angleStep * (bulletCount - 1) / 2.f;
+
+					for (int i = 0; i < bulletCount; i++)
+					{
+						float radian = (startAngle + angleStep * i) * M_PI / 180;
+
+						sf::Vector2f fireDir;
+						fireDir.x = look.x * cos(radian) - look.y * sin(radian);
+						fireDir.y = look.x * sin(radian) + look.y * cos(radian);
+
+						Bullet* bullet = poolBullets.Get();
+						bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
+
+						sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+						//bullet->Fire(fireP, look, 400.f);
+						bullet->Fire(fireP, fireDir, 400.f);
+
+						Scene* scene = SCENE_MGR.GetCurrScene();
+						SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+						if (sceneGame != nullptr)
+						{
+							bullet->SetMonsterList(sceneGame->GetMonsterList());
+							sceneGame->AddGo(bullet);
+						}
+						//SCENE_MGR.GetCurrScene()->AddGo(bullet);
+					}
+					rebound = true;
 				}
-				SCENE_MGR.GetCurrScene()->AddGo(bullet);
-				rebound = true;
+				else
+				{
+					Bullet* bullet = poolBullets.Get();
+					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
+					sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+					bullet->Fire(fireP, look, 400.f);
+				
+					Scene* scene = SCENE_MGR.GetCurrScene();
+					SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+					if (sceneGame != nullptr)
+					{
+						bullet->SetMonsterList(sceneGame->GetMonsterList());
+						sceneGame->AddGo(bullet);
+					}
+					SCENE_MGR.GetCurrScene()->AddGo(bullet);
+					rebound = true;
+				}
 			}
 		}
 		else
@@ -260,6 +313,8 @@ void CowBoy::Update(float dt)
 		cout << "speed down" << endl;
 		speed = 150.f;
 		isSpeedUp = false;
+		isShotGun = false;
+		timerI = 0.f;
 	}
 
 }
@@ -361,10 +416,6 @@ sf::RectangleShape CowBoy::GetHitBox()
 	return hitBox;
 }
 
-void CowBoy::SetIsRevive(bool is)
-{
-	isRevive = is;
-}
 
 void CowBoy::SetIsDie(bool is)
 {
@@ -378,5 +429,11 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 		speed = 200.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
+	}
+	if (type == Item::ItemTypes::Shotgun && !isSpeedUp)
+	{
+		isSpeedUp = true;
+		isShotGun = true;
+		cout << "use shotgun" << endl;
 	}
 }

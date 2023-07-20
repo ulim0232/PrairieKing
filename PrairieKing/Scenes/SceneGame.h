@@ -21,18 +21,18 @@ protected:
 	sf::SoundBuffer pDieSoundBuffer;
 	sf::Sound pDieSound;
 
-	/*sf::SoundBuffer footStepBuffer;
-	sf::Sound footStep;*/
-
-	CowBoy* cowBoy;
+	/*--풀--*/
 	ObjectPool<Monster> monsterPool;
 	ObjectPool<Item> itemPool;
 
-	sf::Texture* left = nullptr;
-	sf::Texture* right = nullptr;
-	sf::Texture* back = nullptr;
-	sf::Texture* front = nullptr;
-	sf::Texture* origin = nullptr;
+	vector<sf::Vector2f> monsterSpawnPosTop;
+	vector<sf::Vector2f> monsterSpawnPosBottom;
+	vector<sf::Vector2f> monsterSpawnPosLeft;
+	vector<sf::Vector2f> monsterSpawnPosRight;
+
+	/*---플레이어---*/
+	CowBoy* cowBoy;
+
 	/*---map---*/
 	TileMap* tileMap1 = nullptr;
 	TileMap* tileMap2 = nullptr;
@@ -49,43 +49,36 @@ protected:
 	SpriteGo* keyUI; 
 	SpriteGo* pickedItemUI;
 
+	Item* pickedItem = nullptr;
+	int lifeCount = 3;
+	int coinCount = 0;
+
 	TextGo* coinTxt;
 	TextGo* lifeTxt;
 
 	RectangleGo* timerGauge;
-
-	Item* pickedItem = nullptr;
-
-	int lifeCount = 3;
-	int coinCount = 0;
-
+	sf::Vector2f timersize = { 482, 10 };
 	float timerDecreaseRate;
 	float timerDecreaseAmount;
-
 	float currentTime = 0;
 	float initualWidth = 482.f;
 	float timeLimit = 30.0f; //30
 
 	bool isTimerRunning = true;
-	vector<sf::Vector2f> monsterSpawnPosTop;
-	vector<sf::Vector2f> monsterSpawnPosBottom;
-	vector<sf::Vector2f> monsterSpawnPosLeft;
-	vector<sf::Vector2f> monsterSpawnPosRight;
 
+	
+	float mosterSpawnLimit = 3.f; //3초마다 몬스터 생성
+	float reviveLimit = 3.f; //플레이어 사망 시 3초후 재생성
+
+	float timerM = 0.0f; //몬스터 생성에 사용
+	float timerR = 0.0f; //플레이어 부활에 사용
+
+	bool roundClear = false; //라운드 클리어 설정
 	bool isGameOver = false;
-	sf::Vector2f timersize = { 482, 10 };
 
-	float mosterSpawnLimit = 3.f;
-	float timerM = 0.0f;
-
-	float reviveLimit = 3.f;
-	float timerR = 0.0f;
-	sf::Clock clock;
-	const sf::Time blinkTime = sf::seconds(0.2f);
-	bool blinkTimeCheck = false;
-
-	bool roundClear = false;
-
+	//sf::Clock clock;
+	//const sf::Time blinkTime = sf::seconds(0.2f);
+	//bool blinkTimeCheck = false;
 public:
 	SceneGame();
 	virtual ~SceneGame() override = default;
@@ -100,21 +93,20 @@ public:
 	virtual void Draw(sf::RenderWindow& window) override;
 
 	void SpawnMonster(int count);
-
-	template <typename T>
-	void ClearObjectPool(ObjectPool<T>& pool);
-
-	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
-	void OnDieCowBoy();
-	void OnReviveCowBoy();
 	const list<Monster*>* GetMonsterList() const;
 
-	void BlinkCowboy();
+	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
+	void OnDieCowBoy(); 
+	void OnReviveCowBoy();
+	//void BlinkCowboy();
 
 	void TakeItem(Item* item);
 	void GetGoin();
 	void GetLife();
 	void RemoveItem(Item* item);
+
+	template <typename T>
+	void ClearObjectPool(ObjectPool<T>& pool);
 };
 
 template<typename T>
