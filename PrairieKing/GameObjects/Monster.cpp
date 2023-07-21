@@ -62,17 +62,42 @@ void Monster::Update(float dt)
 			return;
 		else
 		{
+			//sf::Vector2f cowboyPos = cowboy->GetPosition();
+			//
+			//float distance = Utils::Distance(cowboyPos, position);
+			//direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
+			//
+			//if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
+			//{
+			//	velocity = direction * speed;
+			//	position += velocity * dt;
+			//	SetPosition(position);
+			//}
+
+			/*----이동 메커니즘 수정----*/
 			sf::Vector2f cowboyPos = cowboy->GetPosition();
+			float absX = abs(cowboyPos.x - position.x);
+			float absY = abs(cowboyPos.y - position.y);
 
 			float distance = Utils::Distance(cowboyPos, position);
-			direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
+			direction = Utils::Normalize(cowboyPos - position);
 
+			if (absX > absY) //x값만 이동
+			{
+				direction.y = 0;
+			}
+			else if (absX < absY) //y값만 이동
+			{
+				direction.x = 0;
+			}
+			//같으면 대각선 이동
 			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 			{
 				velocity = direction * speed;
 				position += velocity * dt;
 				SetPosition(position);
 			}
+
 		}
 		if (sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()))
 		{
