@@ -82,7 +82,10 @@ void CowBoy::Reset()
 {
 	/*변수 초기화*/
 	isDie = false;
-	isSpeedUp = false;
+	isSpeedUp = false; //커피
+	isShotGun = false; //삿건
+	isMachineGun = false; //머신건
+	isWheel = false; // 바퀴
 	speed = 150.f;
 
 	/*텍스쳐 초기화*/
@@ -243,11 +246,20 @@ void CowBoy::Update(float dt)
 				{
 					look /= magnitude;
 				}
-				if(isShotGun)
+				if(isShotGun || isWheel)
 				{
-					int bulletCount = 3;
-					float angleStep = 15.f; //부채꼴 각도
-					float startAngle = -angleStep * (bulletCount - 1) / 2.f;
+					if (isShotGun)
+					{
+						bulletCount = 3;
+						angleStep = 15.f; // 총알 사이의 각도
+						startAngle = -angleStep * (bulletCount - 1) / 2.f;
+					}
+					if (isWheel)
+					{
+						bulletCount = 8;
+						angleStep = 45.f; // 총알 사이의 각도
+						startAngle = -angleStep * (bulletCount - 1) / 2.f;
+					}
 
 					for (int i = 0; i < bulletCount; i++)
 					{
@@ -302,27 +314,48 @@ void CowBoy::Update(float dt)
 			}
 		}
 	}
+	///커피
 	if (isSpeedUp)
 	{
-		timerI += dt;
+		timerCoffee += dt;
 	}
-	if (isSpeedUp && timerI >= itmeDuration)
+	if (isSpeedUp && timerCoffee >= itmeDuration) //커피 종료
 	{
 		cout << "speed down" << endl;
 		speed = 150.f;
 		isSpeedUp = false;
-		isShotGun = false;
-		timerI = 0.f;
+		timerCoffee = 0.f;
 	}
+	//기관총
 	if (isMachineGun)
 	{
-		timerI += dt;
+		timerMuchine += dt;
 	}
-	if (isMachineGun && timerI >= itmeDuration)
+	if (isMachineGun && timerMuchine >= itmeDuration)
 	{
 		isMachineGun = false;
 		shotDelay = 0.3f;
-		timerI = 0.f;
+		timerMuchine = 0.f;
+	}
+	//바퀴
+	if (isWheel)
+	{
+		timerWheel += dt;
+	}
+	if (isWheel && timerWheel >= itmeDuration)
+	{
+		isWheel = false;
+		timerWheel = 0.f;
+	}
+	//샷건
+	if (isShotGun)
+	{
+		timerShot += dt;
+	}
+	if (isShotGun && timerShot >= itmeDuration)
+	{
+		isShotGun = false;
+		timerShot = 0.f;
 	}
 
 }
@@ -438,17 +471,20 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}
-	if (type == Item::ItemTypes::Shotgun /*&& !isSpeedUp*/)
+	if (type == Item::ItemTypes::Shotgun)
 	{
-		isSpeedUp = true;
 		isShotGun = true;
 		cout << "use shotgun" << endl;
 	}
-	if (type == Item::ItemTypes::MuchineGun /*&& !isSpeedUp*/)
+	if (type == Item::ItemTypes::MuchineGun)
 	{
-		isSpeedUp = true;
 		isMachineGun = true;
 		shotDelay = 0.15f;
 		cout << "use MuchineGun" << endl;
+	}
+	if (type == Item::ItemTypes::Wheel)
+	{
+		isWheel = true;
+		cout << "use wheel" << endl;
 	}
 }

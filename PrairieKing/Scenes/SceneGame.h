@@ -39,6 +39,7 @@ protected:
 	TileMap* tileMap3 = nullptr;
 	TileMap* tileMap4 = nullptr;
 	TileMap* tileMap5 = nullptr;
+	TileMap* currentMap = nullptr;
 
 	/*---UI---*/
 	SpriteGo* coinUI;
@@ -66,7 +67,6 @@ protected:
 
 	bool isTimerRunning = true;
 
-	
 	float mosterSpawnLimit = 3.f; //3초마다 몬스터 생성
 	float reviveLimit = 3.f; //플레이어 사망 시 3초후 재생성
 
@@ -75,6 +75,7 @@ protected:
 
 	bool roundClear = false; //라운드 클리어 설정
 	bool isGameOver = false;
+	bool haveItem = false;
 
 	//sf::Clock clock;
 	//const sf::Time blinkTime = sf::seconds(0.2f);
@@ -104,6 +105,8 @@ public:
 	void GetGoin();
 	void GetLife();
 	void RemoveItem(Item* item);
+	void UseNiza();
+	void UseNuke();
 
 	template <typename T>
 	void ClearObjectPool(ObjectPool<T>& pool);

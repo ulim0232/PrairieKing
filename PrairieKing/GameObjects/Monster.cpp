@@ -23,6 +23,7 @@ void Monster::Init()
 	string textureId = "graphics/monsters/Monster_sheet.png";
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip(idleClipPath));
 	animation.AddClip(*RESOURCE_MGR.GetAnimationClip(dieClipPath));
+	animation.AddClip(*RESOURCE_MGR.GetAnimationClip(bombClipPath));
 
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
@@ -62,18 +63,6 @@ void Monster::Update(float dt)
 			return;
 		else
 		{
-			//sf::Vector2f cowboyPos = cowboy->GetPosition();
-			//
-			//float distance = Utils::Distance(cowboyPos, position);
-			//direction = Utils::Normalize(cowboyPos - position); //목적지-내 위치: 방향 구할 수 있음
-			//
-			//if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
-			//{
-			//	velocity = direction * speed;
-			//	position += velocity * dt;
-			//	SetPosition(position);
-			//}
-
 			/*----이동 메커니즘 수정----*/
 			sf::Vector2f cowboyPos = cowboy->GetPosition();
 			float absX = abs(cowboyPos.x - position.x);
@@ -136,6 +125,7 @@ void Monster::SetType(Types t)
 	maxHp = info.maxHp;
 	idleClipPath = info.idleClipPath;
 	dieClipPath = info.dieClipPath;
+	bombClipPath = info.bombClipPath;
 }
 
 Monster::Types Monster::GetType() const
@@ -178,6 +168,17 @@ void Monster::OnDie()
 		animation.Stop();
 		animation.Play("DIE");
 		isAlive = false;
+	}
+}
+
+void Monster::OnBoom()
+{
+	if (animation.GetCurrentClipId() != "BOMB")
+	{
+		animation.Stop();
+		animation.Play("BOMB");
+		isAlive = false;
+		timer = 2.f;
 	}
 }
 

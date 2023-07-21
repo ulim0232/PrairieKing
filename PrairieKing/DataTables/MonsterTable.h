@@ -8,6 +8,7 @@ struct MonsterInfo
 	string name;
 	string idleClipPath;
 	string dieClipPath;
+	string bombClipPath;
 	float speed;
 	int maxHp;
 
@@ -16,7 +17,6 @@ class MonsterTable : public DataTable
 {
 protected:
 	unordered_map<Monster::Types, MonsterInfo> table;
-
 public:
 	MonsterTable() : DataTable(DataTable::Ids::Monster) {};
 	virtual ~MonsterTable() override = default;

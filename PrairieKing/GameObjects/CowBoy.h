@@ -43,20 +43,28 @@ protected:
 
 	bool iscoll = false;
 	bool isDie = false;
-	bool isSpeedUp = false;
-	bool isShotGun = false;
-	bool isMachineGun = false;
+	bool isSpeedUp = false; //커피
+	bool isShotGun = false; //삿건
+	bool isMachineGun = false; //머신건
+	bool isWheel = false; // 바퀴
 	bool rebound = false;
 
 	float duration = 3.f;
-	float timerA = 0.f;
-	float timerI = 0.f; //아이템 유지 시간
+	float timerCoffee = 0.f; //아이템 유지 시간
+	float timerShot = 0.f;
+	float timerMuchine = 0.f;
+	float timerWheel = 0.f;
 	float itmeDuration = 5.f; //아이템 유지 시간
 	float gapLegToHead = 4.f;
 	float speed = 150.f; //100
 	float timer = 0.f; //연사 속도 조절에 사용
 	float shotDelay = 0.3f;
 	float shotSpeed = 400.f;
+
+	/*샷건, 바퀴에 사용*/
+	int bulletCount = 0;
+	float angleStep = 0;
+	float startAngle = 0;
 
 	int tileWidth = 0;
 	

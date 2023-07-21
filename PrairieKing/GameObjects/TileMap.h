@@ -24,5 +24,4 @@ public:
 	int GetTileIndex(int x, int y);
 	Tile& GetTile(const int x, const int y);
 	std::vector<Tile> tiles;
-
 };

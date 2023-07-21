@@ -217,6 +217,7 @@ void SceneGame::Enter()
 	isGameOver = false;
 	pickedItem = nullptr;
 	roundClear = false;
+	haveItem = false;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -258,6 +259,8 @@ void SceneGame::Enter()
 	tileMap4->SetActive(false);
 	tileMap5->SetActive(false);
 
+	currentMap = tileMap1;
+
 	/*----몬스터 설정----*/
 	for (auto monster : monsterPool.GetPool())
 	{
@@ -284,81 +287,98 @@ void SceneGame::Update(float dt)
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
 	}
-
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num0))
 	{
-		tileMap1->SetActive(true);
-		tileMap2->SetActive(false);
-		tileMap3->SetActive(false);
-		tileMap4->SetActive(false);
-		tileMap5->SetActive(false);
-		cowBoy->SetTileMap(tileMap1, 32);
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->SetTileMap(tileMap1, 32);
-		}
+		UseNiza();
 	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
-	{
-		tileMap1->SetActive(false);
-		tileMap2->SetActive(true);
-		tileMap3->SetActive(false);
-		tileMap4->SetActive(false);
-		tileMap5->SetActive(false);
-		cowBoy->SetTileMap(tileMap2, 32);
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->SetTileMap(tileMap2, 32);
-		}
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
-	{
-		tileMap1->SetActive(false);
-		tileMap2->SetActive(false);
-		tileMap3->SetActive(true);
-		tileMap4->SetActive(false);
-		tileMap5->SetActive(false);
-		cowBoy->SetTileMap(tileMap3, 32);
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->SetTileMap(tileMap3, 32);
-		}
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
-	{
-		tileMap1->SetActive(false);
-		tileMap2->SetActive(false);
-		tileMap3->SetActive(false);
-		tileMap4->SetActive(true);
-		tileMap5->SetActive(false);
-		cowBoy->SetTileMap(tileMap4, 32);
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->SetTileMap(tileMap4, 32);
-		}
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
-	{
-		tileMap1->SetActive(false);
-		tileMap2->SetActive(false);
-		tileMap3->SetActive(false);
-		tileMap4->SetActive(false);
-		tileMap5->SetActive(true);
-		cowBoy->SetTileMap(tileMap5, 32);
-		cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->SetTileMap(tileMap5, 32);
-		}
-	}
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space))
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
+	//{
+	//	tileMap1->SetActive(true);
+	//	tileMap2->SetActive(false);
+	//	tileMap3->SetActive(false);
+	//	tileMap4->SetActive(false);
+	//	tileMap5->SetActive(false);
+	//	cowBoy->SetTileMap(tileMap1, 32);
+	//	for (auto monster : monsterPool.GetUseList())
+	//	{
+	//		monster->SetTileMap(tileMap1, 32);
+	//	}
+	//}
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
+	//{
+	//	tileMap1->SetActive(false);
+	//	tileMap2->SetActive(true);
+	//	tileMap3->SetActive(false);
+	//	tileMap4->SetActive(false);
+	//	tileMap5->SetActive(false);
+	//	cowBoy->SetTileMap(tileMap2, 32);
+	//	for (auto monster : monsterPool.GetUseList())
+	//	{
+	//		monster->SetTileMap(tileMap2, 32);
+	//	}
+	//}
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
+	//{
+	//	tileMap1->SetActive(false);
+	//	tileMap2->SetActive(false);
+	//	tileMap3->SetActive(true);
+	//	tileMap4->SetActive(false);
+	//	tileMap5->SetActive(false);
+	//	cowBoy->SetTileMap(tileMap3, 32);
+	//	for (auto monster : monsterPool.GetUseList())
+	//	{
+	//		monster->SetTileMap(tileMap3, 32);
+	//	}
+	//}
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
+	//{
+	//	tileMap1->SetActive(false);
+	//	tileMap2->SetActive(false);
+	//	tileMap3->SetActive(false);
+	//	tileMap4->SetActive(true);
+	//	tileMap5->SetActive(false);
+	//	cowBoy->SetTileMap(tileMap4, 32);
+	//	for (auto monster : monsterPool.GetUseList())
+	//	{
+	//		monster->SetTileMap(tileMap4, 32);
+	//	}
+	//}
+	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
+	//{
+	//	tileMap1->SetActive(false);
+	//	tileMap2->SetActive(false);
+	//	tileMap3->SetActive(false);
+	//	tileMap4->SetActive(false);
+	//	tileMap5->SetActive(true);
+	//	cowBoy->SetTileMap(tileMap5, 32);
+	//	cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
+	//	for (auto monster : monsterPool.GetUseList())
+	//	{
+	//		monster->SetTileMap(tileMap5, 32);
+	//	}
+	//}
+	//아이템 사용
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space) && haveItem)
 	{
 		if (pickedItem != nullptr)
 		{
-			cowBoy->TakeItem(pickedItem->GetType());
+			if (pickedItem->GetType() == Item::ItemTypes::Nuke)
+			{
+				UseNuke();
+			}
+			else if (pickedItem->GetType() == Item::ItemTypes::NinzaBox)
+			{
+				UseNiza();
+			}
+			else
+			{
+				cowBoy->TakeItem(pickedItem->GetType());
+			}
 			pickedItemUI->SetActive(false);
+			haveItem = false;
 		}
 	}
+	
 	/*--타이머 게이지 설정--*/
 	if(isTimerRunning)
 	{
@@ -592,30 +612,34 @@ void SceneGame::TakeItem(Item* item)
 	{
 		GetGoin();
 	}
-	if (item->GetType() == Item::ItemTypes::Life)
+	else if (item->GetType() == Item::ItemTypes::Life)
 	{
 		GetLife();
 	}
-	if (item->GetType() == Item::ItemTypes::Coffee)
+	/*else if (item->GetType() == Item::ItemTypes::Nuke)
 	{
-		pickedItem = item;
-		pickedItemUI->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/items/coffee.png"));
-		pickedItemUI->SetActive(true);
-	}
-	if (item->GetType() == Item::ItemTypes::Shotgun)
+		for (auto monster : monsterPool.GetUseList())
+		{
+			monster->OnBoom();
+		}
+	}*/
+	else
 	{
-		pickedItem = item;
-		sf::Texture* texture = RESOURCE_MGR.GetTexture("graphics/items/shotgun.png");
-		pickedItemUI->sprite.setTexture(*texture);
-		pickedItemUI->SetActive(true);
-	}
+		if (!haveItem)
+		{
+			pickedItem = item;
 
-	if (item->GetType() == Item::ItemTypes::MuchineGun)
-	{
-		pickedItem = item;
-		sf::Texture* texture = RESOURCE_MGR.GetTexture("graphics/items/machineGun.png");
-		pickedItemUI->sprite.setTexture(*texture);
-		pickedItemUI->SetActive(true);
+			string texId = item->textureId;
+			sf::Texture* texture = RESOURCE_MGR.GetTexture(texId);
+			pickedItemUI->sprite.setTexture(*texture);
+
+			pickedItemUI->SetActive(true);
+			haveItem = true;
+		}
+		else
+		{
+			cowBoy->TakeItem(item->GetType());
+		}
 	}
 	RemoveItem(item);
 }
@@ -639,4 +663,27 @@ void SceneGame::RemoveItem(Item* item)
 	item->SetIsSpawn(false);
 	RemoveGo(item); //리스트에서 삭제
 	itemPool.Return(item);
+}
+
+void SceneGame::UseNiza()
+{
+	int tileNum;
+
+	//이동 가능한 타일이 나올 때까지 뽑음
+	do {
+		tileNum = Utils::RandomRange(0, currentMap->tiles.size() + 1);
+	} while (currentMap->tiles[tileNum].texIndex < 2 || currentMap->tiles[tileNum].texIndex > 4);
+
+	sf::Vector2f newPos(currentMap->vertexArray.getBounds().left + currentMap->tiles[tileNum].x * 32.f + 16.f,
+		currentMap->vertexArray.getBounds().top + currentMap->tiles[tileNum].y * 32.f + 32.f);
+	cowBoy->SetPosition(newPos.x, newPos.y - 4.f);
+	cout << "new: " << newPos.x << ", " << newPos.y <<","<<tileNum <<"," << currentMap->tiles[tileNum].texIndex << endl;
+}
+
+void SceneGame::UseNuke()
+{
+	for (auto monster : monsterPool.GetUseList())
+	{
+		monster->OnBoom();
+	}
 }

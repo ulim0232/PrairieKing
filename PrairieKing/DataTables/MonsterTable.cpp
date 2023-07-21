@@ -14,14 +14,15 @@ bool MonsterTable::Load()
 	auto ids = doc.GetColumn<int>(1);
 	auto idle_clips = doc.GetColumn<string>(2);
 	auto die_clips = doc.GetColumn<string>(3);
-	auto speeds = doc.GetColumn<float>(4);
-	auto maxhps = doc.GetColumn<int>(5);
+	auto bomb_clips = doc.GetColumn<string>(4);
+	auto speeds = doc.GetColumn<float>(5);
+	auto maxhps = doc.GetColumn<int>(6);
 
 	for (int i = 0; i < ids.size(); i++)
 	{
 		MonsterInfo minfo
 		{
-			(Monster::Types)ids[i], names[i], idle_clips[i], die_clips[i], speeds[i], maxhps[i]
+			(Monster::Types)ids[i], names[i], idle_clips[i], die_clips[i], bomb_clips[i], speeds[i], maxhps[i]
 		};
 		table.insert({ (Monster::Types)ids[i] , minfo });
 	}

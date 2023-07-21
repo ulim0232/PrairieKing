@@ -74,7 +74,6 @@ void Item::blink()
 	}
 }
 
-
 void Item::Update(float dt)
 {
 	SpriteGo::Update(dt);

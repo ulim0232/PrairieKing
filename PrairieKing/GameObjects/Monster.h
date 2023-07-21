@@ -32,6 +32,7 @@ protected:
 	int hp = 0;
 	string idleClipPath;
 	string dieClipPath;
+	string bombClipPath;
 	bool isAlive;
 
 	float duration = 3.f; //죽으면 3초 후 삭제
@@ -64,6 +65,7 @@ public:
 	bool GetIsAllive();
 	void OnHitBullet(int damage); //총알에 맞았을 때
 	void OnDie(); //죽을 때
+	void OnBoom();
 	void SetTileMap(TileMap* map, int width);
 	bool IsCollisoinTile(int index);
 

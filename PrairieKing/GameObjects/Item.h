@@ -13,6 +13,9 @@ public:
 		Coffee,
 		Shotgun,
 		MuchineGun,
+		Wheel,
+		Nuke,
+		NinzaBox,
 	};
 protected:
 	bool isSpawn = false;
@@ -29,7 +32,7 @@ protected:
 	bool blinkTimeCheck = false;
 
 public:
-	static const int TotalTypes = 5;
+	static const int TotalTypes = 8;
 	Item(const string& textureId = "", const string& n = "");
 	virtual ~Item() override;
 

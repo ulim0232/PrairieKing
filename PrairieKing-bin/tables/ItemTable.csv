@@ -4,3 +4,6 @@ ID,NAME,TEXTURE
 2,Coffee,graphics/items/coffee.png
 3,Shotgun,graphics/items/shotgun.png
 4,MuchineGun,graphics/items/machineGun.png
+5,Wheel,graphics/items/wagonWheel.png
+6,Nuke,graphics/items/screenNuke.png
+7,NinzaBox,graphics/items/ninzaBox.png
