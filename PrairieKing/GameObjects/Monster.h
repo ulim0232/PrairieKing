@@ -44,8 +44,10 @@ protected:
 	AnimationController animation;
 	TileMap* tileMap;
 	int tileWidth = 0;
-	sf::Vector2i tileSize = { 80, 45 };
+	//sf::Vector2i tileSize = { 80, 45 };
+	sf::Vector2i tileSize = { 32, 32 };
 	sf::FloatRect intersection;
+	sf::Vector2f tileMapLT;
 public:
 	Monster(const string& n = "");
 	virtual ~Monster() override;

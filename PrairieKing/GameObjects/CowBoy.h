@@ -35,11 +35,11 @@ protected:
 	TileMap* tileMap;
 	sf::RectangleShape hitBox;
 	sf::RectangleShape tileBox;
-	//sf::Vector2i boxSize = { 28.f, 28.f };
-	//sf::Vector2i tileSize = { 32.f, 32.f };
+	sf::Vector2i boxSize = { 28.f, 28.f };
+	sf::Vector2i tileSize = { 32.f, 32.f };
 
-	sf::Vector2i boxSize = { 70, 39.375 };
-	sf::Vector2i tileSize = { 80, 45 };
+	//sf::Vector2i boxSize = { 70, 39.375 };
+	//sf::Vector2i tileSize = { 80, 45 };
 
 	sf::FloatRect intersection;
 	
@@ -60,10 +60,10 @@ protected:
 	float timerWheel = 0.f;
 	float itmeDuration = 5.f; //아이템 유지 시간
 	float gapLegToHead = 4.f;
-	float speed = 300.f; //100
+	float speed = 150.f; //100
 	float timer = 0.f; //연사 속도 조절에 사용
 	float shotDelay = 0.3f;
-	float shotSpeed = 800.f; //800
+	float shotSpeed = 300.f; //800
 
 	/*샷건, 바퀴에 사용*/
 	int bulletCount = 0;
@@ -71,6 +71,8 @@ protected:
 	float startAngle = 0;
 
 	int tileWidth = 0;
+
+	sf::Vector2f tileMapLT;
 	
 public:
 	sf::Sprite head;

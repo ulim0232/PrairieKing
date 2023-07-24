@@ -29,7 +29,7 @@ void SceneGame::Init()
 	auto size = FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = size * 0.5f;
 	
-	worldView.setSize(size);
+	worldView.setSize({ 512, 512 });
 	worldView.setCenter(centerPos);
 
 	uiView.setSize(size);
@@ -581,23 +581,24 @@ const list<Monster*>* SceneGame::GetMonsterList() const
 void SceneGame::SetSpawnMonsterPos(TileMap* tilemap)
 {
 	sf::Vector2f sizeT = tilemap->GetTileSize();
+	sf::Vector2f tileMapLT(tilemap->vertexArray.getBounds().left, tilemap->vertexArray.getBounds().top);
 	for (auto tile : tilemap->tiles)
 	{
 		if (tile.x == 0 && tile.texIndex < 2)
 		{
-			monsterSpawnPosLeft.push_back({ sizeT.x / 2.f, tile.y * sizeT.y + sizeT.y / 2.f });
+			monsterSpawnPosLeft.push_back({ tileMapLT.x + sizeT.x / 2.f, tile.y * sizeT.y + sizeT.y / 2.f + tileMapLT.y });
 		}
 		if (tile.y == 0 && tile.texIndex < 2)
 		{
-			monsterSpawnPosTop.push_back({ tile.x * sizeT.x + sizeT.x / 2, sizeT.y / 2 });
+			monsterSpawnPosTop.push_back({ tileMapLT.x + tile.x * sizeT.x + sizeT.x / 2, sizeT.y / 2 + tileMapLT.y });
 		}
 		if (tile.x == 15 && tile.texIndex < 2)
 		{
-			monsterSpawnPosRight.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+			monsterSpawnPosRight.push_back({ tileMapLT.x + tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f + tileMapLT.y });
 		}
 		if (tile.y == 15 && tile.texIndex < 2)
 		{
-			monsterSpawnPosBottom.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+			monsterSpawnPosBottom.push_back({ tileMapLT.x + tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f + tileMapLT.y });
 		}
 	}
 }

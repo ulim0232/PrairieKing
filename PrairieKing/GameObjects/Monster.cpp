@@ -27,10 +27,11 @@ void Monster::Init()
 
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
-	sprite.setScale({ 5.0f, 2.8125f });
+	//sprite.setScale({ 5.0f, 2.8125f });
+	sprite.setScale({ 2.f, 2.f });
 
-	//hitBox.setSize(sf::Vector2f(boxSize));
-	hitBox.setSize({ 60.f, 40.f });
+	hitBox.setSize(sf::Vector2f(boxSize));
+	//hitBox.setSize({ 60.f, 40.f });
 	Utils::SetOrigin(hitBox, Origins::MC);
 	hitBox.setFillColor(sf::Color::Transparent);
 	hitBox.setOutlineThickness(1);
@@ -71,7 +72,6 @@ void Monster::Update(float dt)
 
 			float distance = Utils::Distance(cowboyPos, position);
 			direction = Utils::Normalize(cowboyPos - position);
-			direction.y *= 0.5625f; //이동량 보정
 
 			if (absX > absY) //x값만 이동
 			{
@@ -91,8 +91,9 @@ void Monster::Update(float dt)
 
 				for (auto tile : tileMap->tiles)
 				{
-					float tileL = (tileSize.x * tile.x);
-					float tileT = (tileSize.y * tile.y);
+					float tileL = tileMapLT.x + (tileSize.x * tile.x);
+					float tileT = tileMapLT.y + (tileSize.y * tile.y);
+
 					sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
 
 					if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
@@ -225,6 +226,9 @@ void Monster::SetTileMap(TileMap* map, int width)
 {
 	tileMap = map;
 	tileWidth = width;
+
+	tileMapLT.x = tileMap->vertexArray.getBounds().left;
+	tileMapLT.y = tileMap->vertexArray.getBounds().top;
 }
 
 bool Monster::IsCollisoinTile(int index)

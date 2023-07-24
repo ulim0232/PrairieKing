@@ -36,8 +36,8 @@ void CowBoy::Init()
 	//head.setScale(2.0f, 2.0f); 
 	//leg.setScale(2.0f, 2.0f);
 
-	head.setScale(5.0f, 2.8125f);
-	leg.setScale(5.0f, 2.8125f);
+	head.setScale(2.0f, 2.f);
+	leg.setScale(2.0f, 2.f);
 
 	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
 	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
@@ -90,7 +90,7 @@ void CowBoy::Reset()
 	isShotGun = false; //삿건
 	isMachineGun = false; //머신건
 	isWheel = false; // 바퀴
-	speed = 300.f;
+	speed = 150.f;
 
 	/*텍스쳐 초기화*/
 	if (headAnimation.IsPlaying())
@@ -151,21 +151,16 @@ void CowBoy::Update(float dt)
 		{
 			direction /= magnitude;
 		}
-		direction.y *= 0.5625f;
 		velocity = direction * speed;
 
 		newPosition = position + velocity * dt;
 		hitBox.setPosition(newPosition);
 
-		//float leftX = tileMap->vertexArray.getBounds().left;
-
 		for (auto tile : tileMap->tiles)
 		{
-			//float tileL = 384 + (tileSize.x * tile.x);
-			//float tileT = 104 + (tileSize.y * tile.y);
+			float tileL = tileMapLT.x + (tileSize.x * tile.x);
+			float tileT = tileMapLT.y + (tileSize.y * tile.y);
 
-			float tileL = (tileSize.x * tile.x);
-			float tileT = (tileSize.y * tile.y);
 			sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
 
 			if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
@@ -277,7 +272,6 @@ void CowBoy::Update(float dt)
 						sf::Vector2f fireDir;
 						fireDir.x = look.x * cos(radian) - look.y * sin(radian);
 						fireDir.y = look.x * sin(radian) + look.y * cos(radian);
-						fireDir.y *= 0.5625f;
 
 						Bullet* bullet = poolBullets.Get();
 						bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
@@ -300,7 +294,6 @@ void CowBoy::Update(float dt)
 				{
 					Bullet* bullet = poolBullets.Get();
 					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
-					look.y *= 0.5625f;
 					sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
 					bullet->Fire(fireP, look, shotSpeed);
 				
@@ -415,6 +408,9 @@ void CowBoy::SetTileMap(TileMap* map, int width)
 {
 	tileMap = map;
 	tileWidth = width;
+
+	tileMapLT.x = tileMap->vertexArray.getBounds().left;
+	tileMapLT.y = tileMap->vertexArray.getBounds().top;
 }
 
 //현재 사용x
@@ -479,7 +475,7 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 {
 	if (type == Item::ItemTypes::Coffee && !isSpeedUp)
 	{
-		speed = 450.f;
+		speed = 300.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}
