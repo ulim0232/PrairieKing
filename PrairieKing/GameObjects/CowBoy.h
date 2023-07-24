@@ -60,10 +60,10 @@ protected:
 	float timerWheel = 0.f;
 	float itmeDuration = 5.f; //아이템 유지 시간
 	float gapLegToHead = 4.f;
-	float speed = 1500.f; //100
+	float speed = 300.f; //100
 	float timer = 0.f; //연사 속도 조절에 사용
 	float shotDelay = 0.3f;
-	float shotSpeed = 200.f; //800
+	float shotSpeed = 800.f; //800
 
 	/*샷건, 바퀴에 사용*/
 	int bulletCount = 0;

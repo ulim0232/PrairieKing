@@ -22,8 +22,6 @@ SceneGame::SceneGame() : Scene(SceneId::Game)
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
 }
 
-
-
 void SceneGame::Init()
 {
 	Release();

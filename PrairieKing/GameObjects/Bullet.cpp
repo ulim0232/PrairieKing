@@ -20,7 +20,6 @@ void Bullet::SetMonsterList(const list<Monster*>* list)
 
 void Bullet::Fire(const sf::Vector2f pos, const sf::Vector2f direction, float speed)
 {
-	sprite.setRotation(Utils::Angle(direction));
 	SetPosition(pos);
 	
 	this->direction = direction;

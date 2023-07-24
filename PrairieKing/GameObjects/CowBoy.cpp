@@ -90,7 +90,7 @@ void CowBoy::Reset()
 	isShotGun = false; //삿건
 	isMachineGun = false; //머신건
 	isWheel = false; // 바퀴
-	speed = 150.f;
+	speed = 300.f;
 
 	/*텍스쳐 초기화*/
 	if (headAnimation.IsPlaying())
@@ -276,6 +276,7 @@ void CowBoy::Update(float dt)
 						sf::Vector2f fireDir;
 						fireDir.x = look.x * cos(radian) - look.y * sin(radian);
 						fireDir.y = look.x * sin(radian) + look.y * cos(radian);
+						fireDir.y *= 0.5625f;
 
 						Bullet* bullet = poolBullets.Get();
 						bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
@@ -299,6 +300,7 @@ void CowBoy::Update(float dt)
 				{
 					Bullet* bullet = poolBullets.Get();
 					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
+					look.y *= 0.5625f;
 					sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
 					bullet->Fire(fireP, look, shotSpeed);
 				
@@ -333,7 +335,7 @@ void CowBoy::Update(float dt)
 	if (isSpeedUp && timerCoffee >= itmeDuration) //커피 종료
 	{
 		cout << "speed down" << endl;
-		speed = 150.f;
+		speed = 300.f;
 		isSpeedUp = false;
 		timerCoffee = 0.f;
 	}
@@ -478,7 +480,7 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 {
 	if (type == Item::ItemTypes::Coffee && !isSpeedUp)
 	{
-		speed = 2000.f;
+		speed = 450.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}
