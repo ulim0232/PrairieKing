@@ -11,7 +11,8 @@ struct Tile
 class TileMap : public VertexArrayGo
 {
 protected:
-	sf::Vector2f tileSize = { 32.f, 32.f };
+	sf::Vector2f tileSize = { 80.f, 45.f };//{ 32.f, 32.f }; //80.f, 80.f, 2.5น่(1280/512)
+	//sf::Vector2f tileSize = { 32.f, 32.f };
 	sf::Vector2f texSize = { 16.f, 16.f };
 	sf::Vector2i size;
 public:
@@ -24,4 +25,5 @@ public:
 	int GetTileIndex(int x, int y);
 	Tile& GetTile(const int x, const int y);
 	std::vector<Tile> tiles;
+	void setScale(float scaleX, float scaleY);
 };

@@ -27,8 +27,8 @@ void Monster::Init()
 
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
-	sprite.setScale({ 2.f, 2.f });
-
+	//sprite.setScale({ 2.f, 2.f 
+	sprite.setScale({ 5.0f, 2.8125f });
 	hitBox.setSize(sf::Vector2f(boxSize));
 	Utils::SetOrigin(hitBox, Origins::MC);
 	hitBox.setFillColor(sf::Color::Transparent);

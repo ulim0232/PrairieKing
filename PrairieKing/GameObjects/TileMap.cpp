@@ -106,3 +106,50 @@ Tile& TileMap::GetTile(const int x, const int y)
     cout << "ERR: No Tile" << endl;
     exit(1);
 }
+
+void TileMap::setScale(float scaleX, float scaleY)
+{
+    // 뷰의 크기를 설정
+    tileSize.x *= scaleX;
+    tileSize.y *= scaleY;
+
+    // 타일맵 내의 타일들의 위치와 크기를 조정
+    sf::Vector2f tileOffsets[4] =
+    {
+        { 0.f, 0.f },
+        { tileSize.x, 0.f },
+        { tileSize.x, tileSize.y },
+        { 0.f, tileSize.y }
+    };
+
+    sf::Vector2f texOffsets[4] =
+    {
+        { 0.f, 0.f },
+        { texSize.x, 0.f },
+        { texSize.x, texSize.y },
+        { 0.f, texSize.y }
+    };
+
+    sf::Vector2f startPos = { 0.f, 0.f };
+    sf::Vector2f currPos = startPos;
+
+    for (int i = 0; i < size.y; ++i)
+    {
+        for (int j = 0; j < size.x; ++j)
+        {
+            int tileIndex = size.x * i + j;
+            int texIndex = tiles[tileIndex].texIndex;
+            for (int k = 0; k < 4; ++k)
+            {
+                int vertexIndex = tileIndex * 4 + k;
+                vertexArray[vertexIndex].position = currPos + tileOffsets[k];
+                vertexArray[vertexIndex].texCoords = texOffsets[k];
+                vertexArray[vertexIndex].texCoords.x += texSize.x * texIndex;
+            }
+            currPos.x += tileSize.x;
+        }
+        currPos.x = startPos.x;
+        currPos.y += tileSize.y;
+    }
+}
+

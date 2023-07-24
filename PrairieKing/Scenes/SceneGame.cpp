@@ -120,6 +120,7 @@ void SceneGame::Init()
 	timerGauge = (RectangleGo*)AddGo(new RectangleGo(timersize, "timerGauge"));
 	timerGauge->SetOrigin(Origins::ML);
 	timerGauge->rectangle.setFillColor(sf::Color::Green);
+	timerGauge->sortLayer = 100;
 
 	for (auto go : gameObjects)
 	{
@@ -130,26 +131,23 @@ void SceneGame::Init()
 	tileMap1->Load("maps/stage1-1.csv");
 	tileMap1->SetOrigin(Origins::MC);
 	tileMap1->SetPosition(centerPos);
+	//tileMap1->setScale(2.f, 2.f);
 
 	tileMap2->Load("maps/stage1-2.csv");
 	tileMap2->SetOrigin(Origins::MC);
-	tileMap2->SetPosition(centerPos);
-	tileMap2->SetActive(false);
+	tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileSize().y);
 
 	tileMap3->Load("maps/stage1-3.csv");
 	tileMap3->SetOrigin(Origins::MC);
 	tileMap3->SetPosition(centerPos);
-	tileMap3->SetActive(false);
 
 	tileMap4->Load("maps/stage1-4.csv");
 	tileMap4->SetOrigin(Origins::MC);
 	tileMap4->SetPosition(centerPos);
-	tileMap4->SetActive(false);
 
 	tileMap5->Load("maps/stage1-5.csv");
 	tileMap5->SetOrigin(Origins::MC);
 	tileMap5->SetPosition(centerPos);
-	tileMap5->SetActive(false);
 
 
 	/*----UI설정----*/
@@ -208,7 +206,13 @@ void SceneGame::Enter()
 
 	Scene::Enter();
 
+	/*---뷰포트 설정---*/
+	float viewRatioY = 0.7f;
+	float viewRatioX = 0.4f;
+
+	worldView.setViewport(sf::FloatRect(0.5f - viewRatioX / 2.f, 0.5f - viewRatioY / 2.f, viewRatioX, viewRatioY));
 	worldView.setCenter(tileMap1->GetPosition());
+	
 	uiView.setCenter(tileMap1->GetPosition());
 
 	/*--변수 초기화*/
@@ -221,7 +225,8 @@ void SceneGame::Enter()
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
-	sf::Vector2f tileSize = tileMap1->GetTileSize();
+	sf::Vector2f tileSize(512, 512);
+	//sf::Vector2f tileSize = tileMap1->GetTileSize();
 
 	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
 	lifeUI->SetPosition(itemUI->GetPosition().x - 30, itemUI->GetPosition().y + 40);
@@ -254,7 +259,7 @@ void SceneGame::Enter()
 
 	/*----맵 설정----*/
 	tileMap1->SetActive(true);
-	tileMap2->SetActive(false); 
+	tileMap2->SetActive(true); 
 	tileMap3->SetActive(false);
 	tileMap4->SetActive(false);
 	tileMap5->SetActive(false);
@@ -282,6 +287,7 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
+	//worldView.setCenter(cowBoy->GetPosition());
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
@@ -390,13 +396,13 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			SpawnMonster(num);
+			//SpawnMonster(num);
 			timerM = 0.f;
 		}
 	}
 	else
 	{
-		if(!roundClear)
+		if(!roundClear) //플레이어가 죽었을 때
 		{
 			timerR += dt;
 			if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
@@ -438,7 +444,7 @@ void SceneGame::Update(float dt)
 		isTimerRunning = false;
 		timerGauge->rectangle.setSize({ 0, 10 });
 	}
-	if (roundClear)
+	if (roundClear) //라운드 클리어
 	{
 		currentTime += dt;
 		//아이템 삭제

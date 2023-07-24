@@ -32,8 +32,12 @@ void CowBoy::Init()
 	headAnimation.SetTarget(&head);
 	legAnimation.SetTarget(&leg);
 
-	head.setScale(2.0f, 2.0f);
-	leg.setScale(2.0f, 2.0f);
+	//뷰포트 변경으로 수정함
+	//head.setScale(2.0f, 2.0f); 
+	//leg.setScale(2.0f, 2.0f);
+
+	head.setScale(5.0f, 2.8125f);
+	leg.setScale(5.0f, 2.8125f);
 
 	left = RESOURCE_MGR.GetTexture("graphics/players/Player_left.png");
 	right = RESOURCE_MGR.GetTexture("graphics/players/Player_right.png");
@@ -118,8 +122,6 @@ void CowBoy::Update(float dt)
 	legAnimation.Update(dt);
 	headAnimation.Update(dt);
 
-	//이동
-
 	//대각선 이동 속도 보정으로 수정
 	if (!isDie)
 	{
@@ -143,6 +145,7 @@ void CowBoy::Update(float dt)
 			}
 		}
 
+		/*---이동---*/
 		float magnitude = Utils::Magnitude(direction);
 		if (magnitude > 1.f)
 		{
@@ -153,10 +156,15 @@ void CowBoy::Update(float dt)
 		newPosition = position + velocity * dt;
 		hitBox.setPosition(newPosition);
 
+		//float leftX = tileMap->vertexArray.getBounds().left;
+
 		for (auto tile : tileMap->tiles)
 		{
-			float tileL = 384 + (tileSize.x * tile.x);
-			float tileT = 104 + (tileSize.y * tile.y);
+			//float tileL = 384 + (tileSize.x * tile.x);
+			//float tileT = 104 + (tileSize.y * tile.y);
+
+			float tileL = (tileSize.x * tile.x);
+			float tileT = (tileSize.y * tile.y);
 			sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
 
 			if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
@@ -467,7 +475,7 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 {
 	if (type == Item::ItemTypes::Coffee && !isSpeedUp)
 	{
-		speed = 200.f;
+		speed = 2000.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}

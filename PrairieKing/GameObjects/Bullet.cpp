@@ -32,7 +32,7 @@ void Bullet::Init()
 {
 	SpriteGo::Init();
 	SetOrigin(Origins::MC);
-	sprite.setScale({ 1.5f, 1.5f });
+	sprite.setScale({ 5.0f, 2.8125f });
 }
 
 void Bullet::Release()
