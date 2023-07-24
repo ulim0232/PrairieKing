@@ -3,7 +3,7 @@
 class AnimationController
 {
 protected:
-	std::unordered_map<std::string, AnimationClip> clips; //클립의 id, 클립
+	std::unordered_map<std::string, AnimationClip*> clips; //클립의 id, 클립
 	std::queue<std::string> queue;
 	
 	float speed = 1.f; //애니메이션 재생 속도, 2면 2배 빠르게
@@ -19,7 +19,7 @@ protected:
 	sf::Sprite* target = nullptr; //애니메이션이 재생될 스프라이트 객체
 
 public:
-	void AddClip(const AnimationClip& newClip);
+	void AddClip(AnimationClip& newClip);
 	void SetTarget(sf::Sprite* sprite) { target = sprite; }
 	sf::Sprite* GetTarget() const { return target; }
 	bool IsPlaying() { return isPlaying; }

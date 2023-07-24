@@ -279,6 +279,10 @@ void SceneGame::Update(float dt)
 	{
 		UseNiza();
 	}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
+	{
+		SpawnMonster(1);
+	}
 	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
 	//{
 	//	tileMap1->SetActive(true);
@@ -378,7 +382,7 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			SpawnMonster(num);
+			//SpawnMonster(num);
 			timerM = 0.f;
 		}
 	}
@@ -486,7 +490,8 @@ void SceneGame::Draw(sf::RenderWindow& window)
 
 void SceneGame::SpawnMonster(int count)
 {
-	int num = Utils::RandomRange(0, 4);
+	//int num = Utils::RandomRange(0, 4);
+	int num = Utils::RandomRange(0, 2);
 	vector<sf::Vector2f>* spawnPosList = nullptr;
 	switch (num)
 	{
@@ -494,10 +499,10 @@ void SceneGame::SpawnMonster(int count)
 		spawnPosList = &monsterSpawnPosTop;
 		break;
 	case 1:
-		spawnPosList = &monsterSpawnPosBottom;
+		spawnPosList = &monsterSpawnPosLeft;
 		break;
 	case 2:
-		spawnPosList = &monsterSpawnPosLeft;
+		spawnPosList = &monsterSpawnPosBottom; 
 		break;
 	case 3:
 		spawnPosList = &monsterSpawnPosRight;

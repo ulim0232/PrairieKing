@@ -2,11 +2,11 @@
 #include "AnimationController.h"
 #include "ResourceMgr.h"
 
-void AnimationController::AddClip(const AnimationClip& newClip)
+void AnimationController::AddClip(AnimationClip& newClip)
 {
 	if (clips.find(newClip.id) == clips.end()) //없는 경우 end 리턴함
 	{
-		clips.insert({ newClip.id, newClip });
+		clips.insert({ newClip.id, &newClip });
 	}
 }
 
@@ -46,12 +46,12 @@ void AnimationController::Update(float dt)
 		}
 	}
 	
-	if (currentClip->frames[currentFrame].action != nullptr) 
-		//참조하고 있지 않으면 nullptr리턴함
-	{
-		currentClip->frames[currentFrame].action(); 
-		//펑터, 객체를 함수처럼 사용할 수 있다
-	}
+	//if (currentClip->frames[currentFrame].action != nullptr) 
+	//	//참조하고 있지 않으면 nullptr리턴함
+	//{
+	//	currentClip->frames[currentFrame].action(); 
+	//	//펑터, 객체를 함수처럼 사용할 수 있다
+	//}
 
 	if (target != nullptr)
 	{
@@ -78,7 +78,7 @@ void AnimationController::Play(const std::string& clipid, bool clearQueue)
 	}
 
 	isPlaying = true;
-	currentClip = &find->second;
+	currentClip = find->second;
 	currentFrame = 0;
 	totalFrame = (int)currentClip->frames.size();
 	clipDuration = 1.f / currentClip->fps;

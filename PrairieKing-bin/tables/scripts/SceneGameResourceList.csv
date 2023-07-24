@@ -11,15 +11,6 @@
 1,fonts/esamanruMedium.ttf
 1,fonts/angel.ttf
 0,graphics/UIs/controlKey.png
-0,graphics/players/Player_stand.png
-0,graphics/players/Player_left.png
-0,graphics/players/Player_right.png
-0,graphics/players/Player_front.png
-0,graphics/players/Player_back.png
-0,graphics/players/Player_sheet.png
-0,graphics/players/Player_idle.png
-0,graphics/players/Player_Die_sheet.png
-0,graphics/monsters/Die.png
 0,graphics/items/coin1.png
 0,graphics/items/life.png
 0,graphics/items/coffee.png
@@ -27,5 +18,5 @@
 0,graphics/items/machineGun.png
 0,graphics/items/wagonWheel.png
 0,graphics/items/screenNuke.png
-0,graphics/monsters/bomb.png
 0,graphics/items/ninzaBox.png
+0,graphics/monsters/Monster_sheet.png

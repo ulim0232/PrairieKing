@@ -65,14 +65,31 @@ void Monster::Update(float dt)
 			return;
 		else
 		{
-			/*----이동 메커니즘 수정----*/
-			sf::Vector2f cowboyPos = cowboy->GetPosition();
-			float absX = abs(cowboyPos.x - position.x);
-			float absY = abs(cowboyPos.y - position.y);
+			if (isCollision)
+			{
+				if(collTimer == 0)
+				{
+					sf::Vector2f tileMapSize = tileMap->GetTileMapSize();
+					sf::Vector2f random(Utils::RandomRange(0.f, tileMapSize.x), Utils::RandomRange(0.f, tileMapSize.y));
+					sf::Vector2f destination(random.x + tileMapLT.x, random.y + tileMapLT.y);
 
-			float distance = Utils::Distance(cowboyPos, position);
-			direction = Utils::Normalize(cowboyPos - position);
+					absX = abs(destination.x - position.x);
+					absY = abs(destination.y - position.y);
 
+					distance = Utils::Distance(destination, position);
+					direction = Utils::Normalize(destination - position);
+				}
+				collTimer += dt;
+			}
+			else if (!isCollision && collTimer == 0)
+			{
+				sf::Vector2f cowboyPos = cowboy->GetPosition();
+				absX = abs(cowboyPos.x - position.x);
+				absY = abs(cowboyPos.y - position.y);
+
+				distance = Utils::Distance(cowboyPos, position);
+				direction = Utils::Normalize(cowboyPos - position);
+			}
 			if (absX > absY) //x값만 이동
 			{
 				direction.y = 0;
@@ -81,8 +98,6 @@ void Monster::Update(float dt)
 			{
 				direction.x = 0;
 			}
-			//같으면 대각선 이동
-			//장애물 충돌 수정
 			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 			{
 				velocity = direction * speed;
@@ -102,6 +117,7 @@ void Monster::Update(float dt)
 						{
 							hitBox.setOutlineColor(sf::Color::Red);
 							newPos = position;
+							isCollision = true;
 						}
 						else
 						{
@@ -113,13 +129,11 @@ void Monster::Update(float dt)
 				SetPosition(position);
 				hitBox.setPosition(position);
 			}
-			//if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
-			//{
-			//	velocity = direction * speed;
-			//	sf::Vector2f newPos = position + velocity * dt;
-			//	position += velocity * dt;
-			//	SetPosition(position);
-			//}
+			if (collTimer >= collTime)
+			{
+				collTimer = 0.f;
+				isCollision = false;
+			}
 
 		}
 		if (sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()))

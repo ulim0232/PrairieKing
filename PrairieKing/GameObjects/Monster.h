@@ -48,6 +48,13 @@ protected:
 	sf::Vector2i tileSize = { 32, 32 };
 	sf::FloatRect intersection;
 	sf::Vector2f tileMapLT;
+	bool isCollision = false;
+	float collTime = 1.f;
+	float collTimer = 0.f;
+
+	float absX;
+	float absY;
+	float distance;
 public:
 	Monster(const string& n = "");
 	virtual ~Monster() override;
