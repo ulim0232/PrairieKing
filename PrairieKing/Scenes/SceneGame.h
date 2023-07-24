@@ -63,7 +63,7 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 30.0f; //30
+	float timeLimit = 30000.0f; //30
 
 	bool isTimerRunning = true;
 
@@ -95,6 +95,7 @@ public:
 
 	void SpawnMonster(int count);
 	const list<Monster*>* GetMonsterList() const;
+	void SetSpawnMonsterPos(TileMap* tilemap);
 
 	void OnDieMonster(Monster* monster); //좀비가 죽었을 때 씬에서 해야할 일
 	void OnDieCowBoy(); 

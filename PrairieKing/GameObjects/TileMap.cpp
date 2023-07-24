@@ -75,7 +75,7 @@ bool TileMap::Load(const std::string& filePath)
     return true;
 }
 
-sf::Vector2f TileMap::GetTileSize()
+sf::Vector2f TileMap::GetTileMapSize()
 {
     return sf::Vector2f{tileSize.x* size.x, tileSize.y* size.y};
 }
@@ -151,5 +151,10 @@ void TileMap::setScale(float scaleX, float scaleY)
         currPos.x = startPos.x;
         currPos.y += tileSize.y;
     }
+}
+
+sf::Vector2f TileMap::GetTileSize()
+{
+    return tileSize;
 }
 

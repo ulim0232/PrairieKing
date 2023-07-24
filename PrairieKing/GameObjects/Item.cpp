@@ -32,7 +32,7 @@ void Item::Init()
 {
 	SpriteGo::Init();
 	SetOrigin(Origins::MC);
-	sprite.setScale({ 2.f, 2.f });
+	sprite.setScale({ 5.0f, 2.8125f });
 	isSpawn = false;
 }
 

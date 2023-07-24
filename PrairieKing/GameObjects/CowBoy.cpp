@@ -289,6 +289,8 @@ void CowBoy::Update(float dt)
 						{
 							bullet->SetMonsterList(sceneGame->GetMonsterList());
 							sceneGame->AddGo(bullet);
+							//bullet->sortLayer = 101;
+							
 						}
 					}
 					rebound = true;
@@ -306,6 +308,7 @@ void CowBoy::Update(float dt)
 					{
 						bullet->SetMonsterList(sceneGame->GetMonsterList());
 						sceneGame->AddGo(bullet);
+						//bullet->sortLayer = 101;
 					}
 					SCENE_MGR.GetCurrScene()->AddGo(bullet);
 					rebound = true;

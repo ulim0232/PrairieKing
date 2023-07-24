@@ -20,27 +20,6 @@ SceneGame::SceneGame() : Scene(SceneId::Game)
 
 	timerDecreaseRate = 1.0f / timeLimit;
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
-
-	/*----스폰 위치 설정, 변경 필요----*/
-	//위
-	monsterSpawnPosTop.push_back({ 240, 16 });
-	monsterSpawnPosTop.push_back({ 272, 16 });
-	monsterSpawnPosTop.push_back({ 304, 16 });
-
-	//아래
-	monsterSpawnPosBottom.push_back({ 240, 496 });
-	monsterSpawnPosBottom.push_back({ 272, 496 });
-	monsterSpawnPosBottom.push_back({ 304, 496 });
-
-	//왼쪽
-	monsterSpawnPosLeft.push_back({ 16, 240 });
-	monsterSpawnPosLeft.push_back({ 16, 272 });
-	monsterSpawnPosLeft.push_back({ 16, 304 });
-
-	//오른쪽
-	monsterSpawnPosRight.push_back({ 496, 240 });
-	monsterSpawnPosRight.push_back({ 496, 272 });
-	monsterSpawnPosRight.push_back({ 496, 304 });
 }
 
 
@@ -135,7 +114,7 @@ void SceneGame::Init()
 
 	tileMap2->Load("maps/stage1-2.csv");
 	tileMap2->SetOrigin(Origins::MC);
-	tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileSize().y);
+	tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileMapSize().y);
 
 	tileMap3->Load("maps/stage1-3.csv");
 	tileMap3->SetOrigin(Origins::MC);
@@ -226,7 +205,7 @@ void SceneGame::Enter()
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
 	sf::Vector2f tileSize(512, 512);
-	//sf::Vector2f tileSize = tileMap1->GetTileSize();
+	//sf::Vector2f tileSize = tileMap1->GetTileMapSize();
 
 	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
 	lifeUI->SetPosition(itemUI->GetPosition().x - 30, itemUI->GetPosition().y + 40);
@@ -271,6 +250,29 @@ void SceneGame::Enter()
 	{
 		monster->SetTileMap(tileMap1, 32);
 	}
+
+	/*---몬스터 스폰 위치 설정----*/
+	SetSpawnMonsterPos(tileMap1);
+	//sf::Vector2f sizeT = tileMap1->GetTileSize();
+	//for (auto tile : tileMap1->tiles)
+	//{
+	//	if (tile.x == 0 && tile.texIndex < 2)
+	//	{
+	//		monsterSpawnPosLeft.push_back({ sizeT.x / 2.f, tile.y * sizeT.y + sizeT.y / 2.f });
+	//	}
+	//	if (tile.y == 0 && tile.texIndex < 2)
+	//	{
+	//		monsterSpawnPosTop.push_back({ tile.x * sizeT.x + sizeT.x / 2, sizeT.y / 2 });
+	//	}
+	//	if (tile.x == 15 && tile.texIndex < 2)
+	//	{
+	//		monsterSpawnPosRight.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+	//	}
+	//	if (tile.y == 15 && tile.texIndex < 2)
+	//	{
+	//		monsterSpawnPosBottom.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+	//	}
+	//}
 }
 
 void SceneGame::Exit()
@@ -288,6 +290,8 @@ void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
 	//worldView.setCenter(cowBoy->GetPosition());
+
+	//cout << cowBoy->GetPosition().x << ", " << cowBoy->GetPosition().y << endl;
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Escape))
 	{
@@ -396,7 +400,7 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			//SpawnMonster(num);
+			SpawnMonster(num);
 			timerM = 0.f;
 		}
 	}
@@ -527,7 +531,8 @@ void SceneGame::SpawnMonster(int count)
 	for (int i = 0; i < count; i++)
 	{
 		Monster* monster = monsterPool.Get();
-		monster->SetPosition(spawnPosList->at(i).x + 384, spawnPosList->at(i).y + 104);
+		monster->SetPosition(spawnPosList->at(i).x, spawnPosList->at(i).y);
+		cout << monster->GetPosition().x << "," << monster->GetPosition().y << endl;
 		AddGo(monster);
 	}
 }
@@ -593,6 +598,30 @@ void SceneGame::OnReviveCowBoy()
 const list<Monster*>* SceneGame::GetMonsterList() const
 {
 	return &monsterPool.GetUseList();
+}
+
+void SceneGame::SetSpawnMonsterPos(TileMap* tilemap)
+{
+	sf::Vector2f sizeT = tilemap->GetTileSize();
+	for (auto tile : tilemap->tiles)
+	{
+		if (tile.x == 0 && tile.texIndex < 2)
+		{
+			monsterSpawnPosLeft.push_back({ sizeT.x / 2.f, tile.y * sizeT.y + sizeT.y / 2.f });
+		}
+		if (tile.y == 0 && tile.texIndex < 2)
+		{
+			monsterSpawnPosTop.push_back({ tile.x * sizeT.x + sizeT.x / 2, sizeT.y / 2 });
+		}
+		if (tile.x == 15 && tile.texIndex < 2)
+		{
+			monsterSpawnPosRight.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+		}
+		if (tile.y == 15 && tile.texIndex < 2)
+		{
+			monsterSpawnPosBottom.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
+		}
+	}
 }
 
 //void SceneGame::BlinkCowboy()

@@ -21,9 +21,10 @@ public:
 
 	bool Load(const std::string& filePath);
 
-	sf::Vector2f GetTileSize();
+	sf::Vector2f GetTileMapSize();
 	int GetTileIndex(int x, int y);
 	Tile& GetTile(const int x, const int y);
 	std::vector<Tile> tiles;
 	void setScale(float scaleX, float scaleY);
+	sf::Vector2f GetTileSize();
 };
