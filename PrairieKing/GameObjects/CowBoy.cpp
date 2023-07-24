@@ -151,6 +151,7 @@ void CowBoy::Update(float dt)
 		{
 			direction /= magnitude;
 		}
+		direction.y *= 0.5625f;
 		velocity = direction * speed;
 
 		newPosition = position + velocity * dt;
@@ -290,7 +291,6 @@ void CowBoy::Update(float dt)
 						{
 							bullet->SetMonsterList(sceneGame->GetMonsterList());
 							sceneGame->AddGo(bullet);
-							//bullet->sortLayer = 101;
 							
 						}
 					}
@@ -310,7 +310,6 @@ void CowBoy::Update(float dt)
 					{
 						bullet->SetMonsterList(sceneGame->GetMonsterList());
 						sceneGame->AddGo(bullet);
-						//bullet->sortLayer = 101;
 					}
 					SCENE_MGR.GetCurrScene()->AddGo(bullet);
 					rebound = true;

@@ -144,7 +144,7 @@ void SceneGame::Init()
 		monster->SetType(monsterType);
 		monster->SetCowboy(cowBoy);
 		monster->SetPool(&monsterPool);
-		monster->SetTileMap(tileMap1, 32);
+		monster->SetTileMap(tileMap1,32);
 		monster->sortLayer = 2; //플레이어와 동일
 	};
 	monsterPool.Init();
@@ -251,26 +251,6 @@ void SceneGame::Enter()
 
 	/*---몬스터 스폰 위치 설정----*/
 	SetSpawnMonsterPos(tileMap1);
-	//sf::Vector2f sizeT = tileMap1->GetTileSize();
-	//for (auto tile : tileMap1->tiles)
-	//{
-	//	if (tile.x == 0 && tile.texIndex < 2)
-	//	{
-	//		monsterSpawnPosLeft.push_back({ sizeT.x / 2.f, tile.y * sizeT.y + sizeT.y / 2.f });
-	//	}
-	//	if (tile.y == 0 && tile.texIndex < 2)
-	//	{
-	//		monsterSpawnPosTop.push_back({ tile.x * sizeT.x + sizeT.x / 2, sizeT.y / 2 });
-	//	}
-	//	if (tile.x == 15 && tile.texIndex < 2)
-	//	{
-	//		monsterSpawnPosRight.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
-	//	}
-	//	if (tile.y == 15 && tile.texIndex < 2)
-	//	{
-	//		monsterSpawnPosBottom.push_back({ tile.x * sizeT.x + sizeT.x / 2, tile.y * sizeT.y + sizeT.y / 2.f });
-	//	}
-	//}
 }
 
 void SceneGame::Exit()
@@ -649,13 +629,6 @@ void SceneGame::TakeItem(Item* item)
 	{
 		GetLife();
 	}
-	/*else if (item->GetType() == Item::ItemTypes::Nuke)
-	{
-		for (auto monster : monsterPool.GetUseList())
-		{
-			monster->OnBoom();
-		}
-	}*/
 	else
 	{
 		if (!haveItem)
@@ -671,7 +644,18 @@ void SceneGame::TakeItem(Item* item)
 		}
 		else
 		{
-			cowBoy->TakeItem(item->GetType());
+			if (item->GetType() == Item::ItemTypes::Nuke)
+			{
+				UseNuke();
+			}
+			else if (item->GetType() == Item::ItemTypes::NinzaBox)
+			{
+				UseNiza();
+			}
+			else
+			{
+				cowBoy->TakeItem(item->GetType());
+			}
 		}
 	}
 	RemoveItem(item);

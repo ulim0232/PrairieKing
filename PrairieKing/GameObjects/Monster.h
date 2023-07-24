@@ -44,7 +44,7 @@ protected:
 	AnimationController animation;
 	TileMap* tileMap;
 	int tileWidth = 0;
-	sf::Vector2i tileSize = { 32.f, 32.f };
+	sf::Vector2i tileSize = { 80, 45 };
 	sf::FloatRect intersection;
 public:
 	Monster(const string& n = "");
@@ -55,6 +55,7 @@ public:
 	virtual void Reset() override;
 
 	virtual void Update(float dt) override;
+	virtual void Draw(sf::RenderWindow& window) override;
 
 	void SetPool(ObjectPool<Monster>* pool) { this->pool = pool; }
 

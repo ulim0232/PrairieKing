@@ -27,9 +27,10 @@ void Monster::Init()
 
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
-	//sprite.setScale({ 2.f, 2.f 
 	sprite.setScale({ 5.0f, 2.8125f });
-	hitBox.setSize(sf::Vector2f(boxSize));
+
+	//hitBox.setSize(sf::Vector2f(boxSize));
+	hitBox.setSize({ 60.f, 40.f });
 	Utils::SetOrigin(hitBox, Origins::MC);
 	hitBox.setFillColor(sf::Color::Transparent);
 	hitBox.setOutlineThickness(1);
@@ -70,6 +71,7 @@ void Monster::Update(float dt)
 
 			float distance = Utils::Distance(cowboyPos, position);
 			direction = Utils::Normalize(cowboyPos - position);
+			direction.y *= 0.5625f; //이동량 보정
 
 			if (absX > absY) //x값만 이동
 			{
@@ -80,12 +82,43 @@ void Monster::Update(float dt)
 				direction.x = 0;
 			}
 			//같으면 대각선 이동
+			//장애물 충돌 수정
 			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 			{
 				velocity = direction * speed;
-				position += velocity * dt;
+				sf::Vector2f newPos = position + velocity * dt;
+				hitBox.setPosition(newPos);
+
+				for (auto tile : tileMap->tiles)
+				{
+					float tileL = (tileSize.x * tile.x);
+					float tileT = (tileSize.y * tile.y);
+					sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+					if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+					{
+						if (IsCollisoinTile(tile.texIndex))
+						{
+							hitBox.setOutlineColor(sf::Color::Red);
+							newPos = position;
+						}
+						else
+						{
+							hitBox.setOutlineColor(sf::Color::Cyan);
+						}
+					}
+				}
+				position = newPos;
 				SetPosition(position);
+				hitBox.setPosition(position);
 			}
+			//if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
+			//{
+			//	velocity = direction * speed;
+			//	sf::Vector2f newPos = position + velocity * dt;
+			//	position += velocity * dt;
+			//	SetPosition(position);
+			//}
 
 		}
 		if (sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()))
@@ -114,6 +147,12 @@ void Monster::Update(float dt)
 			}
 		}
 	}
+}
+
+void Monster::Draw(sf::RenderWindow& window)
+{
+	SpriteGo::Draw(window);
+	window.draw(hitBox);
 }
 
 void Monster::SetType(Types t)
@@ -190,8 +229,10 @@ void Monster::SetTileMap(TileMap* map, int width)
 
 bool Monster::IsCollisoinTile(int index)
 {
-	if (index > 4)
+	/*if (index > 4)
 	{
 		return true;
-	}
+	}*/
+
+	return (index > 4);
 }
