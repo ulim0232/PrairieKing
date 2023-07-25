@@ -15,10 +15,7 @@ class SceneGame : public Scene
 {
 protected:
 	/*---sound---*/
-	sf::SoundBuffer stage1BgmBuffer;
 	sf::Sound stage1Bgm;
-
-	sf::SoundBuffer pDieSoundBuffer;
 	sf::Sound pDieSound;
 
 	/*--풀--*/
@@ -50,6 +47,7 @@ protected:
 	SpriteGo* timerUI;
 	SpriteGo* keyUI; 
 	SpriteGo* pickedItemUI;
+	SpriteGo* arrow;
 
 	Item* pickedItem = nullptr;
 	int lifeCount = 3;
@@ -64,9 +62,10 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 30000.0f; //30
+	float timeLimit = 5.f; //30
 
 	bool isTimerRunning = true;
+	bool isCowBoyDie = false;
 
 	float mosterSpawnLimit = 3.f; //3초마다 몬스터 생성
 	float reviveLimit = 3.f; //플레이어 사망 시 3초후 재생성
@@ -77,9 +76,12 @@ protected:
 	bool roundClear = false; //라운드 클리어 설정
 	bool isGameOver = false;
 	bool haveItem = false;
+	bool roundChange = false;
 
 	sf::Vector2f size;
 	sf::Vector2f centerPos;
+
+	int clearRound = 0;
 
 	//sf::Clock clock;
 	//const sf::Time blinkTime = sf::seconds(0.2f);
@@ -115,7 +117,7 @@ public:
 
 	template <typename T>
 	void ClearObjectPool(ObjectPool<T>& pool);
-	bool GetRoundClear();
+	bool GetRoundChange();
 };
 
 template<typename T>

@@ -15,7 +15,6 @@ Scene::~Scene()
 
 GameObject* Scene::FindGo(const std::string& name)
 {
-
 	for (auto go : gameObjects)
 	{
 		if (go->GetName() == name)

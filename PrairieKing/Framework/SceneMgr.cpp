@@ -24,8 +24,6 @@ void SceneMgr::Init()
 	currentSceneId = startSceneId;
 	currentScene = scenes[(int)currentSceneId];
 	currentScene->Enter();
-
-
 }
 
 void SceneMgr::Release()

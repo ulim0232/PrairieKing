@@ -182,6 +182,7 @@
     <ClCompile Include="Framework\ResourceMgr.cpp" />
     <ClCompile Include="GameObjects\Monster.cpp" />
     <ClCompile Include="DataTables\MonsterTable.cpp" />
+    <ClCompile Include="GameObjects\Merchant.cpp" />
     <ClCompile Include="Scenes\SceneEnding.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneGame.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="GameObjects\Monster.h" />
     <ClInclude Include="DataTables\MonsterTable.h" />
     <ClInclude Include="DataTables\ItemTable.h" />
+    <ClInclude Include="GameObjects\Merchant.h" />
     <ClInclude Include="Scenes\SceneEnding.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneGame.h" />

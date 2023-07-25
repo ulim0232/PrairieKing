@@ -59,8 +59,8 @@ protected:
 	float timerMuchine = 0.f;
 	float timerWheel = 0.f;
 	float itmeDuration = 5.f; //아이템 유지 시간
-	float gapLegToHead = 4.f;
-	float speed = 150.f; //100
+	float gapLegToHead = 12.f;
+	float speed = 100.f; //100
 	float timer = 0.f; //연사 속도 조절에 사용
 	float shotDelay = 0.3f;
 	float shotSpeed = 300.f; //800

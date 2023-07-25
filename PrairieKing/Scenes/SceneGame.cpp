@@ -35,15 +35,6 @@ void SceneGame::Init()
 	uiView.setSize(size);
 	uiView.setCenter(centerPos);
 
-	/*----오디오 설정----*/
-	stage1BgmBuffer.loadFromFile("sounds/OverWorld.wav");
-	stage1Bgm.setBuffer(stage1BgmBuffer);
-	stage1Bgm.setLoop(true);
-
-	pDieSoundBuffer.loadFromFile("sounds/PlayerDie.wav");
-	pDieSound.setBuffer(pDieSoundBuffer);
-	pDieSound.setLoop(false);
-
 	/*----맵 설정----*/
 	tileMap1 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap1"));
 	tileMap2 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap2"));
@@ -65,6 +56,9 @@ void SceneGame::Init()
 	timerUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/timerUI.png", "timerUI"));
 	keyUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/controlKey.png", "keyUI"));
 	pickedItemUI = (SpriteGo*)AddGo(new SpriteGo("graphics/items/coffee.png", "pickedItemUI"));
+	arrow = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/arrow.png", "arrowUI"));
+	sf::Vector2f sizeRect(10.f, 10.f);
+	AddGo(new RectangleGo(sizeRect, "center"));
 
 	coinUI->sprite.setScale({ 2.f, 2.f });
 	itemUI->sprite.setScale({ 2.f, 2.f });
@@ -73,6 +67,7 @@ void SceneGame::Init()
 	timerUI->sprite.setScale({ 2.f, 2.f });
 	keyUI->sprite.setScale({ 2.f, 2.f }); 
 	pickedItemUI->sprite.setScale({ 2.f, 2.f });
+	arrow->sprite.setScale({ 2.f, 2.f });
 
 	coinUI->sortLayer = 100;
 	itemUI->sortLayer = 100;
@@ -81,8 +76,10 @@ void SceneGame::Init()
 	timerUI->sortLayer = 100;
 	keyUI->sortLayer = 100;
 	pickedItemUI->sortLayer = 100;
+	arrow->sortLayer = 4;
 
 	pickedItemUI->SetActive(false);
+	arrow->SetActive(false);
 
 	/*----텍스트 설정----*/
 	coinTxt = (TextGo*)AddGo(new TextGo("coinTxt", "fonts/angel.ttf"));
@@ -135,6 +132,7 @@ void SceneGame::Init()
 	timerUI->SetOrigin(Origins::MC);
 	keyUI->SetOrigin(Origins::MC);
 	pickedItemUI->SetOrigin(Origins::MC);
+	arrow->SetOrigin(Origins::MC);
 
 	/*----몬스터 생성----*/
 	monsterPool.OnCreate = [this](Monster* monster)
@@ -178,10 +176,18 @@ void SceneGame::Enter()
 	size = FRAMEWORK.GetWindowSize();
 	centerPos = size * 0.5f;
 
+	Scene::Enter();
+
+	/*----오디오 설정----*/
+	stage1Bgm.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/OverWorld.wav"));
+	stage1Bgm.setLoop(true);
+
+	pDieSound.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/PlayerDie.wav"));
+	pDieSound.setLoop(false);
+	pDieSound.setVolume(50.f);
+
 	stage1Bgm.play();
 	stage1Bgm.setVolume(40.f);
-
-	Scene::Enter();
 
 	/*---뷰포트 설정---*/
 	float viewRatioY = 0.7f;
@@ -199,10 +205,10 @@ void SceneGame::Enter()
 	pickedItem = nullptr;
 	roundClear = false;
 	haveItem = false;
+	clearRound = 0;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
-	//sf::Vector2f tileSize(512, 512);
 	sf::Vector2f tileSize = tileMap1->GetTileMapSize();
 
 	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
@@ -212,6 +218,7 @@ void SceneGame::Enter()
 	timerUI->SetPosition(mapPosition.x - tileSize.x / 2 + 9, mapPosition.y - tileSize.y / 2 - 20);
 	keyUI->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 + 55);
 	pickedItemUI->SetPosition(itemUI->GetPosition());
+	arrow->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 - 48);
 	
 	/*----txt 설정----*/
 	coinTxt->SetPosition(coinUI->GetPosition().x + 20, coinUI->GetPosition().y - 20);
@@ -229,7 +236,7 @@ void SceneGame::Enter()
 	timerM = 0.0f;
 	
 	/*---플레이어 설정----*/
-	Utils::SetOrigin(cowBoy->head, Origins::BC);
+	Utils::SetOrigin(cowBoy->head, Origins::MC);
 	Utils::SetOrigin(cowBoy->leg, Origins::TC);
 	cowBoy->SetPosition(tileMap1->GetPosition());
 	cowBoy->SetTileMap(tileMap1, 32);
@@ -251,6 +258,12 @@ void SceneGame::Enter()
 
 	/*---몬스터 스폰 위치 설정----*/
 	SetSpawnMonsterPos(tileMap1);
+
+	RectangleGo* rect = (RectangleGo*)FindGo("center");
+	rect->sortLayer = 5;
+	rect->SetOrigin(Origins::MC);
+	rect->SetPosition(tileMap1->GetPosition());
+	rect->rectangle.setFillColor(sf::Color::Magenta);
 }
 
 void SceneGame::Exit()
@@ -310,37 +323,15 @@ void SceneGame::Update(float dt)
 	}
 	if (currentTime >= timeLimit)
 	{
-		currentTime = 0.0f;
 		isTimerRunning = false;
+		currentTime = 0.0f;
 		timerGauge->rectangle.setSize({ 0, 10 });
-		if (monsterPool.GetUseList().empty())
-		{
-			roundClear = true;
-			switch (currentStage)
-			{
-			case 1:
-				currentMap = tileMap2;
-				currentStage = 2;
-				break;
-			case 2:
-				currentMap = tileMap3;
-				currentStage = 3;
-				break;
-			case 3:
-				currentMap = tileMap4;
-				currentStage = 4;
-				break;
-			case 4:
-				currentMap = tileMap5;
-				currentStage = 5;
-				break;
-			}
-		}
+		
 	}
 	/*--타이머 게이지 설정--*/
 	if(isTimerRunning)
 	{
-		//currentTime += dt;
+		currentTime += dt;
 		float decreaseWidth = timerDecreaseAmount * currentTime;
 		float newWidth = initualWidth - decreaseWidth;
 		timerGauge->rectangle.setSize(sf::Vector2f(newWidth, timerGauge->rectangle.getSize().y));
@@ -348,13 +339,13 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			//SpawnMonster(num);
+			SpawnMonster(num);
 			timerM = 0.f;
 		}
 	}
 	else
 	{
-		if(!roundClear) //플레이어가 죽었을 때
+		if(!roundClear && currentTime > 0) //플레이어가 죽었을 때
 		{
 			timerR += dt;
 			if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
@@ -374,6 +365,32 @@ void SceneGame::Update(float dt)
 				isTimerRunning = true;
 			}
 		}
+		else
+		{
+			if (monsterPool.GetUseList().empty() && !roundClear)
+			{
+				roundClear = true;
+				switch (currentStage)
+				{
+				case 1:
+					currentMap = tileMap2;
+					currentStage = 2;
+					break;
+				case 2:
+					currentMap = tileMap3;
+					currentStage = 3;
+					break;
+				case 3:
+					currentMap = tileMap4;
+					currentStage = 4;
+					break;
+				case 4:
+					currentMap = tileMap5;
+					currentStage = 5;
+					break;
+				}
+			}
+		}
 		/*부활 시 플레이어 blink 추가 필요
 		if (timerR == 0.f)
 		{
@@ -387,11 +404,9 @@ void SceneGame::Update(float dt)
 			}
 		}*/
 	}
-
-	 //제한시간이 종료되면 라운드 전환으로 변환 필요
-	
 	if (roundClear) //라운드 클리어
 	{
+		//arrow->SetActive(true);
 		//아이템 삭제
 		list<Item*> items = itemPool.GetUseList();
 		if (!items.empty())
@@ -450,23 +465,42 @@ void SceneGame::Update(float dt)
 			{
 				monster->SetTileMap(currentMap, 32);
 			}
+			arrow->SetActive(true);
+			clearRound++;
 		}
-		//타이머 초기화
-		timerGauge->rectangle.setSize(timersize);
-		
+		if(clearRound==2)
+		{
+		}
 		//플레이어 위치 이동
-		if (cowBoy->GetPosition().y < currentMap->GetPosition().y)
+		if (arrow->sprite.getGlobalBounds().intersects(cowBoy->GetHitBox().getGlobalBounds()))
 		{
-			cowBoy->RoundClearMove(dt);
+			roundChange = true;
+			arrow->SetPosition(currentMap->GetPosition().x, currentMap->GetPosition().y + currentMap->GetTileMapSize().y / 2 - currentMap->GetTileSize().y);
+			arrow->SetActive(false);
 		}
-		else
+		if(roundChange)
 		{
-			//이전 맵 delete 추가 필요
+			//cout << "boy: " << cowBoy->GetPosition().y << endl;
+			//cout << "map: " << currentMap->GetPosition().y << endl;
+			if (cowBoy->GetPosition().y < currentMap->GetPosition().y)
+			{
+				cowBoy->RoundClearMove(dt);
+			}
+			else
+			{
+				//이전 맵 delete 추가 필요
+				roundChange = false;
+				timerGauge->rectangle.setSize(timersize);
+			}
+		}
+		if(cowBoy->GetPosition().y >= currentMap->GetPosition().y)
+		{
 			currentTime += dt;
 		}
-		if (worldView.getCenter().y <= currentMap->GetPosition().y)
+		//월드 뷰 이동
+		if (worldView.getCenter().y <= currentMap->GetPosition().y && roundChange)
 		{
-			worldView.setCenter(worldView.getCenter().x, worldView.getCenter().y + 200 * dt);
+			worldView.setCenter(worldView.getCenter().x, worldView.getCenter().y + 300 * dt);
 		}
 		//3초 후 재시작
 		if (currentTime >= 3.0f)
@@ -726,7 +760,7 @@ void SceneGame::UseNuke()
 	}
 }
 
-bool SceneGame::GetRoundClear()
+bool SceneGame::GetRoundChange()
 {
-	return roundClear;
+	return roundChange;
 }

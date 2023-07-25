@@ -6,9 +6,6 @@
 0,graphics/UIs/life.png
 0,graphics/UIs/shot.png
 0,graphics/UIs/timerUI.png
-1,fonts/mugunghwa.ttf
-1,fonts/NanumYeBbeunMinGyeongCe.ttf
-1,fonts/esamanruMedium.ttf
 1,fonts/angel.ttf
 0,graphics/UIs/controlKey.png
 0,graphics/items/coin1.png
@@ -20,3 +17,6 @@
 0,graphics/items/screenNuke.png
 0,graphics/items/ninzaBox.png
 0,graphics/monsters/Monster_sheet.png
+0,graphics/UIs/arrow.png
+2,sounds/OverWorld.wav
+2,sounds/PlayerDie.wav

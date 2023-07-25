@@ -48,7 +48,7 @@ void CowBoy::Init()
 
 	/*--set hitbox--*/
 	hitBox.setSize(sf::Vector2f(boxSize));
-	Utils::SetOrigin(hitBox, Origins::BC);
+	Utils::SetOrigin(hitBox, Origins::MC);
 	hitBox.setFillColor(sf::Color::Transparent);
 	hitBox.setOutlineThickness(1);
 	hitBox.setOutlineColor(sf::Color::Cyan);
@@ -90,7 +90,7 @@ void CowBoy::Reset()
 	isShotGun = false; //삿건
 	isMachineGun = false; //머신건
 	isWheel = false; // 바퀴
-	speed = 150.f;
+	speed = 100.f;
 
 	/*텍스쳐 초기화*/
 	if (headAnimation.IsPlaying())
@@ -114,6 +114,7 @@ void CowBoy::Reset()
 	for (auto bullet : poolBullets.GetUseList())
 	{
 		SCENE_MGR.GetCurrScene()->RemoveGo(bullet);
+		poolBullets.Return(bullet);
 	}
 	//poolBullets.Clear();
 }
@@ -129,18 +130,7 @@ void CowBoy::Update(float dt)
 		Scene* scene = SCENE_MGR.GetCurrScene();
 		SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 		
-		if (!sceneGame->GetRoundClear())
-		
-		//	//라운드 클리어 이동
-		//	if (position.y < tileMap->GetPosition().y)
-		//	{
-		//		direction = { 0, 1 };
-		//		velocity = direction * speed;
-		//		position += velocity * dt;
-		//		SetPosition(position);
-		//	}
-		//}
-		//else
+		if (!sceneGame->GetRoundChange())
 		{
 			direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
 			direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
@@ -292,7 +282,7 @@ void CowBoy::Update(float dt)
 						Bullet* bullet = poolBullets.Get();
 						bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
 
-						sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+						sf::Vector2f fireP(GetPosition().x, GetPosition().y);
 						bullet->Fire(fireP, fireDir, shotSpeed);
 
 						Scene* scene = SCENE_MGR.GetCurrScene();
@@ -310,7 +300,7 @@ void CowBoy::Update(float dt)
 				{
 					Bullet* bullet = poolBullets.Get();
 					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
-					sf::Vector2f fireP(GetPosition().x, GetPosition().y - 10.f);
+					sf::Vector2f fireP(GetPosition().x, GetPosition().y);
 					bullet->Fire(fireP, look, shotSpeed);
 				
 					Scene* scene = SCENE_MGR.GetCurrScene();
@@ -343,7 +333,7 @@ void CowBoy::Update(float dt)
 	if (isSpeedUp && timerCoffee >= itmeDuration) //커피 종료
 	{
 		cout << "speed down" << endl;
-		speed = 300.f;
+		speed = 100.f;
 		isSpeedUp = false;
 		timerCoffee = 0.f;
 	}
@@ -385,20 +375,20 @@ void CowBoy::Draw(sf::RenderWindow& window)
 {
 	window.draw(head);
 	window.draw(leg);
-	window.draw(hitBox);
-	window.draw(tileBox);
+	//window.draw(hitBox);
+	//window.draw(tileBox);
 }
 
 void CowBoy::SetPosition(const sf::Vector2f& p)
 {
 	GameObject::SetPosition(p);
 	head.setPosition(p);
-	leg.setPosition(p.x, p.y - gapLegToHead);
+	leg.setPosition(p.x, p.y + gapLegToHead);
 }
 
 void CowBoy::SetPosition(float x, float y)
 {
-	GameObject::SetPosition(x, y);;
+	GameObject::SetPosition(x, y);
 	head.setPosition(x, y);
 	leg.setPosition(x, y);
 }
@@ -490,16 +480,16 @@ void CowBoy::SetIsDie(bool is)
 void CowBoy::RoundClearMove(float dt)
 {
 	direction = { 0, 1 };
-	velocity = direction * speed;
+	velocity = direction * 150.f;
 	position += velocity * dt;
 	SetPosition(position);
 }
 
 void CowBoy::TakeItem(Item::ItemTypes type)
 {
-	if (type == Item::ItemTypes::Coffee && !isSpeedUp)
+	if (type == Item::ItemTypes::Coffee)
 	{
-		speed = 300.f;
+		speed = speed * 2.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}

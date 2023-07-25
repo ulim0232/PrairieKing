@@ -5,6 +5,7 @@
 #include "SpriteGo.h"
 #include "InputMgr.h"
 #include "SceneMgr.h"
+#include "ResourceMgr.h"
 
 SceneTitle::SceneTitle()
 	:Scene(SceneId::Title)
@@ -30,9 +31,7 @@ void SceneTitle::Init()
 	titleIcon->SetPosition(centerPos.x, size.y);
 
 	/*----bgm ¼³Á¤----*/
-	titleBgmBuffer.loadFromFile("sounds/Title.wav");
-	titleBgm.setBuffer(titleBgmBuffer);
-	titleBgm.setLoop(true);
+	//titleBgmBuffer.loadFromFile("sounds/Title.wav");
 
 	for (auto go : gameObjects)
 	{
@@ -53,6 +52,8 @@ void SceneTitle::Enter()
 {
 	Scene::Enter();
 
+	titleBgm.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/Title.wav"));
+	titleBgm.setLoop(true);
 	titleBgm.play();
 	titleBgm.setVolume(40.f);
 
