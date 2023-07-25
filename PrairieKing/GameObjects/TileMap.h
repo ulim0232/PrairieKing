@@ -15,7 +15,10 @@ protected:
 	sf::Vector2f tileSize = { 32.f, 32.f };
 	sf::Vector2f texSize = { 16.f, 16.f };
 	sf::Vector2i size;
+	
 public:
+	bool isLood = false;
+
 	TileMap(const std::string& textureId = "", const std::string& n = "");
 	virtual ~TileMap() override;
 

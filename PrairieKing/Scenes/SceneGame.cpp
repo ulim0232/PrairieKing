@@ -26,8 +26,8 @@ void SceneGame::Init()
 {
 	Release();
 
-	auto size = FRAMEWORK.GetWindowSize();
-	sf::Vector2f centerPos = size * 0.5f;
+	size = FRAMEWORK.GetWindowSize();
+	centerPos = size * 0.5f;
 	
 	worldView.setSize({ 512, 512 });
 	worldView.setCenter(centerPos);
@@ -110,22 +110,21 @@ void SceneGame::Init()
 	tileMap1->SetOrigin(Origins::MC);
 	tileMap1->SetPosition(centerPos);
 
-	tileMap2->Load("maps/stage1-2.csv");
-	tileMap2->SetOrigin(Origins::MC);
-	//tileMap2->SetPosition(centerPos);
-	tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileMapSize().y);
+	//tileMap2->Load("maps/stage1-2.csv");
+	//tileMap2->SetOrigin(Origins::MC);
+	//tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileMapSize().y);
 
-	tileMap3->Load("maps/stage1-3.csv");
-	tileMap3->SetOrigin(Origins::MC);
-	tileMap3->SetPosition(centerPos);
+	//tileMap3->Load("maps/stage1-3.csv");
+	//tileMap3->SetOrigin(Origins::MC);
+	//tileMap3->SetPosition(centerPos);
 
-	tileMap4->Load("maps/stage1-4.csv");
-	tileMap4->SetOrigin(Origins::MC);
-	tileMap4->SetPosition(centerPos);
+	//tileMap4->Load("maps/stage1-4.csv");
+	//tileMap4->SetOrigin(Origins::MC);
+	//tileMap4->SetPosition(centerPos);
 
-	tileMap5->Load("maps/stage1-5.csv");
-	tileMap5->SetOrigin(Origins::MC);
-	tileMap5->SetPosition(centerPos);
+	//tileMap5->Load("maps/stage1-5.csv");
+	//tileMap5->SetOrigin(Origins::MC);
+	//tileMap5->SetPosition(centerPos);
 
 
 	/*----UI설정----*/
@@ -176,8 +175,8 @@ void SceneGame::Release()
 
 void SceneGame::Enter()
 {
-	auto size = FRAMEWORK.GetWindowSize();
-	sf::Vector2f centerPos = size * 0.5f;
+	size = FRAMEWORK.GetWindowSize();
+	centerPos = size * 0.5f;
 
 	stage1Bgm.play();
 	stage1Bgm.setVolume(40.f);
@@ -236,11 +235,11 @@ void SceneGame::Enter()
 	cowBoy->SetTileMap(tileMap1, 32);
 
 	/*----맵 설정----*/
-	tileMap1->SetActive(true);
-	tileMap2->SetActive(true); 
-	tileMap3->SetActive(false);
-	tileMap4->SetActive(false);
-	tileMap5->SetActive(false);
+	//tileMap1->SetActive(true);
+	//tileMap2->SetActive(true); 
+	//tileMap3->SetActive(false);
+	//tileMap4->SetActive(false);
+	//tileMap5->SetActive(false);
 
 	currentMap = tileMap1;
 
@@ -284,72 +283,10 @@ void SceneGame::Update(float dt)
 	{
 		SpawnMonster(1);
 	}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
-	//{
-	//	tileMap1->SetActive(true);
-	//	tileMap2->SetActive(false);
-	//	tileMap3->SetActive(false);
-	//	tileMap4->SetActive(false);
-	//	tileMap5->SetActive(false);
-	//	cowBoy->SetTileMap(tileMap1, 32);
-	//	for (auto monster : monsterPool.GetUseList())
-	//	{
-	//		monster->SetTileMap(tileMap1, 32);
-	//	}
-	//}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
-	//{
-	//	tileMap1->SetActive(false);
-	//	tileMap2->SetActive(true);
-	//	tileMap3->SetActive(false);
-	//	tileMap4->SetActive(false);
-	//	tileMap5->SetActive(false);
-	//	cowBoy->SetTileMap(tileMap2, 32);
-	//	for (auto monster : monsterPool.GetUseList())
-	//	{
-	//		monster->SetTileMap(tileMap2, 32);
-	//	}
-	//}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
-	//{
-	//	tileMap1->SetActive(false);
-	//	tileMap2->SetActive(false);
-	//	tileMap3->SetActive(true);
-	//	tileMap4->SetActive(false);
-	//	tileMap5->SetActive(false);
-	//	cowBoy->SetTileMap(tileMap3, 32);
-	//	for (auto monster : monsterPool.GetUseList())
-	//	{
-	//		monster->SetTileMap(tileMap3, 32);
-	//	}
-	//}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num4))
-	//{
-	//	tileMap1->SetActive(false);
-	//	tileMap2->SetActive(false);
-	//	tileMap3->SetActive(false);
-	//	tileMap4->SetActive(true);
-	//	tileMap5->SetActive(false);
-	//	cowBoy->SetTileMap(tileMap4, 32);
-	//	for (auto monster : monsterPool.GetUseList())
-	//	{
-	//		monster->SetTileMap(tileMap4, 32);
-	//	}
-	//}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num5))
-	//{
-	//	tileMap1->SetActive(false);
-	//	tileMap2->SetActive(false);
-	//	tileMap3->SetActive(false);
-	//	tileMap4->SetActive(false);
-	//	tileMap5->SetActive(true);
-	//	cowBoy->SetTileMap(tileMap5, 32);
-	//	cowBoy->SetPosition(tileMap5->GetPosition().x, tileMap5->GetPosition().y - 20.f);
-	//	for (auto monster : monsterPool.GetUseList())
-	//	{
-	//		monster->SetTileMap(tileMap5, 32);
-	//	}
-	//}
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
+	{
+		currentTime = 50000.f;
+	}
 	//아이템 사용
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space) && haveItem)
 	{
@@ -371,11 +308,39 @@ void SceneGame::Update(float dt)
 			haveItem = false;
 		}
 	}
-	
+	if (currentTime >= timeLimit)
+	{
+		currentTime = 0.0f;
+		isTimerRunning = false;
+		timerGauge->rectangle.setSize({ 0, 10 });
+		if (monsterPool.GetUseList().empty())
+		{
+			roundClear = true;
+			switch (currentStage)
+			{
+			case 1:
+				currentMap = tileMap2;
+				currentStage = 2;
+				break;
+			case 2:
+				currentMap = tileMap3;
+				currentStage = 3;
+				break;
+			case 3:
+				currentMap = tileMap4;
+				currentStage = 4;
+				break;
+			case 4:
+				currentMap = tileMap5;
+				currentStage = 5;
+				break;
+			}
+		}
+	}
 	/*--타이머 게이지 설정--*/
 	if(isTimerRunning)
 	{
-		currentTime += dt;
+		//currentTime += dt;
 		float decreaseWidth = timerDecreaseAmount * currentTime;
 		float newWidth = initualWidth - decreaseWidth;
 		timerGauge->rectangle.setSize(sf::Vector2f(newWidth, timerGauge->rectangle.getSize().y));
@@ -424,16 +389,9 @@ void SceneGame::Update(float dt)
 	}
 
 	 //제한시간이 종료되면 라운드 전환으로 변환 필요
-	if (currentTime >= timeLimit)
-	{
-		currentTime = 0.0f;
-		roundClear = true;
-		isTimerRunning = false;
-		timerGauge->rectangle.setSize({ 0, 10 });
-	}
+	
 	if (roundClear) //라운드 클리어
 	{
-		currentTime += dt;
 		//아이템 삭제
 		list<Item*> items = itemPool.GetUseList();
 		if (!items.empty())
@@ -456,20 +414,60 @@ void SceneGame::Update(float dt)
 			}
 		}
 		//맵 변경
-		tileMap1->SetActive(false);
-		tileMap2->SetActive(true);
-		cowBoy->SetTileMap(tileMap2, 32);
-		for (auto monster : monsterPool.GetPool())
+		if (!currentMap->isLood)
 		{
-			monster->SetTileMap(tileMap2, 32);
-		}
+			switch (currentStage)
+			{
+			case 2:
+				currentMap->Load("maps/stage1-2.csv");
+				currentMap->SetOrigin(Origins::MC);
+				currentMap->SetPosition(tileMap1->GetPosition().x, tileMap1->GetPosition().y + tileMap1->GetTileMapSize().y);
+				break;
+			case 3:
+				currentMap->Load("maps/stage1-3.csv");
+				currentMap->SetOrigin(Origins::MC);
+				currentMap->SetPosition(tileMap2->GetPosition().x, tileMap2->GetPosition().y + tileMap2->GetTileMapSize().y);
+				break;
+			case 4:
+				currentMap->Load("maps/stage1-4.csv");
+				currentMap->SetOrigin(Origins::MC);
+				currentMap->SetPosition(tileMap3->GetPosition().x, tileMap3->GetPosition().y + tileMap3->GetTileMapSize().y);
+				break;
+			case 5:
+				currentMap->Load("maps/stage1-5.csv");
+				currentMap->SetOrigin(Origins::MC);
+				currentMap->SetPosition(tileMap4->GetPosition().x, tileMap4->GetPosition().y + tileMap4->GetTileMapSize().y);
+				break;
+			default:
+				break;
+			}
+			//몬스터 스폰 지점 수정
+			SetSpawnMonsterPos(currentMap);
 
+			//플레이어, 몬스터 tilemap 변경
+			cowBoy->SetTileMap(currentMap, 32);
+			for (auto monster : monsterPool.GetPool())
+			{
+				monster->SetTileMap(currentMap, 32);
+			}
+		}
 		//타이머 초기화
 		timerGauge->rectangle.setSize(timersize);
 		
 		//플레이어 위치 이동
-		cowBoy->SetPosition(tileMap2->GetPosition());
-
+		if (cowBoy->GetPosition().y < currentMap->GetPosition().y)
+		{
+			cowBoy->RoundClearMove(dt);
+		}
+		else
+		{
+			//이전 맵 delete 추가 필요
+			currentTime += dt;
+		}
+		if (worldView.getCenter().y <= currentMap->GetPosition().y)
+		{
+			worldView.setCenter(worldView.getCenter().x, worldView.getCenter().y + 200 * dt);
+		}
 		//3초 후 재시작
 		if (currentTime >= 3.0f)
 		{
@@ -571,6 +569,7 @@ void SceneGame::OnReviveCowBoy()
 	TextGo* findText = (TextGo*)FindGo("lifeTxt");
 	findText->text.setString("X " + to_string(lifeCount));
 	cowBoy->Reset();
+	cowBoy->SetPosition(currentMap->GetPosition());
 	if (pDieSound.getStatus() == sf::SoundSource::Status::Playing)
 	{
 		pDieSound.stop();
@@ -585,6 +584,22 @@ const list<Monster*>* SceneGame::GetMonsterList() const
 
 void SceneGame::SetSpawnMonsterPos(TileMap* tilemap)
 {
+	if (!monsterSpawnPosBottom.empty())
+	{
+		monsterSpawnPosBottom.clear();
+	}
+	if (!monsterSpawnPosTop.empty())
+	{
+		monsterSpawnPosTop.clear();
+	}
+	if (!monsterSpawnPosLeft.empty())
+	{
+		monsterSpawnPosLeft.clear();
+	}
+	if (!monsterSpawnPosRight.empty())
+	{
+		monsterSpawnPosRight.clear();
+	}
 	sf::Vector2f sizeT = tilemap->GetTileSize();
 	sf::Vector2f tileMapLT(tilemap->vertexArray.getBounds().left, tilemap->vertexArray.getBounds().top);
 	for (auto tile : tilemap->tiles)
@@ -709,4 +724,9 @@ void SceneGame::UseNuke()
 	{
 		monster->OnBoom();
 	}
+}
+
+bool SceneGame::GetRoundClear()
+{
+	return roundClear;
 }

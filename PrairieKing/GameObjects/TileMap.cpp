@@ -27,9 +27,6 @@ bool TileMap::Load(const std::string& filePath)
             tiles.push_back(tile);
         }
     }
-
-   /* sf::Vector2f tileSize = { 32.f, 32.f };
-    sf::Vector2f texSize = { 16.f, 16.f };*/
     sf::Vector2f texOffsets[4] =
     {
         { 0.f, 0.f },
@@ -72,6 +69,7 @@ bool TileMap::Load(const std::string& filePath)
         currPos.y += tileSize.y;
     }
 
+    isLood = true;
     return true;
 }
 

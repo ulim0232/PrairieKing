@@ -104,6 +104,8 @@ public:
 
 	void CowBoyDie();
 	void SetIsDie(bool is);
+
+	void RoundClearMove(float dt);
 	
 	sf::RectangleShape GetHitBox();
 	

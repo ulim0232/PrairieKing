@@ -108,6 +108,7 @@ void CowBoy::Reset()
 	legAnimation.Play("Idle");
 
 	SetPosition(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2);
+	//SetPosition(tileMap->GetPosition());
 
 	/*총알 삭제*/
 	for (auto bullet : poolBullets.GetUseList())
@@ -125,73 +126,88 @@ void CowBoy::Update(float dt)
 	//대각선 이동 속도 보정으로 수정
 	if (!isDie)
 	{
-		direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
-		direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
-
-		/*audio*/
-		if (direction.x == 0 && direction.y == 0)
+		Scene* scene = SCENE_MGR.GetCurrScene();
+		SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
+		
+		if (!sceneGame->GetRoundClear())
+		
+		//	//라운드 클리어 이동
+		//	if (position.y < tileMap->GetPosition().y)
+		//	{
+		//		direction = { 0, 1 };
+		//		velocity = direction * speed;
+		//		position += velocity * dt;
+		//		SetPosition(position);
+		//	}
+		//}
+		//else
 		{
-			if (footStep.getStatus() == sf::SoundSource::Status::Playing)
+			direction.x = INPUT_MGR.GetAxis(Axis::Horizontal);
+			direction.y = INPUT_MGR.GetAxis(Axis::Vertical);
+
+			/*audio*/
+			if (direction.x == 0 && direction.y == 0)
 			{
-				footStep.stop();
-			}
-		}
-		if (direction.x != 0 || direction.y != 0)
-		{
-			if (footStep.getStatus() != sf::SoundSource::Status::Playing)
-			{
-				footStep.play();
-				footStep.setVolume(100.f);
-			}
-		}
-
-		/*---이동---*/
-		float magnitude = Utils::Magnitude(direction);
-		if (magnitude > 1.f)
-		{
-			direction /= magnitude;
-		}
-		velocity = direction * speed;
-
-		newPosition = position + velocity * dt;
-		hitBox.setPosition(newPosition);
-
-		for (auto tile : tileMap->tiles)
-		{
-			float tileL = tileMapLT.x + (tileSize.x * tile.x);
-			float tileT = tileMapLT.y + (tileSize.y * tile.y);
-
-			sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
-
-			if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
-			{
-				//이동량 보정
-				float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
-				float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
-				if (IsCollisoinTile(tile.texIndex))
+				if (footStep.getStatus() == sf::SoundSource::Status::Playing)
 				{
-					hitBox.setOutlineColor(sf::Color::Red);
-					if (std::abs(overlapX) < std::abs(overlapY))
+					footStep.stop();
+				}
+			}
+			if (direction.x != 0 || direction.y != 0)
+			{
+				if (footStep.getStatus() != sf::SoundSource::Status::Playing)
+				{
+					footStep.play();
+					footStep.setVolume(100.f);
+				}
+			}
+
+			/*---이동---*/
+			float magnitude = Utils::Magnitude(direction);
+			if (magnitude > 1.f)
+			{
+				direction /= magnitude;
+			}
+			velocity = direction * speed;
+
+			newPosition = position + velocity * dt;
+			hitBox.setPosition(newPosition);
+
+			for (auto tile : tileMap->tiles)
+			{
+				float tileL = tileMapLT.x + (tileSize.x * tile.x);
+				float tileT = tileMapLT.y + (tileSize.y * tile.y);
+
+				sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+				if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+				{
+					//이동량 보정
+					float overlapX = std::abs(intersection.width) * ((velocity.x > 0) ? -1.0f : 1.0f);
+					float overlapY = std::abs(intersection.height) * ((velocity.y > 0) ? -1.0f : 1.0f);
+					if (IsCollisoinTile(tile.texIndex))
 					{
-						newPosition.x = position.x + overlapX;
+						hitBox.setOutlineColor(sf::Color::Red);
+						if (std::abs(overlapX) < std::abs(overlapY))
+						{
+							newPosition.x = position.x + overlapX;
+						}
+						else
+						{
+							newPosition.y = position.y + overlapY;
+						}
 					}
 					else
 					{
-						newPosition.y = position.y + overlapY;
+						hitBox.setOutlineColor(sf::Color::Cyan);
 					}
 				}
-				else
-				{
-					hitBox.setOutlineColor(sf::Color::Cyan);
-				}
 			}
+
+			position = newPosition;
+			SetPosition(position);
+			hitBox.setPosition(position);
 		}
-
-		position = newPosition;
-
-		SetPosition(position);
-		hitBox.setPosition(position);
-
 		//애니메이션
 		if (legAnimation.GetCurrentClipId() == "Idle")
 		{
@@ -304,7 +320,7 @@ void CowBoy::Update(float dt)
 						bullet->SetMonsterList(sceneGame->GetMonsterList());
 						sceneGame->AddGo(bullet);
 					}
-					SCENE_MGR.GetCurrScene()->AddGo(bullet);
+					//SCENE_MGR.GetCurrScene()->AddGo(bullet);
 					rebound = true;
 				}
 			}
@@ -469,6 +485,14 @@ sf::RectangleShape CowBoy::GetHitBox()
 void CowBoy::SetIsDie(bool is)
 {
 	isDie = is;
+}
+
+void CowBoy::RoundClearMove(float dt)
+{
+	direction = { 0, 1 };
+	velocity = direction * speed;
+	position += velocity * dt;
+	SetPosition(position);
 }
 
 void CowBoy::TakeItem(Item::ItemTypes type)

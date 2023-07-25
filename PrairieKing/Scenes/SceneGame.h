@@ -40,6 +40,7 @@ protected:
 	TileMap* tileMap4 = nullptr;
 	TileMap* tileMap5 = nullptr;
 	TileMap* currentMap = nullptr;
+	int currentStage = 1;
 
 	/*---UI---*/
 	SpriteGo* coinUI;
@@ -77,6 +78,9 @@ protected:
 	bool isGameOver = false;
 	bool haveItem = false;
 
+	sf::Vector2f size;
+	sf::Vector2f centerPos;
+
 	//sf::Clock clock;
 	//const sf::Time blinkTime = sf::seconds(0.2f);
 	//bool blinkTimeCheck = false;
@@ -111,6 +115,7 @@ public:
 
 	template <typename T>
 	void ClearObjectPool(ObjectPool<T>& pool);
+	bool GetRoundClear();
 };
 
 template<typename T>
