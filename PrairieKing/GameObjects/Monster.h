@@ -22,7 +22,7 @@ public:
 
 protected:
 	Types monsterType;
-	sf::Vector2i boxSize = { 28.f, 28.f };
+	sf::Vector2i boxSize = { 26.f, 26.f };
 	sf::RectangleShape hitBox;
 	sf::Vector2f velocity;
 	sf::Vector2f direction; //이동하는 방향
@@ -49,8 +49,9 @@ protected:
 	sf::FloatRect intersection;
 	sf::Vector2f tileMapLT;
 	bool isCollision = false;
-	float collTime = 1.f;
+	float collTime = 1.5f;
 	float collTimer = 0.f;
+	int collCount = 0;
 
 	float absX;
 	float absY;

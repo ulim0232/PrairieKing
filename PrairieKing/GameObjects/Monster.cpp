@@ -27,11 +27,9 @@ void Monster::Init()
 
 	animation.SetTarget(&sprite);
 	SetOrigin(Origins::MC);
-	//sprite.setScale({ 5.0f, 2.8125f });
 	sprite.setScale({ 2.f, 2.f });
 
 	hitBox.setSize(sf::Vector2f(boxSize));
-	//hitBox.setSize({ 60.f, 40.f });
 	Utils::SetOrigin(hitBox, Origins::MC);
 	hitBox.setFillColor(sf::Color::Transparent);
 	hitBox.setOutlineThickness(1);
@@ -69,15 +67,15 @@ void Monster::Update(float dt)
 			{
 				if(collTimer == 0)
 				{
-					sf::Vector2f tileMapSize = tileMap->GetTileMapSize();
-					sf::Vector2f random(Utils::RandomRange(0.f, tileMapSize.x), Utils::RandomRange(0.f, tileMapSize.y));
-					sf::Vector2f destination(random.x + tileMapLT.x, random.y + tileMapLT.y);
+					//sf::Vector2f tileMapSize = tileMap->GetTileMapSize();
+					//sf::Vector2f random(Utils::RandomRange(0.f, tileMapSize.x), Utils::RandomRange(0.f, tileMapSize.y));
+					//sf::Vector2f destination(random.x + tileMapLT.x, random.y + tileMapLT.y);
+					//absX = abs(destination.x - position.x);
+					//absY = abs(destination.y - position.y);
+					//distance = Utils::Distance(destination, position);
+					//direction = Utils::Normalize(destination - position);
 
-					absX = abs(destination.x - position.x);
-					absY = abs(destination.y - position.y);
-
-					distance = Utils::Distance(destination, position);
-					direction = Utils::Normalize(destination - position);
+					direction = Utils::Normalize({ (float)Utils::RandomRange(-1, 2), (float)Utils::RandomRange(-1, 2) });
 				}
 				collTimer += dt;
 			}
@@ -89,15 +87,56 @@ void Monster::Update(float dt)
 
 				distance = Utils::Distance(cowboyPos, position);
 				direction = Utils::Normalize(cowboyPos - position);
+
+				if (absX > absY && !isCollision) //x값만 이동
+				{
+					if (collCount > 2)
+					{
+						direction.x = 0;
+						collCount = 0;
+					}
+					else
+					{
+						direction.y = 0;
+					}
+				}
+				else if (absX < absY && !isCollision) //y값만 이동
+				{
+					if (collCount > 2)
+					{
+						direction.y = 0;
+						collCount = 0;
+					}
+					else
+					{
+						direction.x = 0;
+					}
+				}
 			}
-			if (absX > absY) //x값만 이동
-			{
-				direction.y = 0;
-			}
-			else if (absX < absY) //y값만 이동
-			{
-				direction.x = 0;
-			}
+			//if (absX > absY && !isCollision) //x값만 이동
+			//{
+			//	if (collCount > 2)
+			//	{
+			//		direction.x = 0;
+			//		collCount = 0;
+			//	}
+			//	else
+			//	{
+			//		direction.y = 0;
+			//	}
+			//}
+			//else if (absX < absY &&!isCollision) //y값만 이동
+			//{
+			//	if (collCount > 2)
+			//	{
+			//		direction.y = 0;
+			//		collCount = 0;
+			//	}
+			//	else
+			//	{
+			//		direction.x = 0;
+			//	}
+			//}
 			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 			{
 				velocity = direction * speed;
@@ -116,7 +155,18 @@ void Monster::Update(float dt)
 						if (IsCollisoinTile(tile.texIndex))
 						{
 							hitBox.setOutlineColor(sf::Color::Red);
-							newPos = position;
+							if (intersection.height > intersection.width) //좌우로 부딪힘
+							{
+								newPos.x = position.x;
+							}
+							else if (intersection.height < intersection.width) //상하로 부딪힘
+							{
+								newPos.y = position.y;
+							}
+							else
+							{
+								newPos = position;
+							}
 							isCollision = true;
 						}
 						else
@@ -133,6 +183,8 @@ void Monster::Update(float dt)
 			{
 				collTimer = 0.f;
 				isCollision = false;
+				collCount++;
+				cout << "collCount++:" << collCount << endl;
 			}
 
 		}

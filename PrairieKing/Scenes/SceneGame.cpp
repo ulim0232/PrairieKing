@@ -51,6 +51,7 @@ void SceneGame::Init()
 	tileMap4 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap4"));
 	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap5"));
 	tileMap1->sortLayer = -1;
+	tileMap2->sortLayer = -1;
 
 	/*---플레이어 설정----*/
 	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
@@ -108,10 +109,10 @@ void SceneGame::Init()
 	tileMap1->Load("maps/stage1-1.csv");
 	tileMap1->SetOrigin(Origins::MC);
 	tileMap1->SetPosition(centerPos);
-	//tileMap1->setScale(2.f, 2.f);
 
 	tileMap2->Load("maps/stage1-2.csv");
 	tileMap2->SetOrigin(Origins::MC);
+	//tileMap2->SetPosition(centerPos);
 	tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileMapSize().y);
 
 	tileMap3->Load("maps/stage1-3.csv");
@@ -145,7 +146,7 @@ void SceneGame::Init()
 		monster->SetCowboy(cowBoy);
 		monster->SetPool(&monsterPool);
 		monster->SetTileMap(tileMap1,32);
-		monster->sortLayer = 2; //플레이어와 동일
+		monster->sortLayer = 2;
 	};
 	monsterPool.Init();
 
@@ -202,8 +203,8 @@ void SceneGame::Enter()
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
-	sf::Vector2f tileSize(512, 512);
-	//sf::Vector2f tileSize = tileMap1->GetTileMapSize();
+	//sf::Vector2f tileSize(512, 512);
+	sf::Vector2f tileSize = tileMap1->GetTileMapSize();
 
 	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
 	lifeUI->SetPosition(itemUI->GetPosition().x - 30, itemUI->GetPosition().y + 40);
@@ -490,8 +491,7 @@ void SceneGame::Draw(sf::RenderWindow& window)
 
 void SceneGame::SpawnMonster(int count)
 {
-	//int num = Utils::RandomRange(0, 4);
-	int num = Utils::RandomRange(0, 2);
+	int num = Utils::RandomRange(0, 4);
 	vector<sf::Vector2f>* spawnPosList = nullptr;
 	switch (num)
 	{
