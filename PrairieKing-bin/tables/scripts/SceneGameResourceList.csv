@@ -20,3 +20,9 @@
 0,graphics/UIs/arrow.png
 2,sounds/OverWorld.wav
 2,sounds/PlayerDie.wav
+0,graphics/players/merchant_front.png
+0,graphics/players/merchant_left.png
+0,graphics/players/merchant_move.png
+0,graphics/players/merchant_right.png
+0,graphics/players/merchant_table.png
+0,graphics/stats/upBoots1.png

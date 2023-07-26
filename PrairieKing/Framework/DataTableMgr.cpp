@@ -4,6 +4,7 @@
 #include "ClipTable.h"
 #include "MonsterTable.h"
 #include "ItemTable.h"
+#include "StatsTable.h"
 
 void DataTableMgr::LoadAll()
 {
@@ -11,6 +12,7 @@ void DataTableMgr::LoadAll()
 	tables.insert({ DataTable::Ids::Clip, new ClipTable() });
 	tables.insert({ DataTable::Ids::Monster, new MonsterTable() });
 	tables.insert({ DataTable::Ids::Item, new ItemTable() });
+	tables.insert({ DataTable::Ids::Stats, new StatsTable() });
 
 	for (auto pair : tables)
 	{

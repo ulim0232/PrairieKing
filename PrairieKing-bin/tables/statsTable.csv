@@ -1,0 +1,4 @@
+ID,NAME,TEXTURE_1,TEXTURE_2,TEXTURE_3,PRICE_1,PRICE_2,PRICE_3
+0,Boots,graphics/stats/upBoots1.png,graphics/stats/upBoots2.png,graphics/stats/upBoots3.png,8,20,10
+1,Gun,graphics/stats/upGun1.png,graphics/stats/upGun2.png,graphics/stats/upGun3.png,10,20,30
+2,Shot,graphics/stats/upShot1.png,graphics/stats/upShot2.png,graphics/stats/upShot3.png,15,30,45

@@ -173,7 +173,6 @@
     <ClCompile Include="GameObjects\TextGo.cpp" />
     <ClCompile Include="GameObjects\VertexArrayGo.cpp" />
     <ClCompile Include="Global\Utils.cpp" />
-    <ClCompile Include="GameObjects\Ground.cpp" />
     <ClCompile Include="DataTables\ItemTable.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -192,6 +191,8 @@
     <ClCompile Include="GameObjects\UiButton.cpp" />
     <ClCompile Include="Scenes\SceneTitle.cpp" />
     <ClCompile Include="GameObjects\TileMap.cpp" />
+    <ClCompile Include="GameObjects\Stats.cpp" />
+    <ClCompile Include="DataTables\StatsTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rd\rapidcsv.h" />
@@ -215,7 +216,6 @@
     <ClInclude Include="Framework\InputMgr.h" />
     <ClInclude Include="Framework\ResourceMgr.h" />
     <ClInclude Include="Global\Utils.h" />
-    <ClInclude Include="GameObjects\Ground.h" />
     <ClInclude Include="GameObjects\Monster.h" />
     <ClInclude Include="DataTables\MonsterTable.h" />
     <ClInclude Include="DataTables\ItemTable.h" />
@@ -227,6 +227,8 @@
     <ClInclude Include="Global\Singleton.h" />
     <ClInclude Include="GameObjects\SpriteGo.h" />
     <ClInclude Include="Scenes\SceneTitle.h" />
+    <ClInclude Include="GameObjects\Stats.h" />
+    <ClInclude Include="DataTables\StatsTable.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Global\Variables.h" />
     <ClInclude Include="GameObjects\UiButton.h" />

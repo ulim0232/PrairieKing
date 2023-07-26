@@ -10,6 +10,8 @@ class TextGo;
 class RectangleGo;
 class Monster;
 class Item;
+class Merchant;
+class Stats;
 
 class SceneGame : public Scene
 {
@@ -29,6 +31,14 @@ protected:
 
 	/*---플레이어---*/
 	CowBoy* cowBoy;
+
+	/*--상인--*/
+	Merchant* merchant;
+	SpriteGo* merchantTable;
+
+	Stats* boots;
+	Stats* gun;
+	Stats* shot;
 
 	/*---map---*/
 	TileMap* tileMap1 = nullptr;
@@ -55,6 +65,9 @@ protected:
 
 	TextGo* coinTxt;
 	TextGo* lifeTxt;
+	TextGo* bootsTxt;
+	TextGo* gunTxt;
+	TextGo* shotTxt;
 
 	RectangleGo* timerGauge;
 	sf::Vector2f timersize = { 482, 10 };
@@ -62,7 +75,7 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 5.f; //30
+	float timeLimit = 30.f; //30
 
 	bool isTimerRunning = true;
 	bool isCowBoyDie = false;
@@ -82,6 +95,10 @@ protected:
 	sf::Vector2f centerPos;
 
 	int clearRound = 0;
+	int bootsLevel = 0;
+	int gunLevel = 0;
+	int shotLevel = 0;
+	bool isUpgrade = false;
 
 	//sf::Clock clock;
 	//const sf::Time blinkTime = sf::seconds(0.2f);
@@ -109,7 +126,7 @@ public:
 	//void BlinkCowboy();
 
 	void TakeItem(Item* item);
-	void GetGoin();
+	void GetCoin();
 	void GetLife();
 	void RemoveItem(Item* item);
 	void UseNiza();

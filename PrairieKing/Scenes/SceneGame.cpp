@@ -12,6 +12,8 @@
 #include "RectangleGo.h"
 #include "CowBoy.h"
 #include "Monster.h"
+#include "Merchant.h"
+#include "Stats.h"
 
 SceneGame::SceneGame() : Scene(SceneId::Game)
 {
@@ -46,7 +48,18 @@ void SceneGame::Init()
 
 	/*---플레이어 설정----*/
 	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
-	cowBoy->sortLayer = 3;
+	cowBoy->sortLayer = 4;
+
+	/*--상인 설정--*/
+	merchant = (Merchant*)AddGo(new Merchant("Merchant"));
+	merchant->sortLayer = 3;
+	
+	boots = (Stats*)AddGo(new Stats("graphics/stats/upBoots1.png", "boots"));
+	gun = (Stats*)AddGo(new Stats("graphics/stats/upGun1.png", "gun"));
+	shot = (Stats*)AddGo(new Stats("graphics/stats/upShot1.png", "shot"));
+	boots->sortLayer = 3;
+	gun->sortLayer = 3;
+	shot->sortLayer = 3;
 
 	/*----UI설정----*/
 	coinUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/coin1.png", "coinUI"));
@@ -57,6 +70,8 @@ void SceneGame::Init()
 	keyUI = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/controlKey.png", "keyUI"));
 	pickedItemUI = (SpriteGo*)AddGo(new SpriteGo("graphics/items/coffee.png", "pickedItemUI"));
 	arrow = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/arrow.png", "arrowUI"));
+	merchantTable = (SpriteGo*)AddGo(new SpriteGo("graphics/players/merchant_table.png", "table"));
+
 	sf::Vector2f sizeRect(10.f, 10.f);
 	AddGo(new RectangleGo(sizeRect, "center"));
 
@@ -68,6 +83,7 @@ void SceneGame::Init()
 	keyUI->sprite.setScale({ 2.f, 2.f }); 
 	pickedItemUI->sprite.setScale({ 2.f, 2.f });
 	arrow->sprite.setScale({ 2.f, 2.f });
+	merchantTable->sprite.setScale(2.f, 2.f);
 
 	coinUI->sortLayer = 100;
 	itemUI->sortLayer = 100;
@@ -76,10 +92,12 @@ void SceneGame::Init()
 	timerUI->sortLayer = 100;
 	keyUI->sortLayer = 100;
 	pickedItemUI->sortLayer = 100;
+	merchantTable->sortLayer = 2;
 	arrow->sortLayer = 4;
 
 	pickedItemUI->SetActive(false);
 	arrow->SetActive(false);
+	merchantTable->SetActive(false);
 
 	/*----텍스트 설정----*/
 	coinTxt = (TextGo*)AddGo(new TextGo("coinTxt", "fonts/angel.ttf"));
@@ -89,6 +107,10 @@ void SceneGame::Init()
 	coinTxt->text.setOutlineColor(sf::Color::White);
 
 	lifeTxt = (TextGo*)AddGo(new TextGo("lifeTxt", "fonts/angel.ttf"));
+
+	bootsTxt = (TextGo*)AddGo(new TextGo("bootsTxt", "fonts/angel.ttf"));
+	gunTxt = (TextGo*)AddGo(new TextGo("gunTxt", "fonts/angel.ttf"));
+	shotTxt = (TextGo*)AddGo(new TextGo("shotTxt", "fonts/angel.ttf"));
 
 	/*---타이머 게이지 설정----*/
 	
@@ -133,6 +155,7 @@ void SceneGame::Init()
 	keyUI->SetOrigin(Origins::MC);
 	pickedItemUI->SetOrigin(Origins::MC);
 	arrow->SetOrigin(Origins::MC);
+	merchantTable->SetOrigin(Origins::TL);
 
 	/*----몬스터 생성----*/
 	monsterPool.OnCreate = [this](Monster* monster)
@@ -157,6 +180,35 @@ void SceneGame::Init()
 	};
 	itemPool.Init();
 
+	/*---스탯 생성---*/
+	boots->SetType(Stats::StatsTypes::Boots);
+	boots->SetLevel(0);
+	boots->SetOrigin(Origins::MC);
+	gun->SetType(Stats::StatsTypes::Gun);
+	gun->SetLevel(0);
+	gun ->SetOrigin(Origins::MC);
+	shot->SetType(Stats::StatsTypes::Shot);
+	shot->SetLevel(0);
+	shot->SetOrigin(Origins::MC);
+
+	/*---스탯 텍스트 설정---*/
+	ss = to_string(boots->getCost());
+	bootsTxt->SetText(ss, 25, sf::Color::Black, Origins::TC, 3, 0, 0);
+	bootsTxt->text.setOutlineThickness(0.5f);
+	bootsTxt->text.setOutlineColor(sf::Color::Black);
+	bootsTxt->SetOrigin(Origins::TC);
+
+	ss = to_string(gun->getCost());
+	gunTxt->SetText(ss, 25, sf::Color::Black, Origins::TC, 3, 0, 0);
+	gunTxt->text.setOutlineThickness(0.5f);
+	gunTxt->text.setOutlineColor(sf::Color::Black);
+	gunTxt->SetOrigin(Origins::TC);
+
+	ss = to_string(shot->getCost());
+	shotTxt->SetText(ss, 25, sf::Color::Black, Origins::TC, 3, 0, 0);
+	shotTxt->text.setOutlineThickness(0.5f);
+	shotTxt->text.setOutlineColor(sf::Color::Black);
+	shotTxt->SetOrigin(Origins::TC);
 }
 
 void SceneGame::Release()
@@ -206,10 +258,15 @@ void SceneGame::Enter()
 	roundClear = false;
 	haveItem = false;
 	clearRound = 0;
+	bootsLevel = 0;
+	gunLevel = 0;
+	shotLevel = 0;
+	isUpgrade = false;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
 	sf::Vector2f tileSize = tileMap1->GetTileMapSize();
+	sf::Vector2f sizeT = tileMap1->GetTileSize();
 
 	itemUI->SetPosition(mapPosition.x - tileSize.x / 2 - 25, mapPosition.y - tileSize.y / 2 + 22);
 	lifeUI->SetPosition(itemUI->GetPosition().x - 30, itemUI->GetPosition().y + 40);
@@ -219,7 +276,17 @@ void SceneGame::Enter()
 	keyUI->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 + 55);
 	pickedItemUI->SetPosition(itemUI->GetPosition());
 	arrow->SetPosition(mapPosition.x, mapPosition.y + tileSize.y / 2 - 48);
+	merchantTable->SetPosition(mapPosition.x - tileSize.x / 2 + sizeT.x * 7, mapPosition.y - tileSize.y / 2 + sizeT.y * 6);
 	
+	/*----스탯 설정----*/
+	boots->SetPosition(merchantTable->GetPosition().x + 21.f, merchantTable->GetPosition().y + 20.f);
+	gun->SetPosition(merchantTable->GetPosition().x + 63.f, merchantTable->GetPosition().y + 20.f);
+	shot->SetPosition(merchantTable->GetPosition().x + 105.f, merchantTable->GetPosition().y + 20.f);
+
+	boots->SetActive(false);
+	gun->SetActive(false);
+	shot->SetActive(false);
+
 	/*----txt 설정----*/
 	coinTxt->SetPosition(coinUI->GetPosition().x + 20, coinUI->GetPosition().y - 20);
 	string ss = "X " + to_string(lifeCount);
@@ -227,6 +294,14 @@ void SceneGame::Enter()
 	lifeTxt->text.setOutlineThickness(0.5f);
 	lifeTxt->text.setOutlineColor(sf::Color::White);
 	lifeTxt->SetPosition(lifeUI->GetPosition().x + 20, lifeUI->GetPosition().y - 20);
+
+	bootsTxt->SetPosition(boots->GetPosition().x - 8.f, boots->GetPosition().y + 10.f);
+	gunTxt->SetPosition(gun->GetPosition().x - 8.f, gun->GetPosition().y + 10.f);
+	shotTxt->SetPosition(shot->GetPosition().x - 8.f, shot->GetPosition().y + 10.f);
+
+	bootsTxt->SetActive(false);
+	gunTxt->SetActive(false);
+	shotTxt->SetActive(false);
 
 	/*---timer 설정----*/
 	timerGauge->rectangle.setSize(timersize);
@@ -240,6 +315,10 @@ void SceneGame::Enter()
 	Utils::SetOrigin(cowBoy->leg, Origins::TC);
 	cowBoy->SetPosition(tileMap1->GetPosition());
 	cowBoy->SetTileMap(tileMap1, 32);
+
+	merchant->SetTileMap(tileMap1);
+	merchant->Reset();
+	merchant->SetActive(false);
 
 	/*----맵 설정----*/
 	//tileMap1->SetActive(true);
@@ -298,7 +377,7 @@ void SceneGame::Update(float dt)
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
 	{
-		currentTime = 50000.f;
+		GetCoin();
 	}
 	//아이템 사용
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space) && haveItem)
@@ -369,6 +448,19 @@ void SceneGame::Update(float dt)
 		{
 			if (monsterPool.GetUseList().empty() && !roundClear)
 			{
+				sf::Vector2f sizeT = currentMap->GetTileSize();
+				merchant->SetTileMap(currentMap);
+				merchant->SetSpawnPosition();
+				merchantTable->SetPosition(currentMap->vertexArray.getBounds().left + sizeT.x * 7, currentMap->vertexArray.getBounds().top + sizeT.y * 6);
+				
+				boots->SetPosition(merchantTable->GetPosition().x + 21.f, merchantTable->GetPosition().y + 20.f);
+				gun->SetPosition(merchantTable->GetPosition().x + 63.f, merchantTable->GetPosition().y + 20.f);
+				shot->SetPosition(merchantTable->GetPosition().x + 105.f, merchantTable->GetPosition().y + 20.f);
+
+				bootsTxt->SetPosition(boots->GetPosition().x - 8.f, boots->GetPosition().y + 10.f);
+				gunTxt->SetPosition(gun->GetPosition().x - 8.f, gun->GetPosition().y + 10.f);
+				shotTxt->SetPosition(shot->GetPosition().x - 8.f, shot->GetPosition().y + 10.f);
+
 				roundClear = true;
 				switch (currentStage)
 				{
@@ -406,16 +498,13 @@ void SceneGame::Update(float dt)
 	}
 	if (roundClear) //라운드 클리어
 	{
-		//arrow->SetActive(true);
 		//아이템 삭제
 		list<Item*> items = itemPool.GetUseList();
 		if (!items.empty())
 		{
 			for (auto item : items)
 			{
-				item->SetIsSpawn(false);
-				RemoveGo(item);
-				itemPool.Return(item);
+				RemoveItem(item);
 			}
 		}
 		//몬스터 삭제
@@ -467,9 +556,71 @@ void SceneGame::Update(float dt)
 			}
 			arrow->SetActive(true);
 			clearRound++;
+			if (clearRound > 2)
+			{
+				clearRound = 1;
+				merchant->isArrival = false;
+				merchant->SetActive(false);
+				merchantTable->SetActive(false);
+				boots->SetActive(false);
+				gun->SetActive(false);
+				shot->SetActive(false);
+				bootsTxt->SetActive(false);
+				gunTxt->SetActive(false);
+				shotTxt->SetActive(false);
+			}
 		}
 		if(clearRound==2)
 		{
+			merchant->SetActive(true);
+			if (!merchantTable->GetActive() && merchant->isArrival)
+			{
+				merchantTable->SetActive(true);
+				boots->SetActive(true);
+				gun->SetActive(true);
+				shot->SetActive(true);
+				bootsTxt->SetActive(true);
+				gunTxt->SetActive(true);
+				shotTxt->SetActive(true);
+			}
+			if (cowBoy->GetHitBox().getGlobalBounds().intersects(boots->sprite.getGlobalBounds()) && 
+				boots->GetActive() && coinCount >= boots->getCost() && !isUpgrade)
+			{
+				coinCount -= boots->getCost();
+				boots->SetLevel(++bootsLevel);
+				TextGo* findText = (TextGo*)FindGo("coinTxt");
+				findText->text.setString("X " + to_string(coinCount));
+				if (bootsLevel < 3)
+				{
+					cowBoy->StatsUpgrade(Stats::StatsTypes::Boots);
+				}
+				else
+				{
+					GetLife();
+				}
+				isUpgrade = true;
+
+			}
+			else if (cowBoy->GetHitBox().getGlobalBounds().intersects(gun->sprite.getGlobalBounds()) &&
+				gun->GetActive() && coinCount >= gun->getCost() && !isUpgrade)
+			{
+				coinCount -= gun->getCost();
+				gun->SetLevel(++gunLevel);
+				TextGo* findText = (TextGo*)FindGo("coinTxt");
+				findText->text.setString("X " + to_string(coinCount));
+				cowBoy->StatsUpgrade(Stats::StatsTypes::Gun);
+				isUpgrade = true;
+			}
+			else if (cowBoy->GetHitBox().getGlobalBounds().intersects(shot->sprite.getGlobalBounds()) &&
+				shot->GetActive() && coinCount >= shot->getCost() && !isUpgrade)
+			{
+				coinCount -= shot->getCost();
+				shot->SetLevel(++shotLevel);
+				TextGo* findText = (TextGo*)FindGo("coinTxt");
+				findText->text.setString("X " + to_string(coinCount));
+				cowBoy->StatsUpgrade(Stats::StatsTypes::Shot);
+				isUpgrade = true;
+			}
 		}
 		//플레이어 위치 이동
 		if (arrow->sprite.getGlobalBounds().intersects(cowBoy->GetHitBox().getGlobalBounds()))
@@ -508,6 +659,7 @@ void SceneGame::Update(float dt)
 			currentTime = 0.f;
 			roundClear = false;
 			isTimerRunning = true;
+			isUpgrade = false;
 		}
 	}
 	if (isGameOver)
@@ -589,9 +741,7 @@ void SceneGame::OnDieCowBoy()
 		{
 			for (auto item : items)
 			{
-				item->SetIsSpawn(false);
-				RemoveGo(item);
-				itemPool.Return(item);
+				RemoveItem(item);
 			}
 		}
 	}
@@ -678,7 +828,7 @@ void SceneGame::TakeItem(Item* item)
 {
 	if (item->GetType() == Item::ItemTypes::Coin)
 	{
-		GetGoin();
+		GetCoin();
 	}
 	else if (item->GetType() == Item::ItemTypes::Life)
 	{
@@ -716,7 +866,7 @@ void SceneGame::TakeItem(Item* item)
 	RemoveItem(item);
 }
 
-void SceneGame::GetGoin()
+void SceneGame::GetCoin()
 {
 	coinCount++;
 	TextGo* findText = (TextGo*)FindGo("coinTxt");

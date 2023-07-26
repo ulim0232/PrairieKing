@@ -90,7 +90,7 @@ void CowBoy::Reset()
 	isShotGun = false; //삿건
 	isMachineGun = false; //머신건
 	isWheel = false; // 바퀴
-	speed = 100.f;
+	currentSpeed = speed;
 
 	/*텍스쳐 초기화*/
 	if (headAnimation.IsPlaying())
@@ -158,7 +158,7 @@ void CowBoy::Update(float dt)
 			{
 				direction /= magnitude;
 			}
-			velocity = direction * speed;
+			velocity = direction * currentSpeed;
 
 			newPosition = position + velocity * dt;
 			hitBox.setPosition(newPosition);
@@ -333,7 +333,7 @@ void CowBoy::Update(float dt)
 	if (isSpeedUp && timerCoffee >= itmeDuration) //커피 종료
 	{
 		cout << "speed down" << endl;
-		speed = 100.f;
+		currentSpeed = speed;
 		isSpeedUp = false;
 		timerCoffee = 0.f;
 	}
@@ -485,11 +485,35 @@ void CowBoy::RoundClearMove(float dt)
 	SetPosition(position);
 }
 
+void CowBoy::StatsUpgrade(Stats::StatsTypes type)
+{
+	if (type == Stats::StatsTypes::Boots)
+	{
+		speed *= 1.5f;
+		currentSpeed = speed;
+		cout << "speed upgrade: " << speed << endl;
+	}
+	else if (type == Stats::StatsTypes::Gun)
+	{
+		shotDelay -= 0.05f;
+		cout << "shotDelay upgrade: " << shotDelay << endl;
+	}
+	else if (type == Stats::StatsTypes::Shot)
+	{
+		for (auto bullet : poolBullets.GetPool())
+		{
+			bullet->SetDamage(bullet->GetDamage() + 1);
+			cout << "damage upgrade: " << bullet->GetDamage() << endl;
+		}
+
+	}
+}
+
 void CowBoy::TakeItem(Item::ItemTypes type)
 {
 	if (type == Item::ItemTypes::Coffee)
 	{
-		speed = speed * 2.f;
+		currentSpeed = speed * 2.f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}

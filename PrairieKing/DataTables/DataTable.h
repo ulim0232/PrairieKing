@@ -10,6 +10,7 @@ public:
 		Clip,
 		Monster,
 		Item,
+		Stats,
 	};
 
 	DataTable(const DataTable& other) = delete;
