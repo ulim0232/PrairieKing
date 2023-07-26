@@ -4,6 +4,8 @@
 #include "TileMap.h"
 
 class Monster;
+class TileMap;
+
 class Bullet : public SpriteGo
 {
 protected:
@@ -13,6 +15,10 @@ protected:
 	int damage = 1;
 	sf::FloatRect tileBounds;
 	const list<Monster*>* monsters;
+	TileMap* tileMap;
+	sf::Vector2f TileMapLT;
+	float tileCount = 16;
+	float tileSize = 32;
 	
 public:
 	ObjectPool<Bullet>* pool;
@@ -34,6 +40,6 @@ public:
 	void SetDamage(int num) { damage = num; }
 	int GetDamage() { return damage; }
 	void SetTileMapBound(const sf::FloatRect& bounds);
-
+	void SetTileMap(TileMap* map);
 };
 

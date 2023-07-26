@@ -279,7 +279,7 @@ void Monster::OnDie()
 
 void Monster::OnBoom()
 {
-	if (animation.GetCurrentClipId() != "BOMB")
+	if (animation.GetCurrentClipId() != "BOMB" && isAlive )
 	{
 		animation.Stop();
 		animation.Play("BOMB");
@@ -304,5 +304,5 @@ bool Monster::IsCollisoinTile(int index)
 		return true;
 	}*/
 
-	return (index > 4);
+	return (index > 4 && index < 10);
 }

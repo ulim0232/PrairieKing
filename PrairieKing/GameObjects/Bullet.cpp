@@ -3,6 +3,7 @@
 #include "Monster.h"
 #include "SceneMgr.h"
 #include "Scene.h"
+#include "TileMap.h"
 
 Bullet::Bullet(const string& textureId, const string& n)
 	:SpriteGo(textureId, n)
@@ -78,6 +79,20 @@ void Bullet::Update(float dt)
 			}
 		}
 	}
+	if (tileMap != nullptr)
+	{
+		float tileXIndex = (position.x - TileMapLT.x) / tileSize;
+		float tileYIndex = (position.y - TileMapLT.y) / tileSize;
+		int texIndex = tileMap->GetTileIndex(tileXIndex, tileYIndex);
+
+		if (texIndex > 4)
+		{
+			SCENE_MGR.GetCurrScene()->RemoveGo(this);
+			pool->Return(this);
+		}
+	}
+	
+
 }
 
 void Bullet::Draw(sf::RenderWindow& window)
@@ -88,4 +103,11 @@ void Bullet::Draw(sf::RenderWindow& window)
 void Bullet::SetTileMapBound(const sf::FloatRect& bounds)
 {
 	tileBounds = bounds;
+}
+
+void Bullet::SetTileMap(TileMap* map)
+{
+	tileMap = map;
+	TileMapLT.x = tileMap->vertexArray.getBounds().left;
+	TileMapLT.y = tileMap->vertexArray.getBounds().top;
 }

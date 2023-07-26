@@ -5,6 +5,7 @@
 #include "DataTableMgr.h"
 #include "StringTable.h"
 #include "SceneEnding.h"
+#include "SceneClear.h"
 
 void SceneMgr::Init()
 {
@@ -15,6 +16,7 @@ void SceneMgr::Init()
 	scenes.push_back(new SceneTitle());
 	scenes.push_back(new SceneGame());
 	scenes.push_back(new SceneOver());
+	scenes.push_back(new SceneClear());
 
 	for (auto scene : scenes)
 	{

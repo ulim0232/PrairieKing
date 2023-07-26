@@ -16,6 +16,7 @@ CowBoy::CowBoy(const std::string& n)
 
 CowBoy::~CowBoy()
 {
+
 }
 
 void CowBoy::Init()
@@ -71,15 +72,19 @@ void CowBoy::Init()
 	poolBullets.Init();
 
 	/*---set audio---*/
-	footStepBuffer.loadFromFile("sounds/Footstep.wav");
-	footStep.setBuffer(footStepBuffer);
+	footStep.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/Footstep.wav"));
 	footStep.setLoop(true);
+
+	shotFire.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/shotFire.wav"));
+	shotFire.setVolume(50);
 
 }
 
 void CowBoy::Release()
 {
 	poolBullets.Release();
+	footStep.stop();
+	shotFire.stop();
 }
 
 void CowBoy::Reset()
@@ -284,14 +289,15 @@ void CowBoy::Update(float dt)
 
 						sf::Vector2f fireP(GetPosition().x, GetPosition().y);
 						bullet->Fire(fireP, fireDir, shotSpeed);
+						shotFire.play();
 
 						Scene* scene = SCENE_MGR.GetCurrScene();
 						SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 						if (sceneGame != nullptr)
 						{
 							bullet->SetMonsterList(sceneGame->GetMonsterList());
+							bullet->SetTileMap(tileMap);
 							sceneGame->AddGo(bullet);
-							
 						}
 					}
 					rebound = true;
@@ -302,12 +308,14 @@ void CowBoy::Update(float dt)
 					bullet->SetTileMapBound(tileMap->vertexArray.getBounds());
 					sf::Vector2f fireP(GetPosition().x, GetPosition().y);
 					bullet->Fire(fireP, look, shotSpeed);
+					shotFire.play();
 				
 					Scene* scene = SCENE_MGR.GetCurrScene();
 					SceneGame* sceneGame = dynamic_cast<SceneGame*>(scene); //c++의 형변환 연산자
 					if (sceneGame != nullptr)
 					{
 						bullet->SetMonsterList(sceneGame->GetMonsterList());
+						bullet->SetTileMap(tileMap);
 						sceneGame->AddGo(bullet);
 					}
 					//SCENE_MGR.GetCurrScene()->AddGo(bullet);
@@ -446,7 +454,7 @@ bool CowBoy::IsTileCollision()
 }
 bool CowBoy::IsCollisoinTile(int index)
 {
-	return (index != 2 && index != 3 && index != 4); // 2, 3, 4가 이동 가능한 타일의 인덱스라고 가정
+	return (index != 2 && index != 3 && index != 4 && index != 10); // 2, 3, 4, 10가 이동 가능한 타일의 인덱스
 }
 
 void CowBoy::CowBoyDie()
@@ -513,7 +521,7 @@ void CowBoy::TakeItem(Item::ItemTypes type)
 {
 	if (type == Item::ItemTypes::Coffee)
 	{
-		currentSpeed = speed * 2.f;
+		currentSpeed = speed * 1.2f;
 		isSpeedUp = true;
 		cout << "speed up" << endl;
 	}

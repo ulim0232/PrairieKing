@@ -15,8 +15,8 @@ protected:
 	AnimationController headAnimation;
 
 	/*사운드*/
-	sf::SoundBuffer footStepBuffer;
 	sf::Sound footStep;
+	sf::Sound shotFire;
 
 	/*--이동--*/
 	sf::Vector2f newPosition;

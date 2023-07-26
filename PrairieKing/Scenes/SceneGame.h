@@ -19,6 +19,11 @@ protected:
 	/*---sound---*/
 	sf::Sound stage1Bgm;
 	sf::Sound pDieSound;
+	sf::Sound takeItemSound;
+	sf::Sound getCoinSound;
+	sf::Sound statsUpSound;
+	sf::Sound mDieSound;
+
 
 	/*--풀--*/
 	ObjectPool<Monster> monsterPool;
@@ -46,7 +51,15 @@ protected:
 	TileMap* tileMap3 = nullptr;
 	TileMap* tileMap4 = nullptr;
 	TileMap* tileMap5 = nullptr;
+	TileMap* tileMap6 = nullptr;
+	TileMap* tileMap7 = nullptr;
+	TileMap* tileMap8 = nullptr;
+	TileMap* tileMap9 = nullptr;
+	TileMap* tileMap10 = nullptr;
+	TileMap* previusMap = nullptr;
 	TileMap* currentMap = nullptr;
+	//TileMap* nextStageMap = nullptr;
+	int currentRound = 1;
 	int currentStage = 1;
 
 	/*---UI---*/
@@ -58,9 +71,10 @@ protected:
 	SpriteGo* keyUI; 
 	SpriteGo* pickedItemUI;
 	SpriteGo* arrow;
+	SpriteGo* clearHeart;
 
 	Item* pickedItem = nullptr;
-	int lifeCount = 3;
+	int lifeCount = 0;
 	int coinCount = 0;
 
 	TextGo* coinTxt;
@@ -75,7 +89,8 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 30.f; //30
+	float timeLimit = 3.f; //30
+	float deadtime = 0.f;
 
 	bool isTimerRunning = true;
 	bool isCowBoyDie = false;
@@ -94,18 +109,20 @@ protected:
 	sf::Vector2f size;
 	sf::Vector2f centerPos;
 
-	int clearRound = 0;
+	int clearRound = 0; //2가 되면 스탯 업그레이드
 	int bootsLevel = 0;
 	int gunLevel = 0;
 	int shotLevel = 0;
 	bool isUpgrade = false;
+	bool isArrive = false;
+	bool isGameClear = false;
 
 	//sf::Clock clock;
 	//const sf::Time blinkTime = sf::seconds(0.2f);
 	//bool blinkTimeCheck = false;
 public:
 	SceneGame();
-	virtual ~SceneGame() override = default;
+	virtual ~SceneGame() override;
 
 	virtual void Init() override;
 	virtual void Release() override;
@@ -135,6 +152,8 @@ public:
 	template <typename T>
 	void ClearObjectPool(ObjectPool<T>& pool);
 	bool GetRoundChange();
+	void ChangeRound(int num);
+	void ChangeMap();
 };
 
 template<typename T>

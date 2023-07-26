@@ -24,6 +24,11 @@ SceneGame::SceneGame() : Scene(SceneId::Game)
 	timerDecreaseAmount = 482.0f * timerDecreaseRate;
 }
 
+SceneGame::~SceneGame()
+{
+	Release();
+}
+
 void SceneGame::Init()
 {
 	Release();
@@ -42,7 +47,12 @@ void SceneGame::Init()
 	tileMap2 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap2"));
 	tileMap3 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap3"));
 	tileMap4 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap4"));
-	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage1.png", "TileMap5"));
+	tileMap5 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage2.png", "TileMap5"));
+	tileMap6 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage2.png", "TileMap6"));
+	tileMap7 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage2.png", "TileMap7"));
+	tileMap8 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage3.png", "TileMap8"));
+	tileMap9 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage3.png", "TileMap9"));
+	tileMap10 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage3.png", "TileMap10"));
 	tileMap1->sortLayer = -1;
 	tileMap2->sortLayer = -1;
 
@@ -71,6 +81,7 @@ void SceneGame::Init()
 	pickedItemUI = (SpriteGo*)AddGo(new SpriteGo("graphics/items/coffee.png", "pickedItemUI"));
 	arrow = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/arrow.png", "arrowUI"));
 	merchantTable = (SpriteGo*)AddGo(new SpriteGo("graphics/players/merchant_table.png", "table"));
+	clearHeart = (SpriteGo*)AddGo(new SpriteGo("graphics/items/clear.png", "clearHeart"));
 
 	sf::Vector2f sizeRect(10.f, 10.f);
 	AddGo(new RectangleGo(sizeRect, "center"));
@@ -84,6 +95,7 @@ void SceneGame::Init()
 	pickedItemUI->sprite.setScale({ 2.f, 2.f });
 	arrow->sprite.setScale({ 2.f, 2.f });
 	merchantTable->sprite.setScale(2.f, 2.f);
+	clearHeart->sprite.setScale(2.f, 2.f);
 
 	coinUI->sortLayer = 100;
 	itemUI->sortLayer = 100;
@@ -94,10 +106,12 @@ void SceneGame::Init()
 	pickedItemUI->sortLayer = 100;
 	merchantTable->sortLayer = 2;
 	arrow->sortLayer = 4;
+	clearHeart->sortLayer = 2;
 
 	pickedItemUI->SetActive(false);
 	arrow->SetActive(false);
 	merchantTable->SetActive(false);
+	clearHeart->SetActive(false);
 
 	/*----텍스트 설정----*/
 	coinTxt = (TextGo*)AddGo(new TextGo("coinTxt", "fonts/angel.ttf"));
@@ -129,23 +143,6 @@ void SceneGame::Init()
 	tileMap1->SetOrigin(Origins::MC);
 	tileMap1->SetPosition(centerPos);
 
-	//tileMap2->Load("maps/stage1-2.csv");
-	//tileMap2->SetOrigin(Origins::MC);
-	//tileMap2->SetPosition(centerPos.x, centerPos.y + tileMap1->GetTileMapSize().y);
-
-	//tileMap3->Load("maps/stage1-3.csv");
-	//tileMap3->SetOrigin(Origins::MC);
-	//tileMap3->SetPosition(centerPos);
-
-	//tileMap4->Load("maps/stage1-4.csv");
-	//tileMap4->SetOrigin(Origins::MC);
-	//tileMap4->SetPosition(centerPos);
-
-	//tileMap5->Load("maps/stage1-5.csv");
-	//tileMap5->SetOrigin(Origins::MC);
-	//tileMap5->SetPosition(centerPos);
-
-
 	/*----UI설정----*/
 	coinUI->SetOrigin(Origins::MC);
 	itemUI->SetOrigin(Origins::MC);
@@ -155,6 +152,7 @@ void SceneGame::Init()
 	keyUI->SetOrigin(Origins::MC);
 	pickedItemUI->SetOrigin(Origins::MC);
 	arrow->SetOrigin(Origins::MC);
+	clearHeart->SetOrigin(Origins::MC);
 	merchantTable->SetOrigin(Origins::TL);
 
 	/*----몬스터 생성----*/
@@ -238,6 +236,11 @@ void SceneGame::Enter()
 	pDieSound.setLoop(false);
 	pDieSound.setVolume(50.f);
 
+	takeItemSound.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/pickUpItem.wav"));
+	getCoinSound.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/pickUpCoin.wav"));
+	statsUpSound.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/powerUp.wav"));
+	mDieSound.setBuffer(*RESOURCE_MGR.GetSoundBuffer("sounds/hitEnemy.wav"));
+
 	stage1Bgm.play();
 	stage1Bgm.setVolume(40.f);
 
@@ -251,7 +254,7 @@ void SceneGame::Enter()
 	uiView.setCenter(tileMap1->GetPosition());
 
 	/*--변수 초기화*/
-	lifeCount = 3;
+	lifeCount = 0;
 	coinCount = 0;
 	isGameOver = false;
 	pickedItem = nullptr;
@@ -262,6 +265,7 @@ void SceneGame::Enter()
 	gunLevel = 0;
 	shotLevel = 0;
 	isUpgrade = false;
+	deadtime = 0.f;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -321,12 +325,6 @@ void SceneGame::Enter()
 	merchant->SetActive(false);
 
 	/*----맵 설정----*/
-	//tileMap1->SetActive(true);
-	//tileMap2->SetActive(true); 
-	//tileMap3->SetActive(false);
-	//tileMap4->SetActive(false);
-	//tileMap5->SetActive(false);
-
 	currentMap = tileMap1;
 
 	/*----몬스터 설정----*/
@@ -351,7 +349,6 @@ void SceneGame::Exit()
 
 	ClearObjectPool(monsterPool);
 	ClearObjectPool(itemPool);
-	cowBoy->Reset();
 	
 	Scene::Exit();
 }
@@ -369,7 +366,7 @@ void SceneGame::Update(float dt)
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num0))
 	{
-		UseNiza();
+		SCENE_MGR.ChangeScene(SceneId::Clear);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
 	{
@@ -418,7 +415,7 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			SpawnMonster(num);
+			//SpawnMonster(num);
 			timerM = 0.f;
 		}
 	}
@@ -448,11 +445,13 @@ void SceneGame::Update(float dt)
 		{
 			if (monsterPool.GetUseList().empty() && !roundClear)
 			{
+				roundClear = true;
+
 				sf::Vector2f sizeT = currentMap->GetTileSize();
 				merchant->SetTileMap(currentMap);
 				merchant->SetSpawnPosition();
 				merchantTable->SetPosition(currentMap->vertexArray.getBounds().left + sizeT.x * 7, currentMap->vertexArray.getBounds().top + sizeT.y * 6);
-				
+
 				boots->SetPosition(merchantTable->GetPosition().x + 21.f, merchantTable->GetPosition().y + 20.f);
 				gun->SetPosition(merchantTable->GetPosition().x + 63.f, merchantTable->GetPosition().y + 20.f);
 				shot->SetPosition(merchantTable->GetPosition().x + 105.f, merchantTable->GetPosition().y + 20.f);
@@ -461,26 +460,28 @@ void SceneGame::Update(float dt)
 				gunTxt->SetPosition(gun->GetPosition().x - 8.f, gun->GetPosition().y + 10.f);
 				shotTxt->SetPosition(shot->GetPosition().x - 8.f, shot->GetPosition().y + 10.f);
 
-				roundClear = true;
-				switch (currentStage)
-				{
-				case 1:
-					currentMap = tileMap2;
-					currentStage = 2;
-					break;
-				case 2:
-					currentMap = tileMap3;
-					currentStage = 3;
-					break;
-				case 3:
-					currentMap = tileMap4;
-					currentStage = 4;
-					break;
-				case 4:
-					currentMap = tileMap5;
-					currentStage = 5;
-					break;
-				}
+				ChangeRound(currentRound);
+				//switch (currentRound)
+				//{
+				//case 1:
+				//	currentMap = tileMap2;
+				//	currentRound = 2;
+				//	break;
+				//case 2:
+				//	currentMap = tileMap3;
+				//	currentRound = 3;
+				//	break;
+				//case 3:
+				//	currentMap = tileMap4;
+				//	currentRound = 4;
+				//	break;
+				//case 4:
+				////게임 클리어
+				//	clearHeart->SetActive(true);
+				//	clearHeart->SetPosition(currentMap->GetPosition());
+				//}
+
+
 			}
 		}
 		/*부활 시 플레이어 blink 추가 필요
@@ -517,10 +518,15 @@ void SceneGame::Update(float dt)
 				monsterPool.Return(monster);
 			}
 		}
-		//맵 변경
-		if (!currentMap->isLood)
+		if(clearHeart->GetActive() && 
+			cowBoy->GetHitBox().getGlobalBounds().intersects(clearHeart->sprite.getGlobalBounds()))
 		{
-			switch (currentStage)
+			SCENE_MGR.ChangeScene(SceneId::Clear);
+		}
+		//맵 변경
+		if (!currentMap->isLood && !clearHeart->GetActive())
+		{
+			/*switch (currentRound)
 			{
 			case 2:
 				currentMap->Load("maps/stage1-2.csv");
@@ -537,19 +543,14 @@ void SceneGame::Update(float dt)
 				currentMap->SetOrigin(Origins::MC);
 				currentMap->SetPosition(tileMap3->GetPosition().x, tileMap3->GetPosition().y + tileMap3->GetTileMapSize().y);
 				break;
-			case 5:
-				currentMap->Load("maps/stage1-5.csv");
-				currentMap->SetOrigin(Origins::MC);
-				currentMap->SetPosition(tileMap4->GetPosition().x, tileMap4->GetPosition().y + tileMap4->GetTileMapSize().y);
-				break;
 			default:
 				break;
-			}
+			}*/
+			ChangeMap();
 			//몬스터 스폰 지점 수정
 			SetSpawnMonsterPos(currentMap);
 
-			//플레이어, 몬스터 tilemap 변경
-			cowBoy->SetTileMap(currentMap, 32);
+			//몬스터 tilemap 변경
 			for (auto monster : monsterPool.GetPool())
 			{
 				monster->SetTileMap(currentMap, 32);
@@ -572,6 +573,7 @@ void SceneGame::Update(float dt)
 		}
 		if(clearRound==2)
 		{
+			//cout << merchant->GetPosition().x << ", " << merchant->GetPosition().y << endl;
 			merchant->SetActive(true);
 			if (!merchantTable->GetActive() && merchant->isArrival)
 			{
@@ -599,7 +601,10 @@ void SceneGame::Update(float dt)
 					GetLife();
 				}
 				isUpgrade = true;
-
+				if (statsUpSound.getStatus() == sf::Sound::Status::Stopped)
+				{
+					statsUpSound.play();
+				}
 			}
 			else if (cowBoy->GetHitBox().getGlobalBounds().intersects(gun->sprite.getGlobalBounds()) &&
 				gun->GetActive() && coinCount >= gun->getCost() && !isUpgrade)
@@ -610,6 +615,10 @@ void SceneGame::Update(float dt)
 				findText->text.setString("X " + to_string(coinCount));
 				cowBoy->StatsUpgrade(Stats::StatsTypes::Gun);
 				isUpgrade = true;
+				if (statsUpSound.getStatus() == sf::Sound::Status::Stopped)
+				{
+					statsUpSound.play();
+				}
 			}
 			else if (cowBoy->GetHitBox().getGlobalBounds().intersects(shot->sprite.getGlobalBounds()) &&
 				shot->GetActive() && coinCount >= shot->getCost() && !isUpgrade)
@@ -620,6 +629,10 @@ void SceneGame::Update(float dt)
 				findText->text.setString("X " + to_string(coinCount));
 				cowBoy->StatsUpgrade(Stats::StatsTypes::Shot);
 				isUpgrade = true;
+				if (statsUpSound.getStatus() == sf::Sound::Status::Stopped)
+				{
+					statsUpSound.play();
+				}
 			}
 		}
 		//플레이어 위치 이동
@@ -639,14 +652,15 @@ void SceneGame::Update(float dt)
 			}
 			else
 			{
-				//이전 맵 delete 추가 필요
 				roundChange = false;
+				isArrive = true;
 				timerGauge->rectangle.setSize(timersize);
 			}
 		}
-		if(cowBoy->GetPosition().y >= currentMap->GetPosition().y)
+		if(isArrive)
 		{
 			currentTime += dt;
+			cowBoy->SetTileMap(currentMap, 32);
 		}
 		//월드 뷰 이동
 		if (worldView.getCenter().y <= currentMap->GetPosition().y && roundChange)
@@ -660,9 +674,14 @@ void SceneGame::Update(float dt)
 			roundClear = false;
 			isTimerRunning = true;
 			isUpgrade = false;
+			isArrive = false;
 		}
 	}
 	if (isGameOver)
+	{
+		deadtime += dt;
+	}
+	if (deadtime > 3.f)
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
 	}
@@ -707,6 +726,8 @@ void SceneGame::SpawnMonster(int count)
 void SceneGame::OnDieMonster(Monster* monster)
 {
 	//아이템 생성
+	mDieSound.setVolume(40.f);
+	mDieSound.play();
 	int random = Utils::RandomRange(0, 9);
 	if (random >= 0)
 	{
@@ -723,26 +744,23 @@ void SceneGame::OnDieCowBoy()
 	{
 		isGameOver = true;
 	}
-	else
+	isTimerRunning = false;
+	cowBoy->CowBoyDie();
+	const list<Monster*> monsters = monsterPool.GetUseList();
+	if (!monsters.empty())
 	{
-		isTimerRunning = false;
-		cowBoy->CowBoyDie();
-		const list<Monster*> monsters = monsterPool.GetUseList();
-		if(!monsters.empty())
+		for (auto monster : monsters)
 		{
-			for (auto monster : monsters)
-			{
-				monster->OnDie();
-			}
+			monster->OnDie();
 		}
-		//아이템 삭제
-		list<Item*> items = itemPool.GetUseList();
-		if (!items.empty())
+	}
+	//아이템 삭제
+	list<Item*> items = itemPool.GetUseList();
+	if (!items.empty())
+	{
+		for (auto item : items)
 		{
-			for (auto item : items)
-			{
-				RemoveItem(item);
-			}
+			RemoveItem(item);
 		}
 	}
 }
@@ -829,13 +847,16 @@ void SceneGame::TakeItem(Item* item)
 	if (item->GetType() == Item::ItemTypes::Coin)
 	{
 		GetCoin();
+		getCoinSound.play();
 	}
 	else if (item->GetType() == Item::ItemTypes::Life)
 	{
 		GetLife();
+		takeItemSound.play();
 	}
 	else
 	{
+		takeItemSound.play();
 		if (!haveItem)
 		{
 			pickedItem = item;
@@ -908,6 +929,99 @@ void SceneGame::UseNuke()
 	{
 		monster->OnBoom();
 	}
+}
+
+void SceneGame::ChangeRound(int num)
+{
+	switch (currentRound)
+	{
+	case 1:
+		currentMap = tileMap2;
+		previusMap = tileMap1;
+		currentRound = 2;
+		break;
+	case 2:
+		currentMap = tileMap3;
+		previusMap = tileMap2;
+		currentRound = 3;
+		break;
+	case 3:
+		currentMap = tileMap4;
+		previusMap = tileMap3;
+		currentRound = 4;
+		break;
+	case 4:
+		currentMap = tileMap5;
+		previusMap = tileMap4;
+		currentRound = 5;
+		break;
+	case 5:
+		currentMap = tileMap6;
+		previusMap = tileMap5;
+		currentRound = 6;
+		break;
+	case 6:
+		currentMap = tileMap7;
+		previusMap = tileMap6;
+		currentRound = 7;
+		break;
+	case 7:
+		currentMap = tileMap8;
+		previusMap = tileMap7;
+		currentRound = 8;
+		break;
+	case 8:
+		currentMap = tileMap9;
+		previusMap = tileMap8;
+		currentRound = 9;
+		break;
+	case 9:
+		currentMap = tileMap10;
+		previusMap = tileMap9;
+		currentRound = 10;
+		break;
+	case 10:
+		clearHeart->SetActive(true);
+		clearHeart->SetPosition(currentMap->GetPosition());
+	}
+}
+
+void SceneGame::ChangeMap()
+{
+	switch (currentRound)
+	{
+	case 2:
+		currentMap->Load("maps/stage1-2.csv");
+		break;
+	case 3:
+		currentMap->Load("maps/stage1-3.csv");
+		break;
+	case 4:
+		currentMap->Load("maps/stage1-4.csv");
+		break;
+	case 5:
+		currentMap->Load("maps/stage2-1.csv");
+		break;
+	case 6:
+		currentMap->Load("maps/stage2-2.csv");
+		break;
+	case 7:
+		currentMap->Load("maps/stage2-3.csv");
+		break;
+	case 8:
+		currentMap->Load("maps/stage3-1.csv");
+		break;
+	case 9:
+		currentMap->Load("maps/stage3-2.csv");
+		break;
+	case 10:
+		currentMap->Load("maps/stage3-3.csv");
+		break;
+	default:
+		break;
+	}
+	currentMap->SetOrigin(Origins::MC);
+	currentMap->SetPosition(previusMap->GetPosition().x, previusMap->GetPosition().y + previusMap->GetTileMapSize().y);
 }
 
 bool SceneGame::GetRoundChange()

@@ -83,6 +83,8 @@ void Merchant::SetTileMap(TileMap* map)
 	tileMapLT.y = map->vertexArray.getBounds().top;
 
 	tileSize = map->GetTileSize();
+
+	cout << tileMapLT.x << ", " << tileMapLT.y << endl;
 }
 
 void Merchant::SetCowboy(CowBoy* p)

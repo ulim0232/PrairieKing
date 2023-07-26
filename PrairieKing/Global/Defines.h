@@ -38,7 +38,7 @@ enum class SceneId
 	Title,
 	Game,
 	GameOver,
-	Ending,
+	Clear,
 	Count,
 };
 

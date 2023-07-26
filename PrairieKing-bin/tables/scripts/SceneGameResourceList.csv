@@ -26,3 +26,10 @@
 0,graphics/players/merchant_right.png
 0,graphics/players/merchant_table.png
 0,graphics/stats/upBoots1.png
+2,sounds/pickUpItem.wav
+2,sounds/pickUpCoin.wav
+2,sounds/powerUp.wav
+2,sounds/hitEnemy.wav
+0,graphics/maps/map_sheet_stage2.png
+0,graphics/maps/map_sheet_stage3.png
+0,graphics/items/clear.png
