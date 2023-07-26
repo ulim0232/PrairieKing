@@ -4,7 +4,7 @@
 
 bool MonsterTable::Load()
 {
-	string filename = "tables/monster/MonsterTable_stage1.csv";
+	string filename = "tables/monster/MonsterTable.csv";
 
 	rapidcsv::Document doc(filename);
 

@@ -10,19 +10,18 @@ class Monster : public SpriteGo
 public:
 	enum class Types
 	{
-		Boss,
-		Imp,
 		Mirra,
+		Imp,
+		Pixy,
 		Mushroom,
 		Ogre,
-		Orc,
-		Pixy
+		Orc
 	};
 	static const int TotalTypes = 6;
 
 protected:
 	Types monsterType;
-	sf::Vector2i boxSize = { 26.f, 26.f };
+	sf::Vector2i boxSize = { 20.f, 20.f };
 	sf::RectangleShape hitBox;
 	sf::Vector2f velocity;
 	sf::Vector2f direction; //이동하는 방향

@@ -55,6 +55,7 @@ void SceneGame::Init()
 	tileMap10 = (TileMap*)AddGo(new TileMap("graphics/maps/map_sheet_stage3.png", "TileMap10"));
 	tileMap1->sortLayer = -1;
 	tileMap2->sortLayer = -1;
+	currentMap = tileMap1;
 
 	/*---플레이어 설정----*/
 	cowBoy = (CowBoy*)AddGo(new CowBoy("cowBoy"));
@@ -82,9 +83,6 @@ void SceneGame::Init()
 	arrow = (SpriteGo*)AddGo(new SpriteGo("graphics/UIs/arrow.png", "arrowUI"));
 	merchantTable = (SpriteGo*)AddGo(new SpriteGo("graphics/players/merchant_table.png", "table"));
 	clearHeart = (SpriteGo*)AddGo(new SpriteGo("graphics/items/clear.png", "clearHeart"));
-
-	sf::Vector2f sizeRect(10.f, 10.f);
-	AddGo(new RectangleGo(sizeRect, "center"));
 
 	coinUI->sprite.setScale({ 2.f, 2.f });
 	itemUI->sprite.setScale({ 2.f, 2.f });
@@ -159,11 +157,11 @@ void SceneGame::Init()
 	monsterPool.OnCreate = [this](Monster* monster)
 	{
 		//Monster::Types monsterType = (Monster::Types)(Utils::RandomRange(0, Monster::TotalTypes) + 1); //1번은 보스
-		Monster::Types monsterType = (Monster::Types)Utils::RandomRange(4, 6);
+		Monster::Types monsterType = (Monster::Types)Utils::RandomRange(0, Monster::TotalTypes);
 		monster->SetType(monsterType);
 		monster->SetCowboy(cowBoy);
 		monster->SetPool(&monsterPool);
-		monster->SetTileMap(tileMap1,32);
+		monster->SetTileMap(currentMap, 32);
 		monster->sortLayer = 2;
 	};
 	monsterPool.Init();
@@ -254,7 +252,7 @@ void SceneGame::Enter()
 	uiView.setCenter(tileMap1->GetPosition());
 
 	/*--변수 초기화*/
-	lifeCount = 0;
+	lifeCount = 100;
 	coinCount = 0;
 	isGameOver = false;
 	pickedItem = nullptr;
@@ -266,6 +264,7 @@ void SceneGame::Enter()
 	shotLevel = 0;
 	isUpgrade = false;
 	deadtime = 0.f;
+	currentMap = tileMap1;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -370,7 +369,7 @@ void SceneGame::Update(float dt)
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
 	{
-		SpawnMonster(1);
+		SpawnMonster(1, currentRound);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
 	{
@@ -402,7 +401,7 @@ void SceneGame::Update(float dt)
 		isTimerRunning = false;
 		currentTime = 0.0f;
 		timerGauge->rectangle.setSize({ 0, 10 });
-		
+		isTimeOver = true;
 	}
 	/*--타이머 게이지 설정--*/
 	if(isTimerRunning)
@@ -415,30 +414,25 @@ void SceneGame::Update(float dt)
 		if (timerM >= mosterSpawnLimit)
 		{
 			int num = Utils::RandomRange(1, 3);
-			//SpawnMonster(num);
+			SpawnMonster(num, currentRound);
 			timerM = 0.f;
 		}
 	}
 	else
 	{
-		if(!roundClear && currentTime > 0) //플레이어가 죽었을 때
+		if(isCowBoyDie) //플레이어가 죽었을 때
 		{
 			timerR += dt;
-			if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
-			{
-				stage1Bgm.stop();
-			}
-			if (pDieSound.getStatus() == sf::SoundSource::Status::Stopped && timerR < 2.f)
-			{
-				pDieSound.play();
-			}
-			OnDieCowBoy();
 			
 			if (timerR >= reviveLimit)
 			{
 				timerR = 0.f;
 				OnReviveCowBoy();
-				isTimerRunning = true;
+				isCowBoyDie = false;
+				if (!isTimeOver)
+				{
+					isTimerRunning = true;
+				}
 			}
 		}
 		else
@@ -480,8 +474,6 @@ void SceneGame::Update(float dt)
 				//	clearHeart->SetActive(true);
 				//	clearHeart->SetPosition(currentMap->GetPosition());
 				//}
-
-
 			}
 		}
 		/*부활 시 플레이어 blink 추가 필요
@@ -675,6 +667,7 @@ void SceneGame::Update(float dt)
 			isTimerRunning = true;
 			isUpgrade = false;
 			isArrive = false;
+			isTimeOver = false;
 		}
 	}
 	if (isGameOver)
@@ -692,9 +685,18 @@ void SceneGame::Draw(sf::RenderWindow& window)
 	Scene::Draw(window);
 }
 
-void SceneGame::SpawnMonster(int count)
+void SceneGame::SpawnMonster(int count, int round)
 {
-	int num = Utils::RandomRange(0, 4);
+	int num = 0;
+	if (round != 10)
+	{
+		num = Utils::RandomRange(0, 4);
+	}
+	else if (round == 10)
+	{
+		num = Utils::RandomRange(2, 4);
+	}
+	
 	vector<sf::Vector2f>* spawnPosList = nullptr;
 	switch (num)
 	{
@@ -702,10 +704,10 @@ void SceneGame::SpawnMonster(int count)
 		spawnPosList = &monsterSpawnPosTop;
 		break;
 	case 1:
-		spawnPosList = &monsterSpawnPosLeft;
+		spawnPosList = &monsterSpawnPosBottom;
 		break;
 	case 2:
-		spawnPosList = &monsterSpawnPosBottom; 
+		spawnPosList = &monsterSpawnPosLeft;
 		break;
 	case 3:
 		spawnPosList = &monsterSpawnPosRight;
@@ -717,6 +719,46 @@ void SceneGame::SpawnMonster(int count)
 	for (int i = 0; i < count; i++)
 	{
 		Monster* monster = monsterPool.Get();
+		if (round < 3)
+		{
+			while ((int)monster->GetType() != 5)
+			{
+				monsterPool.Return(monster);
+				monster = monsterPool.Get();
+			}
+		}
+		else if (round > 2 && round < 5)
+		{
+			while ((int)monster->GetType() < 4)
+			{
+				monsterPool.Return(monster);
+				monster = monsterPool.Get();
+			}
+		}
+		else if (round == 5)
+		{
+			while ((int)monster->GetType() < 2 || (int)monster->GetType() == 5)
+			{
+				monsterPool.Return(monster);
+				monster = monsterPool.Get();
+			}
+		}
+		else if (round > 5 && round < 8)
+		{
+			while ((int)monster->GetType() < 1 || (int)monster->GetType() == 5)
+			{
+				monsterPool.Return(monster);
+				monster = monsterPool.Get();
+			}
+		}
+		else if (round > 7)
+		{
+			while ((int)monster->GetType() >1 )
+			{
+				monsterPool.Return(monster);
+				monster = monsterPool.Get();
+			}
+		}
 		monster->SetPosition(spawnPosList->at(i).x, spawnPosList->at(i).y);
 		cout << monster->GetPosition().x << "," << monster->GetPosition().y << endl;
 		AddGo(monster);
@@ -728,8 +770,20 @@ void SceneGame::OnDieMonster(Monster* monster)
 	//아이템 생성
 	mDieSound.setVolume(40.f);
 	mDieSound.play();
-	int random = Utils::RandomRange(0, 9);
-	if (random >= 0)
+	int random = Utils::RandomRange(0, 10);
+	if (random == 6 || random == 7)
+	{
+		Item* item = itemPool.Get();
+		while (item->GetType() != Item::ItemTypes::Coin)
+		{
+			itemPool.Return(item);
+			item = itemPool.Get();
+		}
+		item->SetPosition(monster->GetPosition());
+		item->SetIsSpawn(true);
+		AddGo(item);
+	}
+	if (random == 8 || random == 9)
 	{
 		Item* item = itemPool.Get();
 		item->SetPosition(monster->GetPosition());
@@ -740,6 +794,15 @@ void SceneGame::OnDieMonster(Monster* monster)
 
 void SceneGame::OnDieCowBoy()
 {
+	if (stage1Bgm.getStatus() == sf::SoundSource::Status::Playing)
+	{
+		stage1Bgm.stop();
+	}
+	if (pDieSound.getStatus() == sf::SoundSource::Status::Stopped && timerR < 2.f)
+	{
+		pDieSound.play();
+	}
+	isCowBoyDie = true;
 	if (lifeCount <= 0)
 	{
 		isGameOver = true;

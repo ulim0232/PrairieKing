@@ -63,130 +63,115 @@ void Monster::Update(float dt)
 			return;
 		else
 		{
-			if (isCollision)
-			{
-				if(collTimer == 0)
-				{
-					//sf::Vector2f tileMapSize = tileMap->GetTileMapSize();
-					//sf::Vector2f random(Utils::RandomRange(0.f, tileMapSize.x), Utils::RandomRange(0.f, tileMapSize.y));
-					//sf::Vector2f destination(random.x + tileMapLT.x, random.y + tileMapLT.y);
-					//absX = abs(destination.x - position.x);
-					//absY = abs(destination.y - position.y);
-					//distance = Utils::Distance(destination, position);
-					//direction = Utils::Normalize(destination - position);
-
-					direction = Utils::Normalize({ (float)Utils::RandomRange(-1, 2), (float)Utils::RandomRange(-1, 2) });
-				}
-				collTimer += dt;
-			}
-			else if (!isCollision && collTimer == 0)
+			if (monsterType == Types::Imp || monsterType == Types::Pixy)
 			{
 				sf::Vector2f cowboyPos = cowboy->GetPosition();
-				absX = abs(cowboyPos.x - position.x);
-				absY = abs(cowboyPos.y - position.y);
 
 				distance = Utils::Distance(cowboyPos, position);
 				direction = Utils::Normalize(cowboyPos - position);
 
-				if (absX > absY && !isCollision) //x값만 이동
+				if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
 				{
-					if (collCount > 2)
-					{
-						direction.x = 0;
-						collCount = 0;
-					}
-					else
-					{
-						direction.y = 0;
-					}
-				}
-				else if (absX < absY && !isCollision) //y값만 이동
-				{
-					if (collCount > 2)
-					{
-						direction.y = 0;
-						collCount = 0;
-					}
-					else
-					{
-						direction.x = 0;
-					}
+					velocity = direction * speed;
+					position += velocity * dt;
+					SetPosition(position);
+					hitBox.setPosition(position);
 				}
 			}
-			//if (absX > absY && !isCollision) //x값만 이동
-			//{
-			//	if (collCount > 2)
-			//	{
-			//		direction.x = 0;
-			//		collCount = 0;
-			//	}
-			//	else
-			//	{
-			//		direction.y = 0;
-			//	}
-			//}
-			//else if (absX < absY &&!isCollision) //y값만 이동
-			//{
-			//	if (collCount > 2)
-			//	{
-			//		direction.y = 0;
-			//		collCount = 0;
-			//	}
-			//	else
-			//	{
-			//		direction.x = 0;
-			//	}
-			//}
-			if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
+			else
 			{
-				velocity = direction * speed;
-				sf::Vector2f newPos = position + velocity * dt;
-				hitBox.setPosition(newPos);
-
-				for (auto tile : tileMap->tiles)
+				if (isCollision)
 				{
-					float tileL = tileMapLT.x + (tileSize.x * tile.x);
-					float tileT = tileMapLT.y + (tileSize.y * tile.y);
-
-					sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
-
-					if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+					if (collTimer == 0)
 					{
-						if (IsCollisoinTile(tile.texIndex))
+						direction = Utils::Normalize({ (float)Utils::RandomRange(-1, 2), (float)Utils::RandomRange(-1, 2) });
+					}
+					collTimer += dt;
+				}
+				else if (!isCollision && collTimer == 0)
+				{
+					sf::Vector2f cowboyPos = cowboy->GetPosition();
+					absX = abs(cowboyPos.x - position.x);
+					absY = abs(cowboyPos.y - position.y);
+
+					distance = Utils::Distance(cowboyPos, position);
+					direction = Utils::Normalize(cowboyPos - position);
+
+					if (absX > absY && !isCollision) //x값만 이동
+					{
+						if (collCount > 2)
 						{
-							hitBox.setOutlineColor(sf::Color::Red);
-							if (intersection.height > intersection.width) //좌우로 부딪힘
-							{
-								newPos.x = position.x;
-							}
-							else if (intersection.height < intersection.width) //상하로 부딪힘
-							{
-								newPos.y = position.y;
-							}
-							else
-							{
-								newPos = position;
-							}
-							isCollision = true;
+							direction.x = 0;
+							collCount = 0;
 						}
 						else
 						{
-							hitBox.setOutlineColor(sf::Color::Cyan);
+							direction.y = 0;
+						}
+					}
+					else if (absX < absY && !isCollision) //y값만 이동
+					{
+						if (collCount > 2)
+						{
+							direction.y = 0;
+							collCount = 0;
+						}
+						else
+						{
+							direction.x = 0;
 						}
 					}
 				}
-				position = newPos;
-				SetPosition(position);
-				hitBox.setPosition(position);
-			}
-			if (collTimer >= collTime)
-			{
-				collTimer = 0.f;
-				isCollision = false;
-				collCount++;
-				cout << "collCount++:" << collCount << endl;
-			}
+				if (distance > 5.f) //일정 거리에 가까워지면 도착으로 처리
+				{
+					velocity = direction * speed;
+					sf::Vector2f newPos = position + velocity * dt;
+					hitBox.setPosition(newPos);
 
+					for (auto tile : tileMap->tiles)
+					{
+						float tileL = tileMapLT.x + (tileSize.x * tile.x);
+						float tileT = tileMapLT.y + (tileSize.y * tile.y);
+
+						sf::FloatRect tileRect(tileL, tileT, tileSize.x, tileSize.y);
+
+						if (tileRect.intersects(hitBox.getGlobalBounds(), intersection))
+						{
+							if (IsCollisoinTile(tile.texIndex))
+							{
+								hitBox.setOutlineColor(sf::Color::Red);
+								if (intersection.height > intersection.width) //좌우로 부딪힘
+								{
+									newPos.x = position.x;
+								}
+								else if (intersection.height < intersection.width) //상하로 부딪힘
+								{
+									newPos.y = position.y;
+								}
+								else
+								{
+									newPos = position;
+								}
+								isCollision = true;
+							}
+							else
+							{
+								hitBox.setOutlineColor(sf::Color::Cyan);
+							}
+						}
+					}
+					position = newPos;
+					SetPosition(position);
+					hitBox.setPosition(position);
+				}
+				if (collTimer >= collTime)
+				{
+					collTimer = 0.f;
+					isCollision = false;
+					collCount++;
+					cout << "collCount++:" << collCount << endl;
+				}
+			}
 		}
 		if (sprite.getGlobalBounds().intersects(cowboy->GetHitBox().getGlobalBounds()))
 		{

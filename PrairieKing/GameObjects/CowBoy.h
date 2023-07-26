@@ -36,7 +36,7 @@ protected:
 	TileMap* tileMap;
 	sf::RectangleShape hitBox;
 	sf::RectangleShape tileBox;
-	sf::Vector2i boxSize = { 28.f, 28.f };
+	sf::Vector2i boxSize = { 20.f, 20.f };
 	sf::Vector2i tileSize = { 32.f, 32.f };
 
 	//sf::Vector2i boxSize = { 70, 39.375 };

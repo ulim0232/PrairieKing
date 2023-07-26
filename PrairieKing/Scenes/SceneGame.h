@@ -89,7 +89,7 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 3.f; //30
+	float timeLimit = 15.f; //30
 	float deadtime = 0.f;
 
 	bool isTimerRunning = true;
@@ -105,6 +105,7 @@ protected:
 	bool isGameOver = false;
 	bool haveItem = false;
 	bool roundChange = false;
+	bool isTimeOver = false;
 
 	sf::Vector2f size;
 	sf::Vector2f centerPos;
@@ -133,7 +134,7 @@ public:
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
 
-	void SpawnMonster(int count);
+	void SpawnMonster(int count, int round);
 	const list<Monster*>* GetMonsterList() const;
 	void SetSpawnMonsterPos(TileMap* tilemap);
 

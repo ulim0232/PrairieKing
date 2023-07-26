@@ -1,8 +1,7 @@
-﻿NAME,ID,IDLE_CLIP,DIE_CLIP,SPEED,HP
-Boss,0,tables/monster/Imp.csv,tables/monster/Die.csv,100,10
-Imp,1,tables/monster/Imp.csv,tables/monster/Die.csv,100,3
-Mirra,2,tables/monster/Mirra.csv,tables/monster/Die.csv,100,6
-Mushroom,3,tables/monster/Mushroom.csv,tables/monster/Die.csv,100,2
-Ogre,4,tables/monster/Ogre.csv,tables/monster/Die.csv,100,3
-Orc,5,tables/monster/Orc.csv,tables/monster/Die.csv,100,1
-Pixy,6,tables/monster/Pixy.csv,tables/monster/Die.csv,100,1
+﻿NAME,ID,IDLE_CLIP,DIE_CLIP,BOMB_CLIP,SPEED,HP
+Mirra,0,tables/monster/Mirra.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,40,6
+Imp,1,tables/monster/Imp.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,70,3
+Pixy,2,tables/monster/Pixy.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,70,1
+Mushroom,3,tables/monster/Mushroom.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,70,2
+Ogre,4,tables/monster/Ogre.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,40,3
+Orc,5,tables/monster/Orc.csv,tables/monster/Die.csv,tables/monster/Bomb.csv,70,1
