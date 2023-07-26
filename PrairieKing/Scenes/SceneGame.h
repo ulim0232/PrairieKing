@@ -89,11 +89,13 @@ protected:
 	float timerDecreaseAmount;
 	float currentTime = 0;
 	float initualWidth = 482.f;
-	float timeLimit = 15.f; //30
+	float timeLimit = 5.f; //30
 	float deadtime = 0.f;
+	float cleartime = 0.f;
 
 	bool isTimerRunning = true;
 	bool isCowBoyDie = false;
+	bool isClear = false;
 
 	float mosterSpawnLimit = 3.f; //3초마다 몬스터 생성
 	float reviveLimit = 3.f; //플레이어 사망 시 3초후 재생성

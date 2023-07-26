@@ -265,6 +265,8 @@ void SceneGame::Enter()
 	isUpgrade = false;
 	deadtime = 0.f;
 	currentMap = tileMap1;
+	isClear = false;
+	cleartime = 0.f;
 
 	/*----UI설정----*/
 	sf::Vector2f mapPosition = tileMap1->GetPosition();
@@ -334,12 +336,6 @@ void SceneGame::Enter()
 
 	/*---몬스터 스폰 위치 설정----*/
 	SetSpawnMonsterPos(tileMap1);
-
-	RectangleGo* rect = (RectangleGo*)FindGo("center");
-	rect->sortLayer = 5;
-	rect->SetOrigin(Origins::MC);
-	rect->SetPosition(tileMap1->GetPosition());
-	rect->rectangle.setFillColor(sf::Color::Magenta);
 }
 
 void SceneGame::Exit()
@@ -513,7 +509,7 @@ void SceneGame::Update(float dt)
 		if(clearHeart->GetActive() && 
 			cowBoy->GetHitBox().getGlobalBounds().intersects(clearHeart->sprite.getGlobalBounds()))
 		{
-			SCENE_MGR.ChangeScene(SceneId::Clear);
+			isClear = true;
 		}
 		//맵 변경
 		if (!currentMap->isLood && !clearHeart->GetActive())
@@ -674,9 +670,17 @@ void SceneGame::Update(float dt)
 	{
 		deadtime += dt;
 	}
+	if (isClear)
+	{
+		cleartime += dt;
+	}
 	if (deadtime > 3.f)
 	{
 		SCENE_MGR.ChangeScene(SceneId::GameOver);
+	}
+	if (cleartime > 2.f)
+	{
+		SCENE_MGR.ChangeScene(SceneId::Clear);
 	}
 }
 
