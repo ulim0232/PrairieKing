@@ -252,7 +252,7 @@ void SceneGame::Enter()
 	uiView.setCenter(tileMap1->GetPosition());
 
 	/*--변수 초기화*/
-	lifeCount = 100;
+	lifeCount = 3;
 	coinCount = 0;
 	isGameOver = false;
 	pickedItem = nullptr;
@@ -764,7 +764,6 @@ void SceneGame::SpawnMonster(int count, int round)
 			}
 		}
 		monster->SetPosition(spawnPosList->at(i).x, spawnPosList->at(i).y);
-		cout << monster->GetPosition().x << "," << monster->GetPosition().y << endl;
 		AddGo(monster);
 	}
 }
@@ -987,7 +986,7 @@ void SceneGame::UseNiza()
 	sf::Vector2f newPos(currentMap->vertexArray.getBounds().left + currentMap->tiles[tileNum].x * 32.f + 16.f,
 		currentMap->vertexArray.getBounds().top + currentMap->tiles[tileNum].y * 32.f + 32.f);
 	cowBoy->SetPosition(newPos.x, newPos.y - 4.f);
-	cout << "new: " << newPos.x << ", " << newPos.y <<","<<tileNum <<"," << currentMap->tiles[tileNum].texIndex << endl;
+	//cout << "new: " << newPos.x << ", " << newPos.y <<","<<tileNum <<"," << currentMap->tiles[tileNum].texIndex << endl;
 }
 
 void SceneGame::UseNuke()

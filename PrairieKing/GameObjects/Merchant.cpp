@@ -84,7 +84,7 @@ void Merchant::SetTileMap(TileMap* map)
 
 	tileSize = map->GetTileSize();
 
-	cout << tileMapLT.x << ", " << tileMapLT.y << endl;
+	//cout << tileMapLT.x << ", " << tileMapLT.y << endl;
 }
 
 void Merchant::SetCowboy(CowBoy* p)

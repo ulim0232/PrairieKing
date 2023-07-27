@@ -204,7 +204,7 @@ void Monster::Update(float dt)
 void Monster::Draw(sf::RenderWindow& window)
 {
 	SpriteGo::Draw(window);
-	window.draw(hitBox);
+	//window.draw(hitBox);
 }
 
 void Monster::SetType(Types t)
